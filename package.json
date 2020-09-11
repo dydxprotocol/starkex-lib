@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/dydxprotocol/starkex-lib#readme",
   "dependencies": {
+    "@types/elliptic": "^6.4.12",
     "starkware-crypto": "^1.9.7"
   },
   "devDependencies": {
