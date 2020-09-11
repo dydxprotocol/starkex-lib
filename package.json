@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/dydxprotocol/starkex-lib#readme",
   "dependencies": {
+    "starkware-crypto": "^1.9.7"
   },
   "devDependencies": {
     "@dydxprotocol/node-service-base-dev": "0.0.7"

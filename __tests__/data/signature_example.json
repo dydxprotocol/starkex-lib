@@ -1,0 +1,22 @@
+{
+  "keyPair": {
+    "publicKey": "",
+    "privateKey": ""
+  },
+  "order": {
+    "orderType": "",
+    "nonce": "",
+    "publicKey": "",
+    "amountSell": "",
+    "amountBuy": "",
+    "amountFee": "",
+    "tokenIdSell": "",
+    "tokenIdBuy": "",
+    "positionId": "",
+    "expirationTimestamp": ""
+  },
+  "signature": {
+    "r": "",
+    "s": ""
+  }
+}
