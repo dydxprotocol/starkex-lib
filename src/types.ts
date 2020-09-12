@@ -11,16 +11,29 @@ export enum Token {
   USDT = 'USDT',
 }
 
-// Re-export the classes.
-export type KeyPair = elliptic.ec.KeyPair;
-// export const KeyPair = elliptic.ec.KeyPair;
-export type Signature = elliptic.ec.Signature;
-export const Signature = elliptic.ec.Signature;
+export type EcKeyPair = elliptic.ec.KeyPair;
+export type EcSignature = elliptic.ec.Signature;
+
+// Key pair, represented as hex strings, no 0x prefix.
+export interface PublicKey {
+  x: string;
+  y: string;
+}
+export interface KeyPair {
+  publicKey: PublicKey;
+  privateKey: string;
+}
+
+// Signature, represented as hex strings, no 0x prefix.
+export interface Signature {
+  r: string;
+  s: string;
+}
 
 export interface Order {
   orderType: OrderType;
   nonce: string;
-  publicKey: { x: string, y: string };
+  publicKey: PublicKey;
   amountSell: string;
   amountBuy: string;
   amountFee: string;

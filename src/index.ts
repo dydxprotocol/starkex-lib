@@ -5,16 +5,31 @@ import * as encUtils from 'enc-utils';
 import * as crypto from 'starkware-crypto';
 
 import { ORDER_FIELD_LENGTHS, ORDER_MAX_VALUES, TOKEN_STRUCTS } from './constants';
-import { KeyPair, Order, Signature } from './types';
+import {
+  EcKeyPair,
+  EcSignature,
+  KeyPair,
+  Order,
+  Signature,
+} from './types';
+import { bnToHex } from './util';
 
 export * from './constants';
 export * from './types';
 
 /**
- * Generate a StarkEx key pair.
+ * Generate a StarkEx key pair. Represent as a simplified object.
  */
 export function generateKeyPair(): KeyPair {
-  return crypto.ec.genKeyPair();
+  const ecKeyPair: EcKeyPair = crypto.ec.genKeyPair();
+  const ecPublicKey = ecKeyPair.getPublic();
+  return {
+    publicKey: {
+      x: bnToHex(ecPublicKey.getX()),
+      y: bnToHex(ecPublicKey.getY()),
+    },
+    privateKey: bnToHex(ecKeyPair.getPrivate()),
+  };
 }
 
 /**
@@ -30,14 +45,19 @@ export function verifySignature(
 }
 
 /**
- * Sign an order with the given key pair.
+ * Sign an order with the given private key (represented as a hex string).
  */
 export function sign(
   order: Order,
-  keyPair: KeyPair,
+  privateKey: string,
 ): Signature {
   const orderHash = getOrderHash(order);
-  return keyPair.sign(orderHash);
+  const keyPair = crypto.ec.keyFromPrivate(encUtils.removeHexPrefix(privateKey));
+  const ecSignature: EcSignature = keyPair.sign(orderHash);
+  return {
+    r: bnToHex(ecSignature.r),
+    s: bnToHex(ecSignature.s),
+  };
 }
 
 export function getOrderHash(

@@ -2,13 +2,13 @@ import BN from 'bn.js';
 
 import { Order, Token, TokenStruct } from './types';
 
-export const HEX_63_RE = /^0x[a-f]{63}$/;
+export const HEX_64_RE = /^[0-9a-f]{64}$/;
 export const TWO_POW_63_BN = new BN('8000000000000000', 16);
 
 // TODO: Update to correct values.
 export const ORDER_FIELD_LENGTHS: { [K in keyof Order]: number } = {
   orderType: 63,
-  nonce: 63,
+  nonce: 31,
   publicKey: 63,
   amountSell: 63,
   amountBuy: 63,
@@ -16,7 +16,7 @@ export const ORDER_FIELD_LENGTHS: { [K in keyof Order]: number } = {
   tokenIdSell: 63,
   tokenIdBuy: 63,
   positionId: 63,
-  expirationTimestamp: 63,
+  expirationTimestamp: 22,
 };
 // TODO: Derive from ORDER_FIELD_LENGTHS.
 export const ORDER_MAX_VALUES: { [K in keyof Order]: BN } = {

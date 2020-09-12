@@ -22,7 +22,7 @@
     "expirationTimestamp": "1599850770"
   },
   "signature": {
-    "r": "",
-    "s": ""
+    "r": "022dded0305e0c69fa1613d02e079f52a3aeba3467869748e962dd6c751f99e6",
+    "s": "0266b2ee3d043159b64618731705d1c41c2b004c35e70160e68b36e79b1d6c11"
   }
 }

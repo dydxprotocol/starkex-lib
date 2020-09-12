@@ -1,8 +1,5 @@
-import BN from 'bn.js';
-import * as crypto from 'starkware-crypto';
-
 import {
-  HEX_63_RE,
+  HEX_64_RE,
   KeyPair,
   Order,
   Signature,
@@ -19,8 +16,9 @@ describe('starkex-lib', () => {
 
     it('generates a key pair', () => {
       const keyPair: KeyPair = generateKeyPair();
-      expect(keyPair.getPublic()).toMatch(HEX_63_RE);
-      expect(keyPair.getPrivate()).toMatch(HEX_63_RE);
+      expect(keyPair.publicKey.x).toMatch(HEX_64_RE);
+      expect(keyPair.publicKey.y).toMatch(HEX_64_RE);
+      expect(keyPair.privateKey).toMatch(HEX_64_RE);
     });
   });
 
@@ -28,31 +26,31 @@ describe('starkex-lib', () => {
 
     it('returns true for a valid signature', () => {
       const order: Order = signatureExample.order as Order;
-      const signature = new Signature(signatureExample.signature);
+      const signature: Signature = signatureExample.signature;
       const result = verifySignature(order, signature);
       expect(result).toBe(true);
     });
 
     it('returns false for an invalid signature', () => {
       const order: Order = signatureExample.order as Order;
-      const signature = new Signature(signatureExample.signature);
+      const signature: Signature = signatureExample.signature;
 
       // Mutate a single character in r.
-      for (let i = 0; i < 63; i++) {
-        const badSignature = new Signature({
-          r: mutateBnAt(signature.r, i + 2),
+      for (let i = 0; i < 3; i++) {
+        const badSignature: Signature = {
+          r: mutateHexStringAt(signature.r, i),
           s: signature.s,
-        });
+        };
         const result = verifySignature(order, badSignature);
         expect(result).toBe(false);
       }
 
       // Mutate a single character in s.
-      for (let i = 0; i < 63; i++) {
-        const badSignature = new Signature({
+      for (let i = 0; i < 3; i++) {
+        const badSignature: Signature = {
           r: signature.r,
-          s: mutateBnAt(signature.s, i + 2),
-        });
+          s: mutateHexStringAt(signature.s, i),
+        };
         const result = verifySignature(order, badSignature);
         expect(result).toBe(false);
       }
@@ -62,46 +60,48 @@ describe('starkex-lib', () => {
   describe('sign()', () => {
 
     it('signs an order', () => {
-      const keyPair = crypto.ec.keyFromPrivate(signatureExample.keyPair.privateKey);
+      const privateKey: string = signatureExample.keyPair.privateKey;
 
       const order: Order = signatureExample.order as Order;
-      const expectedSignature = new Signature(signatureExample.signature);
+      const expectedSignature: Signature = signatureExample.signature;
 
-      const signature: Signature = sign(order, keyPair);
+      const signature: Signature = sign(order, privateKey);
       expect(signature).toEqual(expectedSignature);
     });
   });
 
-  describe('end-to-end', () => {
+  it('end-to-end', () => {
     const order: Order = signatureExample.order as Order;
 
-    // Repeat several times.
+    // Repeat a few times.
     let failed = false;
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 3; i++) {
       const keyPair: KeyPair = generateKeyPair();
 
-      // Should be invalid signing the original order.
-      const invalidSignature: Signature = sign(order, keyPair);
+      // Should be invalid signing the original, since private key doesn't match public key.
+      const invalidSignature: Signature = sign(order, keyPair.privateKey);
       const invalidIsValid = verifySignature(order, invalidSignature);
       if (invalidIsValid) {
         /* eslint-disable-next-line no-console */
-        console.log(`Expected invalid with pair: ${keyPair} and signature ${invalidSignature}`);
+        console.log(
+          `Expected invalid with pair: ${JSON.stringify(keyPair)} ` +
+          `and signature ${JSON.stringify(invalidSignature)}`,
+        );
         failed = true;
       }
 
-      const publicKey = keyPair.getPublic();
       const newOrder = {
         ...order,
-        publicKey: {
-          x: publicKey.getX().toString('hex'),
-          y: publicKey.getY().toString('hex'),
-        },
+        publicKey: keyPair.publicKey,
       };
-      const validSignature: Signature = sign(newOrder, keyPair);
-      const isValid = verifySignature(order, validSignature);
+      const validSignature: Signature = sign(newOrder, keyPair.privateKey);
+      const isValid = verifySignature(newOrder, validSignature);
       if (!isValid) {
         /* eslint-disable-next-line no-console */
-        console.log(`Expected valid with pair: ${keyPair} and signature ${validSignature}`);
+        console.log(
+          `Expected valid with pair: ${JSON.stringify(keyPair)} ` +
+          `and signature ${JSON.stringify(validSignature)}`,
+        );
         failed = true;
       }
     }
@@ -110,11 +110,10 @@ describe('starkex-lib', () => {
 });
 
 /**
- * Return a new BN modified by one character in the hex representation at the specified index.
+ * Return a new hex string which is different from the original hex string at the specified index.
  */
-function mutateBnAt(bn: BN, i: number): BN {
-  const hex = bn.toString('hex');
-  const newChar = ((Number.parseInt(hex[i], 16) + 1) % 16).toString(16);
-  const newHex = `${hex.slice(0, i)}${newChar}${hex.slice(i + 1)}`;
-  return new BN(newHex, 'hex');
+function mutateHexStringAt(s: string, i: number): string {
+  const newChar = ((Number.parseInt(s[i], 16) + 1) % 16).toString(16);
+  const newString = `${s.slice(0, i)}${newChar}${s.slice(i + 1)}`;
+  return newString;
 }
