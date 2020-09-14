@@ -2,8 +2,11 @@ import BN from 'bn.js';
 
 import { Order, Token, TokenStruct } from './types';
 
-export const HEX_64_RE = /^[0-9a-f]{64}$/;
+export const HEX_RE = /^0x[0-9a-fA-F]$/;
 export const TWO_POW_63_BN = new BN('8000000000000000', 16);
+
+// As derived in starkware-crypto with layer='starkex' and application='starkexdvf'.
+export const STARK_DERIVATION_PATH = 'm/2645\'/579218131\'/1393043894\'/0\'/0\'/0';
 
 // TODO: Update to correct values.
 export const ORDER_FIELD_LENGTHS: { [K in keyof Order]: number } = {

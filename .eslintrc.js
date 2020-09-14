@@ -5,8 +5,4 @@ module.exports = {
   parserOptions: {
     tsconfigRootDir: __dirname,
   },
-
-  rules: {
-    'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
-  },
 };

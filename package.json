@@ -29,6 +29,6 @@
     "starkware-crypto": "^1.9.7"
   },
   "devDependencies": {
-    "@dydxprotocol/node-service-base-dev": "0.0.7"
+    "@dydxprotocol/node-service-base-dev": "0.0.8"
   }
 }
