@@ -282,7 +282,7 @@ describe('starkex-lib', () => {
       const ecKeyPair = asEcKeyPairPublic(signatureExample.keyPair.publicKey);
       expect(() => asSimpleKeyPair(ecKeyPair)).toThrow('Key pair has no private key');
     });
-  })
+  });
 });
 
 /**
