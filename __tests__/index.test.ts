@@ -1,7 +1,13 @@
+import _ from 'lodash';
+
 import {
   KeyPair,
   Order,
   Signature,
+  asEcKeyPair,
+  asEcKeyPairPublic,
+  asSimpleKeyPair,
+  asSimplePublicKey,
   generateKeyPair,
   generateKeyPairFromEntropy,
   generateKeyPairFromMnemonic,
@@ -16,6 +22,14 @@ const HEX_64_RE_LOWER_NO_PREFIX = /^[0-9a-f]{64}$/;
 const UNSAFE_MNEMONIC = (
   'candy maple cake sugar pudding cream honey rich smooth crumble sweet treat'
 );
+
+const paddedKeyPair: KeyPair = {
+  publicKey: {
+    x: signatureExample.keyPair.publicKey.x.padStart(64, '0'),
+    y: signatureExample.keyPair.publicKey.y.padStart(64, '0'),
+  },
+  privateKey: signatureExample.keyPair.privateKey.padStart(64, '0'),
+};
 
 describe('starkex-lib', () => {
 
@@ -236,6 +250,32 @@ describe('starkex-lib', () => {
       }
     }
     expect(failed).toBe(false);
+  });
+
+  describe('asEcKeyPair()', () => {
+
+    it('accepts a key pair as argument', () => {
+      const ecKeyPair = asEcKeyPair(signatureExample.keyPair);
+      expect(asSimpleKeyPair(ecKeyPair)).toEqual(paddedKeyPair);
+    });
+
+    it('accepts just a public key as argument', () => {
+      const ecKeyPair = asEcKeyPair(signatureExample.keyPair.privateKey);
+      expect(asSimpleKeyPair(ecKeyPair)).toEqual(paddedKeyPair);
+    });
+  });
+
+  describe('asEcKeyPairPublic()', () => {
+
+    it('accepts a key pair as argument', () => {
+      const ecKeyPair = asEcKeyPairPublic(signatureExample.keyPair);
+      expect(asSimplePublicKey(ecKeyPair.getPublic())).toEqual(paddedKeyPair.publicKey);
+    });
+
+    it('accepts just a public key as argument', () => {
+      const ecKeyPair = asEcKeyPairPublic(signatureExample.keyPair.publicKey);
+      expect(asSimplePublicKey(ecKeyPair.getPublic())).toEqual(paddedKeyPair.publicKey);
+    });
   });
 });
 

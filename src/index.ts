@@ -14,6 +14,7 @@ import {
 } from './constants';
 import {
   EcKeyPair,
+  EcPublicKey,
   EcSignature,
   KeyPair,
   Order,
@@ -184,12 +185,22 @@ export function asEcKeyPairPublic(
 export function asSimpleKeyPair(
   ecKeyPair: EcKeyPair,
 ): KeyPair {
+  const ecPrivateKey = ecKeyPair.getPrivate();
+  if (!ecPrivateKey) {
+    throw new Error('asSimpleKeyPair: Key pair has no private key');
+  }
   const ecPublicKey = ecKeyPair.getPublic();
   return {
-    publicKey: {
-      x: bnToHex(ecPublicKey.getX()),
-      y: bnToHex(ecPublicKey.getY()),
-    },
-    privateKey: bnToHex(ecKeyPair.getPrivate()),
+    publicKey: asSimplePublicKey(ecPublicKey),
+    privateKey: bnToHex(ecPrivateKey),
+  };
+}
+
+export function asSimplePublicKey(
+  ecPublicKey: EcPublicKey,
+): PublicKey {
+  return {
+    x: bnToHex(ecPublicKey.getX()),
+    y: bnToHex(ecPublicKey.getY()),
   };
 }

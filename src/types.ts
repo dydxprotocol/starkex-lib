@@ -12,6 +12,7 @@ export enum Token {
 }
 
 export type EcKeyPair = elliptic.ec.KeyPair;
+export type EcPublicKey = elliptic.curve.base.BasePoint;
 export type EcSignature = elliptic.ec.Signature;
 
 // Key pair, represented as hex strings, no 0x prefix.
