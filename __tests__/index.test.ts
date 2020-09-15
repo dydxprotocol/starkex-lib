@@ -275,6 +275,14 @@ describe('starkex-lib', () => {
       expect(asSimplePublicKey(ecKeyPair.getPublic())).toEqual(paddedKeyPair.publicKey);
     });
   });
+
+  describe('asSimpleKeyPair()', () => {
+
+    it('throws if the elliptic curve key pair has no private key', () => {
+      const ecKeyPair = asEcKeyPairPublic(signatureExample.keyPair.publicKey);
+      expect(() => asSimpleKeyPair(ecKeyPair)).toThrow('Key pair has no private key');
+    });
+  })
 });
 
 /**
