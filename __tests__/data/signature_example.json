@@ -1,0 +1,28 @@
+{
+  "keyPair": {
+    "publicKey": {
+      "x": "03b865a18323b8d147a12c556bfb1d502516c325b1477a23ba6c77af31f020fd",
+      "y": "211496e5e8ccf71930aebbfb7e815807acbfd0021f17f8b3944a3ed5f06c27"
+    },
+    "privateKey": "58c7d5a90b1776bde86ebac077e053ed85b0f7164f53b080304a531947f46e3"
+  },
+  "order": {
+    "orderType": "LIMIT",
+    "nonce": "0",
+    "publicKey": {
+      "x": "03b865a18323b8d147a12c556bfb1d502516c325b1477a23ba6c77af31f020fd",
+      "y": "211496e5e8ccf71930aebbfb7e815807acbfd0021f17f8b3944a3ed5f06c27"
+    },
+    "amountSell": "140000",
+    "amountBuy": "6000000",
+    "amountFee": "1000",
+    "tokenIdSell": "ETH",
+    "tokenIdBuy": "USDC",
+    "positionId": "12345",
+    "expirationTimestamp": "1599850770"
+  },
+  "signature": {
+    "r": "022dded0305e0c69fa1613d02e079f52a3aeba3467869748e962dd6c751f99e6",
+    "s": "0266b2ee3d043159b64618731705d1c41c2b004c35e70160e68b36e79b1d6c11"
+  }
+}
