@@ -1,3 +1,13 @@
+/**
+ * Unit tests for starkex-lib.
+ *
+ * Note that some of the crypto functions, including crypto.ec.keyFromPublic(), run very slowly
+ * during tests. However, they seem to run quickly outside of tests. I haven't figured out why this
+ * is, but could have to do with how Jest handles module loading.
+ */
+
+import _ from 'lodash';
+
 import {
   KeyPair,
   Order,
@@ -14,6 +24,10 @@ import {
   verifySignature,
 } from '../src';
 
+import {
+  normalizeHex,
+} from '../src/util';
+
 import signatureExample from './data/signature_example.json';
 
 const HEX_64_RE_LOWER_NO_PREFIX = /^[0-9a-f]{64}$/;
@@ -21,13 +35,8 @@ const UNSAFE_MNEMONIC = (
   'candy maple cake sugar pudding cream honey rich smooth crumble sweet treat'
 );
 
-const paddedKeyPair: KeyPair = {
-  publicKey: {
-    x: signatureExample.keyPair.publicKey.x.padStart(64, '0'),
-    y: signatureExample.keyPair.publicKey.y.padStart(64, '0'),
-  },
-  privateKey: signatureExample.keyPair.privateKey.padStart(64, '0'),
-};
+const paddedKeyPair: KeyPair = _.mapValues(signatureExample.keyPair, normalizeHex);
+const paddedSignature: Signature = _.mapValues(signatureExample.signature, normalizeHex);
 
 describe('starkex-lib', () => {
 
@@ -35,8 +44,7 @@ describe('starkex-lib', () => {
 
     it('generates a key pair', () => {
       const keyPair: KeyPair = generateKeyPair();
-      expect(keyPair.publicKey.x).toMatch(HEX_64_RE_LOWER_NO_PREFIX);
-      expect(keyPair.publicKey.y).toMatch(HEX_64_RE_LOWER_NO_PREFIX);
+      expect(keyPair.publicKey).toMatch(HEX_64_RE_LOWER_NO_PREFIX);
       expect(keyPair.privateKey).toMatch(HEX_64_RE_LOWER_NO_PREFIX);
     });
 
@@ -166,7 +174,19 @@ describe('starkex-lib', () => {
 
   describe('verifySignature()', () => {
 
-    it('returns true for a valid signature', () => {
+    it('returns true for a valid signature (even y)', () => {
+      const order: Order = signatureExample.order as Order;
+      const publicKey = signatureExample.publicKeyEvenY;
+      const signature: Signature = signatureExample.signatureEvenY;
+      const newOrder = {
+        ...order,
+        publicKey,
+      };
+      const result = verifySignature(newOrder, signature);
+      expect(result).toBe(true);
+    });
+
+    it('returns true for a valid signature (odd y)', () => {
       const order: Order = signatureExample.order as Order;
       const signature: Signature = signatureExample.signature;
       const result = verifySignature(order, signature);
@@ -203,12 +223,9 @@ describe('starkex-lib', () => {
 
     it('signs an order', () => {
       const privateKey: string = signatureExample.keyPair.privateKey;
-
       const order: Order = signatureExample.order as Order;
-      const expectedSignature: Signature = signatureExample.signature;
-
       const signature: Signature = sign(order, privateKey);
-      expect(signature).toEqual(expectedSignature);
+      expect(signature).toEqual(paddedSignature);
     });
   });
 
@@ -257,7 +274,7 @@ describe('starkex-lib', () => {
       expect(asSimpleKeyPair(ecKeyPair)).toEqual(paddedKeyPair);
     });
 
-    it('accepts just a public key as argument', () => {
+    it('accepts just a private key as argument', () => {
       const ecKeyPair = asEcKeyPair(signatureExample.keyPair.privateKey);
       expect(asSimpleKeyPair(ecKeyPair)).toEqual(paddedKeyPair);
     });
@@ -265,13 +282,13 @@ describe('starkex-lib', () => {
 
   describe('asEcKeyPairPublic()', () => {
 
-    it('accepts a key pair as argument', () => {
-      const ecKeyPair = asEcKeyPairPublic(signatureExample.keyPair);
+    it('gets a public key from an x-coordinate (even y)', () => {
+      const ecKeyPair = asEcKeyPairPublic(signatureExample.keyPair.publicKey, false);
       expect(asSimplePublicKey(ecKeyPair.getPublic())).toEqual(paddedKeyPair.publicKey);
     });
 
-    it('accepts just a public key as argument', () => {
-      const ecKeyPair = asEcKeyPairPublic(signatureExample.keyPair.publicKey);
+    it('gets a public key from an x-coordinate (odd y)', () => {
+      const ecKeyPair = asEcKeyPairPublic(signatureExample.keyPair.publicKey, true);
       expect(asSimplePublicKey(ecKeyPair.getPublic())).toEqual(paddedKeyPair.publicKey);
     });
   });
@@ -279,7 +296,7 @@ describe('starkex-lib', () => {
   describe('asSimpleKeyPair()', () => {
 
     it('throws if the elliptic curve key pair has no private key', () => {
-      const ecKeyPair = asEcKeyPairPublic(signatureExample.keyPair.publicKey);
+      const ecKeyPair = asEcKeyPairPublic(signatureExample.keyPair.publicKey, false);
       expect(() => asSimpleKeyPair(ecKeyPair)).toThrow('Key pair has no private key');
     });
   });
