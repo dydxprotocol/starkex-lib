@@ -16,12 +16,8 @@ export type EcPublicKey = elliptic.curve.base.BasePoint;
 export type EcSignature = elliptic.ec.Signature;
 
 // Key pair, represented as hex strings, no 0x prefix.
-export interface PublicKey {
-  x: string;
-  y: string;
-}
 export interface KeyPair {
-  publicKey: PublicKey;
+  publicKey: string; // x-coordinate
   privateKey: string;
 }
 
@@ -34,7 +30,7 @@ export interface Signature {
 export interface Order {
   orderType: OrderType;
   nonce: string;
-  publicKey: PublicKey;
+  publicKey: string;
   amountSell: string;
   amountBuy: string;
   amountFee: string;

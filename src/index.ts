@@ -2,7 +2,6 @@ import assert from 'assert';
 
 import * as bip39 from 'bip39';
 import BN from 'bn.js';
-import * as encUtils from 'enc-utils';
 import * as crypto from 'starkware-crypto';
 
 import {
@@ -19,9 +18,11 @@ import {
   KeyPair,
   Order,
   Signature,
-  PublicKey,
 } from './types';
-import { bnToHex } from './util';
+import {
+  bnToHex,
+  normalizeHex,
+} from './util';
 
 export * from './constants';
 export * from './types';
@@ -94,9 +95,16 @@ export function verifySignature(
   order: Order,
   signature: Signature,
 ): boolean {
-  const key = asEcKeyPairPublic(order.publicKey);
   const orderHash = getOrderHash(order);
-  return key.verify(orderHash, signature);
+
+  // Return true if the signature is valid for either of the two possible y-coordinates.
+  //
+  // Compare with:
+  // https://github.com/starkware-libs/starkex-resources/blob/1eb84c6a9069950026768013f748016d3bd51d54/crypto/starkware/crypto/signature/signature.py#L151
+  return (
+    asEcKeyPairPublic(order.publicKey, false).verify(orderHash, signature) ||
+    asEcKeyPairPublic(order.publicKey, true).verify(orderHash, signature)
+  );
 }
 
 /**
@@ -147,7 +155,7 @@ export function getOrderHash(
     .iadd(positionIdBn)
     .iushln(ORDER_FIELD_LENGTHS.expirationTimestamp)
     .iadd(expirationTimestampBn);
-  const serializedHex = encUtils.sanitizeHex(serialized.toString(16));
+  const serializedHex = normalizeHex(serialized.toString(16));
 
   return crypto.hashMessage(
     crypto.hashTokenId(TOKEN_STRUCTS[order.tokenIdSell]),
@@ -165,23 +173,35 @@ export function asEcKeyPair(
   const privateKey: string = typeof privateKeyOrKeyPair === 'string'
     ? privateKeyOrKeyPair
     : privateKeyOrKeyPair.privateKey;
-  return crypto.ec.keyFromPrivate(encUtils.removeHexPrefix(privateKey));
+  return crypto.ec.keyFromPrivate(normalizeHex(privateKey));
 }
 
 /**
  * Helper for if you want to access additional cryptographic functionality with a public key.
+ *
+ * The provided parameter should be the x-coordinate of the public key as a hex string. There are
+ * two possible values for the y-coordinate, so `isOdd` is required to choose between the two.
  */
 export function asEcKeyPairPublic(
-  publicKeyOrKeyPair: PublicKey | KeyPair,
+  publicKey: string,
+  isOdd: boolean,
 ): EcKeyPair {
-  const publicKey: PublicKey = ('publicKey' in publicKeyOrKeyPair)
-    ? publicKeyOrKeyPair.publicKey
-    : publicKeyOrKeyPair;
-  const x = encUtils.removeHexPrefix(publicKey.x);
-  const y = encUtils.removeHexPrefix(publicKey.y);
-  return crypto.ec.keyFromPublic({ x, y });
+  const prefix = isOdd ? '03' : '02';
+  const prefixedPublicKey = `${prefix}${normalizeHex(publicKey)}`;
+
+  // This will get the point from only the x-coordinate via:
+  // https://github.com/indutny/elliptic/blob/e71b2d9359c5fe9437fbf46f1f05096de447de57/dist/elliptic.js#L1205
+  //
+  // See also how Starkware infers the y-coordinate:
+  // https://github.com/starkware-libs/starkex-resources/blob/1eb84c6a9069950026768013f748016d3bd51d54/crypto/starkware/crypto/signature/signature.py#L164-L173
+  return crypto.ec.keyFromPublic(prefixedPublicKey, 'hex');
 }
 
+/**
+ * Converts an `elliptic` KeyPair object to a simple object with publicKey & privateKey hex strings.
+ *
+ * Returns hex strings without 0x prefix.
+ */
 export function asSimpleKeyPair(
   ecKeyPair: EcKeyPair,
 ): KeyPair {
@@ -196,11 +216,13 @@ export function asSimpleKeyPair(
   };
 }
 
+/**
+ * Converts an `elliptic` BasePoint object to a compressed representation: the x-coordinate as hex.
+ *
+ * Returns a hex string without 0x prefix.
+ */
 export function asSimplePublicKey(
   ecPublicKey: EcPublicKey,
-): PublicKey {
-  return {
-    x: bnToHex(ecPublicKey.getX()),
-    y: bnToHex(ecPublicKey.getY()),
-  };
+): string {
+  return bnToHex(ecPublicKey.getX());
 }
