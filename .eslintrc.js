@@ -5,4 +5,8 @@ module.exports = {
   parserOptions: {
     tsconfigRootDir: __dirname,
   },
+
+  rules: {
+    'newline-per-chained-call': 'off',
+  },
 };

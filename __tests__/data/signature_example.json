@@ -4,24 +4,26 @@
     "privateKey": "58c7d5a90b1776bde86ebac077e053ed85b0f7164f53b080304a531947f46e3"
   },
   "order": {
-    "orderType": "LIMIT",
-    "nonce": "0",
-    "publicKey": "3b865a18323b8d147a12c556bfb1d502516c325b1477a23ba6c77af31f020fd",
-    "amountSell": "140000",
-    "amountBuy": "6000000",
-    "amountFee": "1000",
-    "tokenIdSell": "ETH",
-    "tokenIdBuy": "USDC",
-    "positionId": "12345",
-    "expirationTimestamp": "1599850770"
+    "clientId": "This is an ID that the client came up with to describe this order.",
+    "starkKey": "3b865a18323b8d147a12c556bfb1d502516c325b1477a23ba6c77af31f020fd",
+    "accountId": "12345",
+    "size": "145.0005",
+    "price": "350.00067",
+    "fee": "123.456",
+    "market": "ETH-USD",
+    "side": "BUY",
+    "expiresAt": "2020-09-17T04:15:55.028Z"
   },
   "signature": {
-    "r": "22dded0305e0c69fa1613d02e079f52a3aeba3467869748e962dd6c751f99e6",
-    "s": "266b2ee3d043159b64618731705d1c41c2b004c35e70160e68b36e79b1d6c11"
+    "r": "24f884410ea789d45a924adc93b5a1cdddb9132db4ff9a758224bdfbbecbc2e",
+    "s": "eef5444d52e97ae329d18eba1cda6a2d69a24ebbf8ba4a99866df7ab94e40"
   },
-  "publicKeyEvenY": "687043e9cfc8d3096074d241020bcf54ebb42f8efe3455acef5a2b8dfb7313b",
+  "keyPairEvenY": {
+    "publicKey": "5c749cd4c44bdc730bc90af9bfbdede9deb2c1c96c05806ce1bc1cb4fed64f7",
+    "privateKey": "65b7bb244e019b45a521ef990fb8a002f76695d1fc6c1e31911680f2ed78b84"
+  },
   "signatureEvenY": {
-    "r": "474894971d57494fcacf46078e9fe2ebaf556fe4dd9e2e8c3d6ed03e40c6d0b",
-    "s": "6ff3fa392feccadfced2bed4afaaab55889f0c9207b2296d75e936466034346"
+    "r": "3ae92277160aca6d49faf8ea2aa11f528ec20acc4e5f445927453b246d16703",
+    "s": "5923288de4eda4464a4fad0433fdb21d5d6f456bac4841287a0c65ef5b7f897"
   }
 }

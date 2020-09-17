@@ -10,18 +10,21 @@ import _ from 'lodash';
 
 import {
   KeyPair,
-  Order,
+  InternalOrder,
+  StarkwareOrder,
   Signature,
   asEcKeyPair,
   asEcKeyPairPublic,
   asSimpleKeyPair,
   asSimplePublicKey,
+  convertToStarkwareOrder,
   generateKeyPair,
   generateKeyPairFromEntropy,
   generateKeyPairFromMnemonic,
   generateKeyPairFromSeedUnsafe,
   sign,
   verifySignature,
+  OrderSide,
 } from '../src';
 
 import {
@@ -175,26 +178,26 @@ describe('starkex-lib', () => {
   describe('verifySignature()', () => {
 
     it('returns true for a valid signature (even y)', () => {
-      const order: Order = signatureExample.order as Order;
-      const publicKey = signatureExample.publicKeyEvenY;
-      const signature: Signature = signatureExample.signatureEvenY;
-      const newOrder = {
+      const order: InternalOrder = signatureExample.order as InternalOrder;
+      const publicKey = signatureExample.keyPairEvenY.publicKey;
+      const newOrder: InternalOrder = {
         ...order,
-        publicKey,
+        starkKey: publicKey,
       };
-      const result = verifySignature(newOrder, signature);
+      const expectedSignature: Signature = signatureExample.signatureEvenY;
+      const result = verifySignature(newOrder, expectedSignature);
       expect(result).toBe(true);
     });
 
     it('returns true for a valid signature (odd y)', () => {
-      const order: Order = signatureExample.order as Order;
+      const order: InternalOrder = signatureExample.order as InternalOrder;
       const signature: Signature = signatureExample.signature;
       const result = verifySignature(order, signature);
       expect(result).toBe(true);
     });
 
     it('returns false for an invalid signature', () => {
-      const order: Order = signatureExample.order as Order;
+      const order: InternalOrder = signatureExample.order as InternalOrder;
       const signature: Signature = signatureExample.signature;
 
       // Mutate a single character in r.
@@ -223,18 +226,62 @@ describe('starkex-lib', () => {
 
     it('signs an order', () => {
       const privateKey: string = signatureExample.keyPair.privateKey;
-      const order: Order = signatureExample.order as Order;
+      const order: InternalOrder = signatureExample.order as InternalOrder;
       const signature: Signature = sign(order, privateKey);
       expect(signature).toEqual(paddedSignature);
+    });
+
+    it('generates a different signature when the client ID is different', () => {
+      const privateKey: string = signatureExample.keyPair.privateKey;
+      const order: InternalOrder = signatureExample.order as InternalOrder;
+      const newOrder = {
+        ...order,
+        clientId: `${order.clientId}!`,
+      };
+      const newSignature = sign(newOrder, privateKey);
+      expect(newSignature).not.toEqual(paddedKeyPair);
+    });
+
+    it('generates a different signature for a SELL order', () => {
+      const privateKey: string = signatureExample.keyPair.privateKey;
+      const order: InternalOrder = signatureExample.order as InternalOrder;
+      const newOrder = {
+        ...order,
+        side: OrderSide.SELL,
+      };
+      const newSignature = sign(newOrder, privateKey);
+      expect(newSignature).not.toEqual(paddedKeyPair);
+    });
+
+    it('generates a different signature when the account ID is different', () => {
+      const privateKey: string = signatureExample.keyPair.privateKey;
+      const order: InternalOrder = signatureExample.order as InternalOrder;
+      const newOrder = {
+        ...order,
+        accountId: (Number.parseInt(order.accountId, 10) + 1).toString(),
+      };
+      const newSignature = sign(newOrder, privateKey);
+      expect(newSignature).not.toEqual(paddedKeyPair);
+    });
+  });
+
+  describe('convertToStarkwareOrder()', () => {
+
+    it('applies token decimals', () => {
+      const order: InternalOrder = signatureExample.order as InternalOrder;
+      const starkwareOrder: StarkwareOrder = convertToStarkwareOrder(order);
+      expect(starkwareOrder.amountBuy).toEqual('145000500');
+      expect(starkwareOrder.amountSell).toEqual('50750272150');
+      expect(starkwareOrder.amountFee).toEqual('123456000');
     });
   });
 
   it('end-to-end', () => {
-    const order: Order = signatureExample.order as Order;
+    const order: InternalOrder = signatureExample.order as InternalOrder;
 
     // Repeat a few times.
     let failed = false;
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 1; i++) {
       const keyPair: KeyPair = generateKeyPair();
 
       // Should be invalid signing the original, since private key doesn't match public key.
@@ -249,9 +296,9 @@ describe('starkex-lib', () => {
         failed = true;
       }
 
-      const newOrder = {
+      const newOrder: InternalOrder = {
         ...order,
-        publicKey: keyPair.publicKey,
+        starkKey: keyPair.publicKey,
       };
       const validSignature: Signature = sign(newOrder, keyPair.privateKey);
       const isValid = verifySignature(newOrder, validSignature);

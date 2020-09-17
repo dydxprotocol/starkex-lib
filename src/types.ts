@@ -7,9 +7,9 @@ export enum OrderType {
 
 // TODO: De-dup with the definition in stacks.
 export enum PerpetualMarket {
-  PBTC_USDC = 'PBTC-USDC',
-  WETH_PUSD = 'WETH-PUSD',
-  PLINK_USDC = 'PLINK-USDC',
+  PBTC_USDC = 'BTC-USD',
+  WETH_PUSD = 'ETH-USD',
+  PLINK_USDC = 'LINK-USD',
 }
 
 export enum Token {
@@ -42,7 +42,7 @@ export interface Signature {
 }
 
 export interface InternalOrder {
-  nonce: string,
+  clientId: string,
   starkKey: string,
   accountId: string,
   size: string,

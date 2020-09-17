@@ -1,5 +1,7 @@
 import assert from 'assert';
+import nodeCrypto from 'crypto';
 
+import BigNumber from 'bignumber.js';
 import * as bip39 from 'bip39';
 import BN from 'bn.js';
 import * as crypto from 'starkware-crypto';
@@ -7,9 +9,11 @@ import * as crypto from 'starkware-crypto';
 import {
   BASE_TOKEN,
   HEX_RE,
+  MARGIN_TOKEN,
   ORDER_FIELD_LENGTHS,
   ORDER_MAX_VALUES,
   STARK_DERIVATION_PATH,
+  TOKEN_DECIMALS,
   TOKEN_STRUCTS,
 } from './constants';
 import {
@@ -22,7 +26,6 @@ import {
   Signature,
   OrderType,
   OrderSide,
-  Token,
 } from './types';
 import {
   bnToHex,
@@ -141,34 +144,38 @@ export function convertToStarkwareOrder(
   // Within the Starkware system, there is only one order type.
   const orderType = OrderType.LIMIT;
 
-  // NOTE: This is currently not on our order model.
-  const nonce = order.nonce;
+  // Make the nonce by hashing the client-provided ID. Does not need to be a secure hash.
+  const nonceHex = nodeCrypto
+    .createHmac('sha256', '(insecure)')
+    .update(order.clientId)
+    .digest('hex');
+  const nonce = new BigNumber(nonceHex, 16).mod(ORDER_MAX_VALUES.nonce.toString())
+    .toString();
 
-  // This is the public key x-coordinate as a hex string, no 0x prefix.
+  // This is the public key x-coordinate as a hex string, without 0x prefix.
   const publicKey = order.starkKey;
 
-  // NOTE: I'm slightly concerned about going from `size` and `price` to `amountSell` and
-  // `amountBuy`. Probably, multiplication of doubles is well-defined and produces the same result
-  // across programming languages. But seems like this would be easier if our API directly took
-  // `amountBuy` and `amountSell`.
-  const isBuy = order.side === OrderSide.BUY;
-  const cost = `${Math.floor(Number(order.size) * Number(order.price))}`;
-  const amountSell = isBuy ? cost : order.size;
-  const amountBuy = isBuy ? order.size : cost;
-
-  // NOTE: This is currently missing from our internal order model.
-  // The fee is an amount, not a percentage, and is always denominated in the margin token.
-  const amountFee = order.fee;
-
   // TODO: May have to tweak these “IDs” to match Starkware.
-  const tokenIdSell = isBuy ? Token.USDC : BASE_TOKEN[order.market];
-  const tokenIdBuy = isBuy ? BASE_TOKEN[order.market] : Token.USDC;
+  const isBuy = order.side === OrderSide.BUY;
+  const tokenIdSell = isBuy ? MARGIN_TOKEN : BASE_TOKEN[order.market];
+  const tokenIdBuy = isBuy ? BASE_TOKEN[order.market] : MARGIN_TOKEN;
+
+  // Note: Need to be careful that the (size, price) -> (amountBuy, amountSell) function is
+  // well-defined and applied consistently.
+  const size = new BigNumber(order.size);
+  const cost = size.times(order.price);
+  const amountSell = (isBuy ? cost : size).shiftedBy(TOKEN_DECIMALS[tokenIdSell]).toFixed(0);
+  const amountBuy = (isBuy ? size : cost).shiftedBy(TOKEN_DECIMALS[tokenIdBuy]).toFixed(0);
+
+  // The fee is an amount, not a percentage, and is always denominated in the margin token.
+  const amountFee = new BigNumber(order.fee).shiftedBy(TOKEN_DECIMALS[MARGIN_TOKEN])
+    .toFixed(0);
 
   // Represents a subaccount or isolated position.
   const positionId = order.accountId;
 
-  // Convert to a Unix timestamp (in seconds).
-  const expirationTimestamp = `${Math.floor(new Date(order.expiresAt).getTime() / 1000)}`;
+  // Convert to a Unix timestamp (in hours).
+  const expirationTimestamp = `${Math.floor(new Date(order.expiresAt).getTime() / 1000 / 3600)}`;
 
   return {
     orderType,
@@ -181,7 +188,7 @@ export function convertToStarkwareOrder(
     tokenIdBuy,
     positionId,
     expirationTimestamp,
-  }
+  };
 }
 
 export function getStarkwareOrderHash(
