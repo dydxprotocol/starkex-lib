@@ -5,10 +5,24 @@ export enum OrderType {
   LIMIT = 'LIMIT',
 }
 
+// TODO: De-dup with the definition in stacks.
+export enum PerpetualMarket {
+  PBTC_USDC = 'PBTC-USDC',
+  WETH_PUSD = 'WETH-PUSD',
+  PLINK_USDC = 'PLINK-USDC',
+}
+
 export enum Token {
+  BTC = 'BTC',
   ETH = 'ETH',
+  LINK = 'LINK',
   USDC = 'USDC',
   USDT = 'USDT',
+}
+
+export enum OrderSide {
+  BUY = 'BUY',
+  SELL = 'SELL',
 }
 
 export type EcKeyPair = elliptic.ec.KeyPair;
@@ -27,7 +41,19 @@ export interface Signature {
   s: string;
 }
 
-export interface Order {
+export interface InternalOrder {
+  nonce: string,
+  starkKey: string,
+  accountId: string,
+  size: string,
+  price: string,
+  fee: string,
+  market: PerpetualMarket,
+  side: OrderSide,
+  expiresAt: string,
+}
+
+export interface StarkwareOrder {
   orderType: OrderType;
   nonce: string;
   publicKey: string;
