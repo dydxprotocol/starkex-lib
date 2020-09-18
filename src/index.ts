@@ -157,8 +157,12 @@ export function convertToStarkwareOrder(
 
   // TODO: May have to tweak these “IDs” to match Starkware.
   const isBuy = order.side === OrderSide.BUY;
-  const tokenIdSell = isBuy ? MARGIN_TOKEN : BASE_TOKEN[order.market];
-  const tokenIdBuy = isBuy ? BASE_TOKEN[order.market] : MARGIN_TOKEN;
+  const baseToken = BASE_TOKEN[order.market];
+  if (!baseToken) {
+    throw new Error(`Unknown market ${order.market}`);
+  }
+  const tokenIdSell = isBuy ? MARGIN_TOKEN : baseToken;
+  const tokenIdBuy = isBuy ? baseToken : MARGIN_TOKEN;
 
   // Note: Need to be careful that the (size, price) -> (amountBuy, amountSell) function is
   // well-defined and applied consistently.
