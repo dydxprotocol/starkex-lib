@@ -22,8 +22,8 @@ import {
   EcSignature,
   InternalOrder,
   KeyPair,
+  SignatureStruct,
   StarkwareOrder,
-  Signature,
   OrderType,
   OrderSide,
 } from './types';
@@ -101,18 +101,19 @@ export function generateKeyPairFromSeedUnsafe(
  */
 export function verifySignature(
   order: InternalOrder,
-  signature: Signature,
+  signature: string,
 ): boolean {
   const starkwareOrder = convertToStarkwareOrder(order);
   const orderHash = getStarkwareOrderHash(starkwareOrder);
+  const signatureStruct = deserializeSignature(signature);
 
   // Return true if the signature is valid for either of the two possible y-coordinates.
   //
   // Compare with:
   // https://github.com/starkware-libs/starkex-resources/blob/1eb84c6a9069950026768013f748016d3bd51d54/crypto/starkware/crypto/signature/signature.py#L151
   return (
-    asEcKeyPairPublic(starkwareOrder.publicKey, false).verify(orderHash, signature) ||
-    asEcKeyPairPublic(starkwareOrder.publicKey, true).verify(orderHash, signature)
+    asEcKeyPairPublic(starkwareOrder.publicKey, false).verify(orderHash, signatureStruct) ||
+    asEcKeyPairPublic(starkwareOrder.publicKey, true).verify(orderHash, signatureStruct)
   );
 }
 
@@ -122,13 +123,13 @@ export function verifySignature(
 export function sign(
   order: InternalOrder,
   privateKey: string | KeyPair,
-): Signature {
+): string {
   const orderHash = getOrderHash(order);
   const ecSignature: EcSignature = asEcKeyPair(privateKey).sign(orderHash);
-  return {
+  return serializeSignature({
     r: bnToHex(ecSignature.r),
     s: bnToHex(ecSignature.s),
-  };
+  });
 }
 
 export function getOrderHash(
@@ -290,4 +291,35 @@ export function asSimplePublicKey(
   ecPublicKey: EcPublicKey,
 ): string {
   return bnToHex(ecPublicKey.getX());
+}
+
+/**
+ * Convert an (r, s) signature struct to a string.
+ */
+export function serializeSignature(
+  signature: { r: string, s: string },
+): string {
+  if (signature.r.length !== 64 || signature.s.length !== 64) {
+    throw new Error(
+      `Invalid signature struct, expected r and s to be hex strings with length 64: ${signature}`,
+    );
+  }
+  return `${signature.r}${signature.s}`;
+}
+
+/**
+ * Convert a serialized signature to an (r, s) struct.
+ */
+export function deserializeSignature(
+  signature: string,
+): SignatureStruct {
+  if (signature.length !== 128) {
+    throw new Error(
+      `Invalid serialized signature, expected a hex string with length 128: ${signature}`,
+    );
+  }
+  return {
+    r: signature.slice(0, 64),
+    s: signature.slice(64),
+  };
 }

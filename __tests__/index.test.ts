@@ -11,20 +11,21 @@ import _ from 'lodash';
 import {
   KeyPair,
   InternalOrder,
+  OrderSide,
   StarkwareOrder,
-  Signature,
   asEcKeyPair,
   asEcKeyPairPublic,
   asSimpleKeyPair,
   asSimplePublicKey,
   convertToStarkwareOrder,
+  deserializeSignature,
   generateKeyPair,
   generateKeyPairFromEntropy,
   generateKeyPairFromMnemonic,
   generateKeyPairFromSeedUnsafe,
+  serializeSignature,
   sign,
   verifySignature,
-  OrderSide,
 } from '../src';
 
 import {
@@ -39,7 +40,6 @@ const UNSAFE_MNEMONIC = (
 );
 
 const paddedKeyPair: KeyPair = _.mapValues(signatureExample.keyPair, normalizeHex);
-const paddedSignature: Signature = _.mapValues(signatureExample.signature, normalizeHex);
 
 describe('starkex-lib', () => {
 
@@ -184,38 +184,32 @@ describe('starkex-lib', () => {
         ...order,
         starkKey: publicKey,
       };
-      const expectedSignature: Signature = signatureExample.signatureEvenY;
+      const expectedSignature: string = signatureExample.signatureEvenY;
       const result = verifySignature(newOrder, expectedSignature);
       expect(result).toBe(true);
     });
 
     it('returns true for a valid signature (odd y)', () => {
       const order: InternalOrder = signatureExample.order as InternalOrder;
-      const signature: Signature = signatureExample.signature;
+      const signature: string = signatureExample.signature;
       const result = verifySignature(order, signature);
       expect(result).toBe(true);
     });
 
     it('returns false for an invalid signature', () => {
       const order: InternalOrder = signatureExample.order as InternalOrder;
-      const signature: Signature = signatureExample.signature;
+      const signature: string = signatureExample.signature;
 
       // Mutate a single character in r.
       for (let i = 0; i < 3; i++) {
-        const badSignature: Signature = {
-          r: mutateHexStringAt(signature.r, i),
-          s: signature.s,
-        };
+        const badSignature: string = mutateHexStringAt(signature, i);
         const result = verifySignature(order, badSignature);
         expect(result).toBe(false);
       }
 
       // Mutate a single character in s.
       for (let i = 0; i < 3; i++) {
-        const badSignature: Signature = {
-          r: signature.r,
-          s: mutateHexStringAt(signature.s, i),
-        };
+        const badSignature: string = mutateHexStringAt(signature, i + 64);
         const result = verifySignature(order, badSignature);
         expect(result).toBe(false);
       }
@@ -225,10 +219,11 @@ describe('starkex-lib', () => {
   describe('sign()', () => {
 
     it('signs an order', () => {
-      const privateKey: string = signatureExample.keyPair.privateKey;
       const order: InternalOrder = signatureExample.order as InternalOrder;
-      const signature: Signature = sign(order, privateKey);
-      expect(signature).toEqual(paddedSignature);
+      const privateKey: string = signatureExample.keyPair.privateKey;
+      const expectedSignature: string = signatureExample.signature;
+      const signature: string = sign(order, privateKey);
+      expect(signature).toEqual(expectedSignature);
     });
 
     it('generates a different signature when the client ID is different', () => {
@@ -285,7 +280,7 @@ describe('starkex-lib', () => {
       const keyPair: KeyPair = generateKeyPair();
 
       // Should be invalid signing the original, since private key doesn't match public key.
-      const invalidSignature: Signature = sign(order, keyPair.privateKey);
+      const invalidSignature: string = sign(order, keyPair.privateKey);
       const invalidIsValid = verifySignature(order, invalidSignature);
       if (invalidIsValid) {
         /* eslint-disable-next-line no-console */
@@ -300,7 +295,7 @@ describe('starkex-lib', () => {
         ...order,
         starkKey: keyPair.publicKey,
       };
-      const validSignature: Signature = sign(newOrder, keyPair.privateKey);
+      const validSignature: string = sign(newOrder, keyPair.privateKey);
       const isValid = verifySignature(newOrder, validSignature);
       if (!isValid) {
         /* eslint-disable-next-line no-console */
@@ -345,6 +340,38 @@ describe('starkex-lib', () => {
     it('throws if the elliptic curve key pair has no private key', () => {
       const ecKeyPair = asEcKeyPairPublic(signatureExample.keyPair.publicKey, false);
       expect(() => asSimpleKeyPair(ecKeyPair)).toThrow('Key pair has no private key');
+    });
+  });
+
+  describe('serializeSignature()', () => {
+
+    it('throws if r has the wrong length', () => {
+      const signatureStruct = {
+        r: signatureExample.signature.slice(0, 63),
+        s: signatureExample.signature.slice(64),
+      };
+      expect(() => serializeSignature(signatureStruct)).toThrow(
+        'Invalid signature struct',
+      );
+    });
+
+    it('throws if s has the wrong length', () => {
+      const signatureStruct = {
+        r: signatureExample.signature.slice(0, 64),
+        s: signatureExample.signature.slice(65),
+      };
+      expect(() => serializeSignature(signatureStruct)).toThrow(
+        'Invalid signature struct',
+      );
+    });
+  });
+
+  describe('deserializeSignature()', () => {
+
+    it('throws if the serialized signature has the wrong length', () => {
+      expect(() => deserializeSignature(signatureExample.signature.slice(1))).toThrow(
+        'Invalid serialized signature',
+      );
     });
   });
 });

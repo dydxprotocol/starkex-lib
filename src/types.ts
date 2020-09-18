@@ -36,7 +36,7 @@ export interface KeyPair {
 }
 
 // Signature, represented as hex strings, no 0x prefix.
-export interface Signature {
+export interface SignatureStruct {
   r: string;
   s: string;
 }
