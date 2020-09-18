@@ -2,13 +2,27 @@ import * as elliptic from 'elliptic';
 import starkwareTypes from 'starkware-types';
 
 export enum OrderType {
-  LIMIT = 'LIMIT',
+  LIMIT = 'LIMIT_ORDER_WITH_FEES',
+}
+
+// TODO: De-dup with the definition in stacks.
+export enum PerpetualMarket {
+  PBTC_USDC = 'BTC-USD',
+  WETH_PUSD = 'ETH-USD',
+  PLINK_USDC = 'LINK-USD',
 }
 
 export enum Token {
+  BTC = 'BTC',
   ETH = 'ETH',
+  LINK = 'LINK',
   USDC = 'USDC',
   USDT = 'USDT',
+}
+
+export enum OrderSide {
+  BUY = 'BUY',
+  SELL = 'SELL',
 }
 
 export type EcKeyPair = elliptic.ec.KeyPair;
@@ -22,12 +36,24 @@ export interface KeyPair {
 }
 
 // Signature, represented as hex strings, no 0x prefix.
-export interface Signature {
+export interface SignatureStruct {
   r: string;
   s: string;
 }
 
-export interface Order {
+export interface InternalOrder {
+  clientId: string,
+  starkKey: string,
+  positionId: string,
+  size: string,
+  price: string,
+  limitFee: string,
+  market: PerpetualMarket,
+  side: OrderSide,
+  expiresAt: string,
+}
+
+export interface StarkwareOrder {
   orderType: OrderType;
   nonce: string;
   publicKey: string;

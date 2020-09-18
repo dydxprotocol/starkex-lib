@@ -1,23 +1,31 @@
 import assert from 'assert';
+import nodeCrypto from 'crypto';
 
+import BigNumber from 'bignumber.js';
 import * as bip39 from 'bip39';
 import BN from 'bn.js';
 import * as crypto from 'starkware-crypto';
 
 import {
+  BASE_TOKEN,
   HEX_RE,
+  MARGIN_TOKEN,
   ORDER_FIELD_LENGTHS,
   ORDER_MAX_VALUES,
   STARK_DERIVATION_PATH,
+  TOKEN_DECIMALS,
   TOKEN_STRUCTS,
 } from './constants';
 import {
   EcKeyPair,
   EcPublicKey,
   EcSignature,
+  InternalOrder,
   KeyPair,
-  Order,
-  Signature,
+  SignatureStruct,
+  StarkwareOrder,
+  OrderType,
+  OrderSide,
 } from './types';
 import {
   bnToHex,
@@ -92,18 +100,20 @@ export function generateKeyPairFromSeedUnsafe(
  * Verify the signature is valid for the order and for the public key mentioned in the order.
  */
 export function verifySignature(
-  order: Order,
-  signature: Signature,
+  order: InternalOrder,
+  signature: string,
 ): boolean {
-  const orderHash = getOrderHash(order);
+  const starkwareOrder = convertToStarkwareOrder(order);
+  const orderHash = getStarkwareOrderHash(starkwareOrder);
+  const signatureStruct = deserializeSignature(signature);
 
   // Return true if the signature is valid for either of the two possible y-coordinates.
   //
   // Compare with:
   // https://github.com/starkware-libs/starkex-resources/blob/1eb84c6a9069950026768013f748016d3bd51d54/crypto/starkware/crypto/signature/signature.py#L151
   return (
-    asEcKeyPairPublic(order.publicKey, false).verify(orderHash, signature) ||
-    asEcKeyPairPublic(order.publicKey, true).verify(orderHash, signature)
+    asEcKeyPairPublic(starkwareOrder.publicKey, false).verify(orderHash, signatureStruct) ||
+    asEcKeyPairPublic(starkwareOrder.publicKey, true).verify(orderHash, signatureStruct)
   );
 }
 
@@ -111,19 +121,79 @@ export function verifySignature(
  * Sign an order with the given private key (represented as a hex string).
  */
 export function sign(
-  order: Order,
+  order: InternalOrder,
   privateKey: string | KeyPair,
-): Signature {
+): string {
   const orderHash = getOrderHash(order);
   const ecSignature: EcSignature = asEcKeyPair(privateKey).sign(orderHash);
-  return {
+  return serializeSignature({
     r: bnToHex(ecSignature.r),
     s: bnToHex(ecSignature.s),
-  };
+  });
 }
 
 export function getOrderHash(
-  order: Order,
+  order: InternalOrder,
+): string {
+  const starkwareOrder = convertToStarkwareOrder(order);
+  return getStarkwareOrderHash(starkwareOrder);
+}
+
+export function convertToStarkwareOrder(
+  order: InternalOrder,
+): StarkwareOrder {
+  // Within the Starkware system, there is only one order type.
+  const orderType = OrderType.LIMIT;
+
+  // Make the nonce by hashing the client-provided ID. Does not need to be a secure hash.
+  const nonceHex = nodeCrypto
+    .createHmac('sha256', '(insecure)')
+    .update(order.clientId)
+    .digest('hex');
+  const nonce = new BN(nonceHex, 16).mod(ORDER_MAX_VALUES.nonce).toString();
+
+  // This is the public key x-coordinate as a hex string, without 0x prefix.
+  const publicKey = order.starkKey;
+
+  // TODO: May have to tweak these “IDs” to match Starkware.
+  const isBuy = order.side === OrderSide.BUY;
+  const tokenIdSell = isBuy ? MARGIN_TOKEN : BASE_TOKEN[order.market];
+  const tokenIdBuy = isBuy ? BASE_TOKEN[order.market] : MARGIN_TOKEN;
+
+  // Note: Need to be careful that the (size, price) -> (amountBuy, amountSell) function is
+  // well-defined and applied consistently.
+  const size = new BigNumber(order.size);
+  const cost = size.times(order.price);
+  const amountSell = (isBuy ? cost : size).shiftedBy(TOKEN_DECIMALS[tokenIdSell]).toFixed(0);
+  const amountBuy = (isBuy ? size : cost).shiftedBy(TOKEN_DECIMALS[tokenIdBuy]).toFixed(0);
+
+  // The fee is an amount, not a percentage, and is always denominated in the margin token.
+  const amountFee = new BigNumber(order.limitFee).shiftedBy(TOKEN_DECIMALS[MARGIN_TOKEN])
+    .toFixed(0);
+
+  // Represents a subaccount or isolated position.
+  const positionId = order.positionId;
+
+  // TODO: How do we get the signed expiration value?
+  // Convert to a Unix timestamp (in hours).
+  const expirationTimestamp = `${Math.floor(new Date(order.expiresAt).getTime() / 1000 / 3600)}`;
+
+  return {
+    orderType,
+    nonce,
+    publicKey,
+    amountSell,
+    amountBuy,
+    amountFee,
+    tokenIdSell,
+    tokenIdBuy,
+    positionId,
+    expirationTimestamp,
+  };
+}
+
+export function getStarkwareOrderHash(
+  order: StarkwareOrder,
 ): string {
   // TODO:
   // I'm following their existing example but we'll have to update the exact encoding details later.
@@ -147,14 +217,10 @@ export function getOrderHash(
   const serialized = orderTypeBn
     .iushln(ORDER_FIELD_LENGTHS.nonce).iadd(nonceBn)
     .iushln(ORDER_FIELD_LENGTHS.amountSell).iadd(amountSellBn)
-    .iushln(ORDER_FIELD_LENGTHS.amountBuy)
-    .iadd(amountBuyBn)
-    .iushln(ORDER_FIELD_LENGTHS.amountFee)
-    .iadd(amountFeeBn)
-    .iushln(ORDER_FIELD_LENGTHS.positionId)
-    .iadd(positionIdBn)
-    .iushln(ORDER_FIELD_LENGTHS.expirationTimestamp)
-    .iadd(expirationTimestampBn);
+    .iushln(ORDER_FIELD_LENGTHS.amountBuy).iadd(amountBuyBn)
+    .iushln(ORDER_FIELD_LENGTHS.amountFee).iadd(amountFeeBn)
+    .iushln(ORDER_FIELD_LENGTHS.positionId).iadd(positionIdBn)
+    .iushln(ORDER_FIELD_LENGTHS.expirationTimestamp).iadd(expirationTimestampBn);
   const serializedHex = normalizeHex(serialized.toString(16));
 
   return crypto.hashMessage(
@@ -225,4 +291,35 @@ export function asSimplePublicKey(
   ecPublicKey: EcPublicKey,
 ): string {
   return bnToHex(ecPublicKey.getX());
+}
+
+/**
+ * Convert an (r, s) signature struct to a string.
+ */
+export function serializeSignature(
+  signature: { r: string, s: string },
+): string {
+  if (signature.r.length !== 64 || signature.s.length !== 64) {
+    throw new Error(
+      `Invalid signature struct, expected r and s to be hex strings with length 64: ${signature}`,
+    );
+  }
+  return `${signature.r}${signature.s}`;
+}
+
+/**
+ * Convert a serialized signature to an (r, s) struct.
+ */
+export function deserializeSignature(
+  signature: string,
+): SignatureStruct {
+  if (signature.length !== 128) {
+    throw new Error(
+      `Invalid serialized signature, expected a hex string with length 128: ${signature}`,
+    );
+  }
+  return {
+    r: signature.slice(0, 64),
+    s: signature.slice(64),
+  };
 }
