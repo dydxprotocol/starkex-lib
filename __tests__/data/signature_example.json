@@ -10,7 +10,7 @@
     "size": "145.0005",
     "price": "350.00067",
     "limitFee": "123.456",
-    "market": "ETH-USD",
+    "market": "WETH-PUSD",
     "side": "BUY",
     "expiresAt": "2020-09-17T04:15:55.028Z"
   },
