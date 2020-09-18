@@ -44,10 +44,10 @@ export interface Signature {
 export interface InternalOrder {
   clientId: string,
   starkKey: string,
-  accountId: string,
+  positionId: string,
   size: string,
   price: string,
-  fee: string,
+  limitFee: string,
   market: PerpetualMarket,
   side: OrderSide,
   expiresAt: string,

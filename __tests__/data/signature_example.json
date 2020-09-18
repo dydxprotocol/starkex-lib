@@ -6,10 +6,10 @@
   "order": {
     "clientId": "This is an ID that the client came up with to describe this order.",
     "starkKey": "3b865a18323b8d147a12c556bfb1d502516c325b1477a23ba6c77af31f020fd",
-    "accountId": "12345",
+    "positionId": "12345",
     "size": "145.0005",
     "price": "350.00067",
-    "fee": "123.456",
+    "limitFee": "123.456",
     "market": "ETH-USD",
     "side": "BUY",
     "expiresAt": "2020-09-17T04:15:55.028Z"

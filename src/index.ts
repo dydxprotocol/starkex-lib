@@ -168,11 +168,11 @@ export function convertToStarkwareOrder(
   const amountBuy = (isBuy ? size : cost).shiftedBy(TOKEN_DECIMALS[tokenIdBuy]).toFixed(0);
 
   // The fee is an amount, not a percentage, and is always denominated in the margin token.
-  const amountFee = new BigNumber(order.fee).shiftedBy(TOKEN_DECIMALS[MARGIN_TOKEN])
+  const amountFee = new BigNumber(order.limitFee).shiftedBy(TOKEN_DECIMALS[MARGIN_TOKEN])
     .toFixed(0);
 
   // Represents a subaccount or isolated position.
-  const positionId = order.accountId;
+  const positionId = order.positionId;
 
   // Convert to a Unix timestamp (in hours).
   const expirationTimestamp = `${Math.floor(new Date(order.expiresAt).getTime() / 1000 / 3600)}`;

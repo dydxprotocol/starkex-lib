@@ -256,9 +256,9 @@ describe('starkex-lib', () => {
     it('generates a different signature when the account ID is different', () => {
       const privateKey: string = signatureExample.keyPair.privateKey;
       const order: InternalOrder = signatureExample.order as InternalOrder;
-      const newOrder = {
+      const newOrder: InternalOrder = {
         ...order,
-        accountId: (Number.parseInt(order.accountId, 10) + 1).toString(),
+        positionId: (Number.parseInt(order.positionId, 10) + 1).toString(),
       };
       const newSignature = sign(newOrder, privateKey);
       expect(newSignature).not.toEqual(paddedKeyPair);
