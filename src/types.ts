@@ -2,7 +2,7 @@ import * as elliptic from 'elliptic';
 import starkwareTypes from 'starkware-types';
 
 export enum OrderType {
-  LIMIT = 'LIMIT',
+  LIMIT = 'LIMIT_ORDER_WITH_FEES',
 }
 
 // TODO: De-dup with the definition in stacks.
