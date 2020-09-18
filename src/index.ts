@@ -150,8 +150,7 @@ export function convertToStarkwareOrder(
     .createHmac('sha256', '(insecure)')
     .update(order.clientId)
     .digest('hex');
-  const nonce = new BigNumber(nonceHex, 16).mod(ORDER_MAX_VALUES.nonce.toString())
-    .toString();
+  const nonce = new BN(nonceHex, 16).mod(ORDER_MAX_VALUES.nonce).toString();
 
   // This is the public key x-coordinate as a hex string, without 0x prefix.
   const publicKey = order.starkKey;
@@ -175,6 +174,7 @@ export function convertToStarkwareOrder(
   // Represents a subaccount or isolated position.
   const positionId = order.positionId;
 
+  // TODO: How do we get the signed expiration value?
   // Convert to a Unix timestamp (in hours).
   const expirationTimestamp = `${Math.floor(new Date(order.expiresAt).getTime() / 1000 / 3600)}`;
 
