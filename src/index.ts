@@ -13,7 +13,6 @@ import {
   ORDER_FIELD_LENGTHS,
   ORDER_MAX_VALUES,
   STARK_DERIVATION_PATH,
-  TOKEN_DECIMALS,
   TOKEN_STRUCTS,
 } from './constants';
 import {
@@ -30,10 +29,12 @@ import {
 import {
   bnToHex,
   normalizeHex,
+  toBaseUnits,
 } from './util';
 
-export * from './constants';
+export { MARGIN_TOKEN } from './constants';
 export * from './types';
+export { toBaseUnits } from './util';
 
 /**
  * Generate a pseudorandom StarkEx key pair.
@@ -166,14 +167,12 @@ export function convertToStarkwareOrder(
 
   // Note: Need to be careful that the (size, price) -> (amountBuy, amountSell) function is
   // well-defined and applied consistently.
-  const size = new BigNumber(order.size);
-  const cost = size.times(order.price);
-  const amountSell = (isBuy ? cost : size).shiftedBy(TOKEN_DECIMALS[tokenIdSell]).toFixed(0);
-  const amountBuy = (isBuy ? size : cost).shiftedBy(TOKEN_DECIMALS[tokenIdBuy]).toFixed(0);
+  const cost = new BigNumber(order.size).times(order.price).toString();
+  const amountSell = toBaseUnits(isBuy ? cost : order.size, tokenIdSell);
+  const amountBuy = toBaseUnits(isBuy ? order.size : cost, tokenIdBuy);
 
   // The fee is an amount, not a percentage, and is always denominated in the margin token.
-  const amountFee = new BigNumber(order.limitFee).shiftedBy(TOKEN_DECIMALS[MARGIN_TOKEN])
-    .toFixed(0);
+  const amountFee = toBaseUnits(order.limitFee, MARGIN_TOKEN);
 
   // Represents a subaccount or isolated position.
   const positionId = order.positionId;
