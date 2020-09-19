@@ -1,5 +1,4 @@
 import assert from 'assert';
-import nodeCrypto from 'crypto';
 
 import BigNumber from 'bignumber.js';
 import * as bip39 from 'bip39';
@@ -28,6 +27,7 @@ import {
 } from './types';
 import {
   bnToHex,
+  nonceFromClientId,
   normalizeHex,
   toBaseUnits,
 } from './util';
@@ -147,11 +147,7 @@ export function convertToStarkwareOrder(
   const orderType = OrderType.LIMIT;
 
   // Make the nonce by hashing the client-provided ID. Does not need to be a secure hash.
-  const nonceHex = nodeCrypto
-    .createHmac('sha256', '(insecure)')
-    .update(order.clientId)
-    .digest('hex');
-  const nonce = new BN(nonceHex, 16).mod(ORDER_MAX_VALUES.nonce).toString();
+  const nonce = nonceFromClientId(order.clientId);
 
   // This is the public key x-coordinate as a hex string, without 0x prefix.
   const publicKey = order.starkKey;
