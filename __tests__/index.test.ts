@@ -9,9 +9,10 @@
 import _ from 'lodash';
 
 import {
-  KeyPair,
   InternalOrder,
+  KeyPair,
   OrderSide,
+  PerpetualMarket,
   StarkwareOrder,
   asEcKeyPair,
   asEcKeyPairPublic,
@@ -268,6 +269,15 @@ describe('starkex-lib', () => {
       expect(starkwareOrder.amountBuy).toEqual('145000500');
       expect(starkwareOrder.amountSell).toEqual('50750272150');
       expect(starkwareOrder.amountFee).toEqual('123456000');
+    });
+
+    it('throws if the market is unknown', () => {
+      const order: InternalOrder = signatureExample.order as InternalOrder;
+      const newOrder: InternalOrder = {
+        ...order,
+        market: 'FAKE-MARKET' as PerpetualMarket,
+      };
+      expect(() => convertToStarkwareOrder(newOrder)).toThrow('Unknown market');
     });
   });
 
