@@ -1,5 +1,4 @@
 import assert from 'assert';
-import nodeCrypto from 'crypto';
 
 import BigNumber from 'bignumber.js';
 import * as bip39 from 'bip39';
@@ -16,12 +15,18 @@ import {
   TOKEN_STRUCTS,
 } from './constants';
 import {
-  EcKeyPair,
-  EcPublicKey,
+  asEcKeyPair,
+  asEcKeyPairPublic,
+  asSimpleKeyPair,
+  deserializeSignature,
+  nonceFromClientId,
+  serializeSignature,
+  toBaseUnits,
+} from './helpers';
+import {
   EcSignature,
   InternalOrder,
   KeyPair,
-  SignatureStruct,
   StarkwareOrder,
   OrderType,
   OrderSide,
@@ -29,12 +34,11 @@ import {
 import {
   bnToHex,
   normalizeHex,
-  toBaseUnits,
 } from './util';
 
 export { MARGIN_TOKEN } from './constants';
+export * from './helpers';
 export * from './types';
-export { toBaseUnits } from './util';
 
 /**
  * Generate a pseudorandom StarkEx key pair.
@@ -147,11 +151,7 @@ export function convertToStarkwareOrder(
   const orderType = OrderType.LIMIT;
 
   // Make the nonce by hashing the client-provided ID. Does not need to be a secure hash.
-  const nonceHex = nodeCrypto
-    .createHmac('sha256', '(insecure)')
-    .update(order.clientId)
-    .digest('hex');
-  const nonce = new BN(nonceHex, 16).mod(ORDER_MAX_VALUES.nonce).toString();
+  const nonce = nonceFromClientId(order.clientId);
 
   // This is the public key x-coordinate as a hex string, without 0x prefix.
   const publicKey = order.starkKey;
@@ -231,98 +231,4 @@ export function getStarkwareOrderHash(
     crypto.hashTokenId(TOKEN_STRUCTS[order.tokenIdBuy]),
     serializedHex,
   );
-}
-
-/**
- * Helper for if you want to access additional cryptographic functionality with a private key.
- */
-export function asEcKeyPair(
-  privateKeyOrKeyPair: string | KeyPair,
-): EcKeyPair {
-  const privateKey: string = typeof privateKeyOrKeyPair === 'string'
-    ? privateKeyOrKeyPair
-    : privateKeyOrKeyPair.privateKey;
-  return crypto.ec.keyFromPrivate(normalizeHex(privateKey));
-}
-
-/**
- * Helper for if you want to access additional cryptographic functionality with a public key.
- *
- * The provided parameter should be the x-coordinate of the public key as a hex string. There are
- * two possible values for the y-coordinate, so `isOdd` is required to choose between the two.
- */
-export function asEcKeyPairPublic(
-  publicKey: string,
-  isOdd: boolean,
-): EcKeyPair {
-  const prefix = isOdd ? '03' : '02';
-  const prefixedPublicKey = `${prefix}${normalizeHex(publicKey)}`;
-
-  // This will get the point from only the x-coordinate via:
-  // https://github.com/indutny/elliptic/blob/e71b2d9359c5fe9437fbf46f1f05096de447de57/dist/elliptic.js#L1205
-  //
-  // See also how Starkware infers the y-coordinate:
-  // https://github.com/starkware-libs/starkex-resources/blob/1eb84c6a9069950026768013f748016d3bd51d54/crypto/starkware/crypto/signature/signature.py#L164-L173
-  return crypto.ec.keyFromPublic(prefixedPublicKey, 'hex');
-}
-
-/**
- * Converts an `elliptic` KeyPair object to a simple object with publicKey & privateKey hex strings.
- *
- * Returns hex strings without 0x prefix.
- */
-export function asSimpleKeyPair(
-  ecKeyPair: EcKeyPair,
-): KeyPair {
-  const ecPrivateKey = ecKeyPair.getPrivate();
-  if (!ecPrivateKey) {
-    throw new Error('asSimpleKeyPair: Key pair has no private key');
-  }
-  const ecPublicKey = ecKeyPair.getPublic();
-  return {
-    publicKey: asSimplePublicKey(ecPublicKey),
-    privateKey: bnToHex(ecPrivateKey),
-  };
-}
-
-/**
- * Converts an `elliptic` BasePoint object to a compressed representation: the x-coordinate as hex.
- *
- * Returns a hex string without 0x prefix.
- */
-export function asSimplePublicKey(
-  ecPublicKey: EcPublicKey,
-): string {
-  return bnToHex(ecPublicKey.getX());
-}
-
-/**
- * Convert an (r, s) signature struct to a string.
- */
-export function serializeSignature(
-  signature: { r: string, s: string },
-): string {
-  if (signature.r.length !== 64 || signature.s.length !== 64) {
-    throw new Error(
-      `Invalid signature struct, expected r and s to be hex strings with length 64: ${signature}`,
-    );
-  }
-  return `${signature.r}${signature.s}`;
-}
-
-/**
- * Convert a serialized signature to an (r, s) struct.
- */
-export function deserializeSignature(
-  signature: string,
-): SignatureStruct {
-  if (signature.length !== 128) {
-    throw new Error(
-      `Invalid serialized signature, expected a hex string with length 128: ${signature}`,
-    );
-  }
-  return {
-    r: signature.slice(0, 64),
-    s: signature.slice(64),
-  };
 }
