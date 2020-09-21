@@ -1,12 +1,10 @@
 import assert from 'assert';
 
-import BigNumber from 'bignumber.js';
 import * as bip39 from 'bip39';
 import BN from 'bn.js';
 import * as crypto from 'starkware-crypto';
 
 import {
-  BASE_TOKEN,
   HEX_RE,
   MARGIN_TOKEN,
   ORDER_FIELD_LENGTHS,
@@ -19,6 +17,7 @@ import {
   asEcKeyPairPublic,
   asSimpleKeyPair,
   deserializeSignature,
+  getBuyAndSellAmounts,
   nonceFromClientId,
   serializeSignature,
   toBaseUnits,
@@ -29,7 +28,6 @@ import {
   KeyPair,
   StarkwareOrder,
   OrderType,
-  OrderSide,
 } from './types';
 import {
   bnToHex,
@@ -156,20 +154,14 @@ export function convertToStarkwareOrder(
   // This is the public key x-coordinate as a hex string, without 0x prefix.
   const publicKey = order.starkKey;
 
-  // TODO: May have to tweak these “IDs” to match Starkware.
-  const isBuy = order.side === OrderSide.BUY;
-  const baseToken = BASE_TOKEN[order.market];
-  if (!baseToken) {
-    throw new Error(`Unknown market ${order.market}`);
-  }
-  const tokenIdSell = isBuy ? MARGIN_TOKEN : baseToken;
-  const tokenIdBuy = isBuy ? baseToken : MARGIN_TOKEN;
-
-  // Note: Need to be careful that the (size, price) -> (amountBuy, amountSell) function is
+  // Need to be careful that the (size, price) -> (amountBuy, amountSell) function is
   // well-defined and applied consistently.
-  const cost = new BigNumber(order.size).times(order.price).toString();
-  const amountSell = toBaseUnits(isBuy ? cost : order.size, tokenIdSell);
-  const amountBuy = toBaseUnits(isBuy ? order.size : cost, tokenIdBuy);
+  const {
+    amountSell,
+    amountBuy,
+    tokenIdSell,
+    tokenIdBuy,
+  } = getBuyAndSellAmounts(order.market, order.side, order.size, order.price);
 
   // The fee is an amount, not a percentage, and is always denominated in the margin token.
   const amountFee = toBaseUnits(order.limitFee, MARGIN_TOKEN);
