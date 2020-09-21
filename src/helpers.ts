@@ -8,11 +8,18 @@ import BigNumber from 'bignumber.js';
 import BN from 'bn.js';
 import * as crypto from 'starkware-crypto';
 
-import { ORDER_MAX_VALUES, TOKEN_DECIMALS } from './constants';
+import {
+  BASE_TOKEN,
+  MARGIN_TOKEN,
+  ORDER_MAX_VALUES,
+  TOKEN_DECIMALS,
+} from './constants';
 import {
   EcKeyPair,
   EcPublicKey,
   KeyPair,
+  OrderSide,
+  PerpetualMarket,
   SignatureStruct,
   Token,
 } from './types';
@@ -125,7 +132,41 @@ export function toBaseUnits(amount: string, tokenId: Token): string {
 }
 
 /**
+ * Get the Starkware amounts and token IDs, given paramters from an order and/or fill.
+ */
+export function getBuyAndSellAmounts(
+  market: PerpetualMarket,
+  side: OrderSide,
+  size: string,
+  price: string,
+): {
+  amountSell: string;
+  amountBuy: string;
+  tokenIdSell: Token;
+  tokenIdBuy: Token;
+} {
+  const isBuy = side === OrderSide.BUY;
+  const baseToken = BASE_TOKEN[market];
+  if (!baseToken) {
+    throw new Error(`Unknown market ${market}`);
+  }
+  const tokenIdSell = isBuy ? MARGIN_TOKEN : baseToken;
+  const tokenIdBuy = isBuy ? baseToken : MARGIN_TOKEN;
+  const cost = new BigNumber(size).times(price).toString();
+  const amountSell = toBaseUnits(isBuy ? cost : size, tokenIdSell);
+  const amountBuy = toBaseUnits(isBuy ? size : cost, tokenIdBuy);
+  return {
+    amountSell,
+    amountBuy,
+    tokenIdSell,
+    tokenIdBuy,
+  };
+}
+
+/**
  * Generate a nonce deterministically from an ID set on the order by the client.
+ *
+ * Does not need to be a cryptographically secure hash.
  */
 export function nonceFromClientId(clientId: string): string {
   const nonceHex = nodeCrypto
