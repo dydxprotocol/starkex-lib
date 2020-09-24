@@ -262,7 +262,7 @@ describe('starkex-lib', () => {
     it('applies token decimals', () => {
       const order: InternalOrder = signatureExample.order as InternalOrder;
       const starkwareOrder: StarkwareOrder = convertToStarkwareOrder(order);
-      expect(starkwareOrder.amountBuy).toEqual('145000500');
+      expect(starkwareOrder.amountBuy).toEqual('14500050000');
       expect(starkwareOrder.amountSell).toEqual('50750272150');
       expect(starkwareOrder.amountFee).toEqual('123456000');
     });

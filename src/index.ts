@@ -34,7 +34,7 @@ import {
   normalizeHex,
 } from './util';
 
-export { MARGIN_TOKEN, TOKEN_QUANTUM } from './constants';
+export { MARGIN_TOKEN } from './constants';
 export * from './helpers';
 export * from './types';
 
