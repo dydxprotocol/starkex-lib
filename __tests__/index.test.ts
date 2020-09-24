@@ -223,6 +223,14 @@ describe('starkex-lib', () => {
       expect(signature).toEqual(expectedSignature);
     });
 
+    it('signs an order (even y)', () => {
+      const order: InternalOrder = signatureExample.order as InternalOrder;
+      const privateKey: string = signatureExample.keyPairEvenY.privateKey;
+      const expectedSignature: string = signatureExample.signatureEvenY;
+      const signature: string = sign(order, privateKey);
+      expect(signature).toEqual(expectedSignature);
+    });
+
     it('generates a different signature when the client ID is different', () => {
       const privateKey: string = signatureExample.keyPair.privateKey;
       const order: InternalOrder = signatureExample.order as InternalOrder;
@@ -262,7 +270,7 @@ describe('starkex-lib', () => {
     it('applies token decimals', () => {
       const order: InternalOrder = signatureExample.order as InternalOrder;
       const starkwareOrder: StarkwareOrder = convertToStarkwareOrder(order);
-      expect(starkwareOrder.amountBuy).toEqual('145000500');
+      expect(starkwareOrder.amountBuy).toEqual('14500050000');
       expect(starkwareOrder.amountSell).toEqual('50750272150');
       expect(starkwareOrder.amountFee).toEqual('123456000');
     });

@@ -1,3 +1,4 @@
+import Big from 'big.js';
 import BN from 'bn.js';
 import _ from 'lodash';
 
@@ -43,12 +44,12 @@ export const ORDER_MAX_VALUES: { [K in keyof StarkwareOrder]: BN } = _.mapValues
 export const MARGIN_TOKEN = Token.USDC;
 
 // TODO: Update.
-export const TOKEN_DECIMALS: Record<Token, number> = {
-  [Token.ETH]: 6,
-  [Token.BTC]: 6,
-  [Token.LINK]: 6,
-  [Token.USDC]: 6,
-  [Token.USDT]: 6,
+export const TOKEN_QUANTUM: Record<Token, Big> = {
+  [Token.ETH]: new Big('1e-8'),
+  [Token.BTC]: new Big('1e-10'),
+  [Token.LINK]: new Big('1e-7'),
+  [Token.USDC]: new Big('1e-6'),
+  [Token.USDT]: new Big('1e-6'),
 };
 
 // TODO: Use the starkware-types structure for tokens for now.

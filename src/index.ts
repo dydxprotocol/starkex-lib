@@ -20,7 +20,7 @@ import {
   getBuyAndSellAmounts,
   nonceFromClientId,
   serializeSignature,
-  toBaseUnits,
+  toQuantum,
 } from './helpers';
 import {
   EcSignature,
@@ -164,7 +164,7 @@ export function convertToStarkwareOrder(
   } = getBuyAndSellAmounts(order.market, order.side, order.size, order.price);
 
   // The fee is an amount, not a percentage, and is always denominated in the margin token.
-  const amountFee = toBaseUnits(order.limitFee, MARGIN_TOKEN);
+  const amountFee = toQuantum(order.limitFee, MARGIN_TOKEN);
 
   // Represents a subaccount or isolated position.
   const positionId = order.positionId;
