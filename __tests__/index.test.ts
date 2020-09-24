@@ -223,6 +223,14 @@ describe('starkex-lib', () => {
       expect(signature).toEqual(expectedSignature);
     });
 
+    it('signs an order (even y)', () => {
+      const order: InternalOrder = signatureExample.order as InternalOrder;
+      const privateKey: string = signatureExample.keyPairEvenY.privateKey;
+      const expectedSignature: string = signatureExample.signatureEvenY;
+      const signature: string = sign(order, privateKey);
+      expect(signature).toEqual(expectedSignature);
+    });
+
     it('generates a different signature when the client ID is different', () => {
       const privateKey: string = signatureExample.keyPair.privateKey;
       const order: InternalOrder = signatureExample.order as InternalOrder;
