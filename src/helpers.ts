@@ -4,7 +4,7 @@
 
 import nodeCrypto from 'crypto';
 
-import BigNumber from 'bignumber.js';
+import Big from 'big.js';
 import BN from 'bn.js';
 import * as crypto from 'starkware-crypto';
 
@@ -12,7 +12,7 @@ import {
   BASE_TOKEN,
   MARGIN_TOKEN,
   ORDER_MAX_VALUES,
-  TOKEN_DECIMALS,
+  TOKEN_QUANTUM,
 } from './constants';
 import {
   EcKeyPair,
@@ -123,12 +123,19 @@ export function deserializeSignature(
 }
 
 /**
- * Convert a token amount to an integer amount in the token's base units.
- *
- * Require the input to be a string, to avoid depending on BigNumber.
+ * Convert a canonical token amount to an integer amount (in the token's base units).
+ * Require the input to be a string, to avoid depending on Big.
  */
-export function toBaseUnits(amount: string, tokenId: Token): string {
-  return new BigNumber(amount).shiftedBy(TOKEN_DECIMALS[tokenId]).toFixed(0);
+export function toQuantum(amount: string, tokenId: Token): string {
+  return new Big(amount).div(TOKEN_QUANTUM[tokenId]).toFixed(0); // should be a whole number
+}
+
+/**
+ * Convert an integer amount (in the token's base units) to a canonical token amount.
+ * Require the input to be a string, to avoid depending on Big.
+ */
+export function fromQuantum(quantum: string, tokenId: Token): string {
+  return new Big(quantum).mul(TOKEN_QUANTUM[tokenId]).toFixed(); // could be a decimal number.
 }
 
 /**
@@ -152,9 +159,9 @@ export function getBuyAndSellAmounts(
   }
   const tokenIdSell = isBuy ? MARGIN_TOKEN : baseToken;
   const tokenIdBuy = isBuy ? baseToken : MARGIN_TOKEN;
-  const cost = new BigNumber(size).times(price).toString();
-  const amountSell = toBaseUnits(isBuy ? cost : size, tokenIdSell);
-  const amountBuy = toBaseUnits(isBuy ? size : cost, tokenIdBuy);
+  const cost = new Big(size).times(price).toFixed();
+  const amountSell = toQuantum(isBuy ? cost : size, tokenIdSell);
+  const amountBuy = toQuantum(isBuy ? size : cost, tokenIdBuy);
   return {
     amountSell,
     amountBuy,
