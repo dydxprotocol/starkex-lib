@@ -7,12 +7,12 @@ export enum OrderType {
 
 // TODO: De-dup with the definition in stacks.
 export enum PerpetualMarket {
-  PBTC_USDC = 'PBTC-USDC',
-  WETH_PUSD = 'WETH-PUSD',
-  PLINK_USDC = 'PLINK-USDC',
+  BTC_USD = 'BTC-USD',
+  ETH_USD = 'ETH-USD',
+  LINK_USD = 'LINK-USD',
 }
 
-export enum Token {
+export enum Asset {
   BTC = 'BTC',
   ETH = 'ETH',
   LINK = 'LINK',
@@ -55,15 +55,16 @@ export interface InternalOrder {
 
 export interface StarkwareOrder {
   orderType: OrderType;
-  nonce: string;
+  nonce: string; // For signature.
   publicKey: string;
-  amountSell: string;
-  amountBuy: string;
+  amountSynthetic: string;
+  amountCollateral: string;
   amountFee: string;
-  tokenIdSell: Token;
-  tokenIdBuy: Token;
+  assetIdSynthetic: Asset;
+  assetIdCollateral: Asset;
   positionId: string;
-  expirationTimestamp: string;
+  isBuyingSynthetic: boolean;
+  expirationTimestamp: string; // For signature.
 }
 
 // Improve on the starkware-types token types.

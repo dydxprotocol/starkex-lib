@@ -7,7 +7,7 @@ import * as crypto from 'starkware-crypto';
 import {
   HEX_RE,
   MARGIN_TOKEN,
-  ORDER_FIELD_LENGTHS,
+  ORDER_FIELD_BIT_LENGTHS,
   ORDER_MAX_VALUES,
   STARK_DERIVATION_PATH,
   TOKEN_STRUCTS,
@@ -17,7 +17,7 @@ import {
   asEcKeyPairPublic,
   asSimpleKeyPair,
   deserializeSignature,
-  getBuyAndSellAmounts,
+  getStarkwareAmounts,
   nonceFromClientId,
   serializeSignature,
   toQuantum,
@@ -157,11 +157,12 @@ export function convertToStarkwareOrder(
   // Need to be careful that the (size, price) -> (amountBuy, amountSell) function is
   // well-defined and applied consistently.
   const {
-    amountSell,
-    amountBuy,
-    tokenIdSell,
-    tokenIdBuy,
-  } = getBuyAndSellAmounts(order.market, order.side, order.size, order.price);
+    amountSynthetic,
+    amountCollateral,
+    assetIdSynthetic,
+    assetIdCollateral,
+    isBuyingSynthetic,
+  } = getStarkwareAmounts(order.market, order.side, order.size, order.price);
 
   // The fee is an amount, not a percentage, and is always denominated in the margin token.
   const amountFee = toQuantum(order.limitFee, MARGIN_TOKEN);
@@ -177,12 +178,13 @@ export function convertToStarkwareOrder(
     orderType,
     nonce,
     publicKey,
-    amountSell,
-    amountBuy,
+    amountSynthetic,
+    amountCollateral,
     amountFee,
-    tokenIdSell,
-    tokenIdBuy,
+    assetIdSynthetic,
+    assetIdCollateral,
     positionId,
+    isBuyingSynthetic,
     expirationTimestamp,
   };
 }
@@ -194,33 +196,36 @@ export function getStarkwareOrderHash(
   // I'm following their existing example but we'll have to update the exact encoding details later.
   const orderTypeBn = new BN('0');
   const nonceBn = new BN(order.nonce);
-  const amountSellBn = new BN(order.amountSell);
-  const amountBuyBn = new BN(order.amountBuy);
+  const amountSyntheticBn = new BN(order.amountSynthetic);
+  const amountCollateralBn = new BN(order.amountCollateral);
   const amountFeeBn = new BN(order.amountFee);
   const positionIdBn = new BN(order.positionId);
+  const isBuyingSyntheticBn = order.isBuyingSynthetic ? new BN('1') : new BN('0');
   const expirationTimestampBn = new BN(order.expirationTimestamp);
 
   // Validate the data is the right size.
   assert(nonceBn.lt(ORDER_MAX_VALUES.nonce));
-  assert(amountSellBn.lt(ORDER_MAX_VALUES.amountSell));
-  assert(amountBuyBn.lt(ORDER_MAX_VALUES.amountBuy));
+  assert(amountSyntheticBn.lt(ORDER_MAX_VALUES.amountSynthetic));
+  assert(amountCollateralBn.lt(ORDER_MAX_VALUES.amountCollateral));
   assert(amountFeeBn.lt(ORDER_MAX_VALUES.amountFee));
   assert(positionIdBn.lt(ORDER_MAX_VALUES.positionId));
+  assert(isBuyingSyntheticBn.lt(ORDER_MAX_VALUES.isBuyingSynthetic));
   assert(expirationTimestampBn.lt(ORDER_MAX_VALUES.expirationTimestamp));
 
   // Serialize the order as a hex string.
   const serialized = orderTypeBn
-    .iushln(ORDER_FIELD_LENGTHS.nonce).iadd(nonceBn)
-    .iushln(ORDER_FIELD_LENGTHS.amountSell).iadd(amountSellBn)
-    .iushln(ORDER_FIELD_LENGTHS.amountBuy).iadd(amountBuyBn)
-    .iushln(ORDER_FIELD_LENGTHS.amountFee).iadd(amountFeeBn)
-    .iushln(ORDER_FIELD_LENGTHS.positionId).iadd(positionIdBn)
-    .iushln(ORDER_FIELD_LENGTHS.expirationTimestamp).iadd(expirationTimestampBn);
+    .iushln(ORDER_FIELD_BIT_LENGTHS.nonce).iadd(nonceBn)
+    .iushln(ORDER_FIELD_BIT_LENGTHS.amountSynthetic).iadd(amountSyntheticBn)
+    .iushln(ORDER_FIELD_BIT_LENGTHS.amountCollateral).iadd(amountCollateralBn)
+    .iushln(ORDER_FIELD_BIT_LENGTHS.amountFee).iadd(amountFeeBn)
+    .iushln(ORDER_FIELD_BIT_LENGTHS.positionId).iadd(positionIdBn)
+    .iushln(ORDER_FIELD_BIT_LENGTHS.isBuyingSynthetic).iadd(isBuyingSyntheticBn)
+    .iushln(ORDER_FIELD_BIT_LENGTHS.expirationTimestamp).iadd(expirationTimestampBn);
   const serializedHex = normalizeHex(serialized.toString(16));
 
   return crypto.hashMessage(
-    crypto.hashTokenId(TOKEN_STRUCTS[order.tokenIdSell]),
-    crypto.hashTokenId(TOKEN_STRUCTS[order.tokenIdBuy]),
+    crypto.hashTokenId(TOKEN_STRUCTS[order.assetIdSynthetic]),
+    crypto.hashTokenId(TOKEN_STRUCTS[order.assetIdCollateral]),
     serializedHex,
   );
 }
