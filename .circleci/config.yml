@@ -65,7 +65,7 @@ jobs:
           key: cache-completed-build-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Coverage
-          command: REDIS_URL=redis://localhost:6379 npm run coverage
+          command: npm run coverage
       - run:
           name: Coveralls
           command: cat coverage/lcov.info | node_modules/.bin/coveralls

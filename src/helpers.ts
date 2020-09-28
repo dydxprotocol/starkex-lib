@@ -21,7 +21,7 @@ import {
   OrderSide,
   PerpetualMarket,
   SignatureStruct,
-  Token,
+  Asset,
 } from './types';
 import {
   bnToHex,
@@ -126,7 +126,7 @@ export function deserializeSignature(
  * Convert a canonical token amount to an integer amount (in the token's base units).
  * Require the input to be a string, to avoid depending on Big.
  */
-export function toQuantum(amount: string, tokenId: Token): string {
+export function toQuantum(amount: string, tokenId: Asset): string {
   return new Big(amount).div(TOKEN_QUANTUM[tokenId]).toFixed(0); // should be a whole number
 }
 
@@ -134,39 +134,40 @@ export function toQuantum(amount: string, tokenId: Token): string {
  * Convert an integer amount (in the token's base units) to a canonical token amount.
  * Require the input to be a string, to avoid depending on Big.
  */
-export function fromQuantum(quantum: string, tokenId: Token): string {
+export function fromQuantum(quantum: string, tokenId: Asset): string {
   return new Big(quantum).mul(TOKEN_QUANTUM[tokenId]).toFixed(); // could be a decimal number.
 }
 
 /**
- * Get the Starkware amounts and token IDs, given paramters from an order and/or fill.
+ * Get Starkware order fields, given paramters from an order and/or fill.
  */
-export function getBuyAndSellAmounts(
+export function getStarkwareAmounts(
   market: PerpetualMarket,
   side: OrderSide,
   size: string,
   price: string,
 ): {
-  amountSell: string;
-  amountBuy: string;
-  tokenIdSell: Token;
-  tokenIdBuy: Token;
+  amountSynthetic: string;
+  amountCollateral: string;
+  assetIdSynthetic: Asset;
+  assetIdCollateral: Asset;
+  isBuyingSynthetic: boolean;
 } {
-  const isBuy = side === OrderSide.BUY;
-  const baseToken = BASE_TOKEN[market];
-  if (!baseToken) {
+  const isBuyingSynthetic = side === OrderSide.BUY;
+  const assetIdSynthetic = BASE_TOKEN[market];
+  if (!assetIdSynthetic) {
     throw new Error(`Unknown market ${market}`);
   }
-  const tokenIdSell = isBuy ? MARGIN_TOKEN : baseToken;
-  const tokenIdBuy = isBuy ? baseToken : MARGIN_TOKEN;
+  const assetIdCollateral = MARGIN_TOKEN;
   const cost = new Big(size).times(price).toFixed();
-  const amountSell = toQuantum(isBuy ? cost : size, tokenIdSell);
-  const amountBuy = toQuantum(isBuy ? size : cost, tokenIdBuy);
+  const amountSynthetic = toQuantum(size, assetIdSynthetic);
+  const amountCollateral = toQuantum(cost, assetIdCollateral);
   return {
-    amountSell,
-    amountBuy,
-    tokenIdSell,
-    tokenIdBuy,
+    amountSynthetic,
+    amountCollateral,
+    assetIdSynthetic,
+    assetIdCollateral,
+    isBuyingSynthetic,
   };
 }
 
