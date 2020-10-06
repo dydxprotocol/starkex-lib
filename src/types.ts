@@ -41,6 +41,14 @@ export interface SignatureStruct {
   s: string;
 }
 
+export interface InternalWithdrawal {
+  clientId: string;
+  starkKey: string;
+  positionId: string;
+  debitAmount: string;
+  expiresAt: string;
+}
+
 export interface InternalOrder {
   clientId: string,
   starkKey: string,
@@ -53,10 +61,19 @@ export interface InternalOrder {
   expiresAt: string,
 }
 
-export interface StarkwareOrder {
-  orderType: OrderType;
-  nonce: string; // For signature.
+export interface StarkwareSignable {
   publicKey: string;
+}
+
+export interface StarkwareWithdrawal extends StarkwareSignable {
+  positionId: string;
+  amount: string;
+  nonce: string; // For signature.
+  expirationTimestamp: string; // For signature.
+}
+
+export interface StarkwareOrder extends StarkwareSignable {
+  orderType: OrderType;
   amountSynthetic: string;
   amountCollateral: string;
   amountFee: string;
@@ -64,6 +81,7 @@ export interface StarkwareOrder {
   assetIdCollateral: Asset;
   positionId: string;
   isBuyingSynthetic: boolean;
+  nonce: string; // For signature.
   expirationTimestamp: string; // For signature.
 }
 

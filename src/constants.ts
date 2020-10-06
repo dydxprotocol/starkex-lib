@@ -3,9 +3,10 @@ import BN from 'bn.js';
 import _ from 'lodash';
 
 import {
+  Asset,
   PerpetualMarket,
   StarkwareOrder,
-  Asset,
+  StarkwareWithdrawal,
   TokenStruct,
 } from './types';
 
@@ -20,7 +21,6 @@ export const BASE_TOKEN: Record<PerpetualMarket, Asset> = {
   [PerpetualMarket.LINK_USD]: Asset.LINK,
 };
 
-// TODO: Update to correct values.
 export const ORDER_FIELD_BIT_LENGTHS: { [K in keyof StarkwareOrder]: number } = {
   orderType: 1,
   nonce: 16,
@@ -34,9 +34,24 @@ export const ORDER_FIELD_BIT_LENGTHS: { [K in keyof StarkwareOrder]: number } = 
   isBuyingSynthetic: 1,
   expirationTimestamp: 22,
 };
-// TODO: Derive from ORDER_FIELD_LENGTHS.
+
 export const ORDER_MAX_VALUES: { [K in keyof StarkwareOrder]: BN } = _.mapValues(
   ORDER_FIELD_BIT_LENGTHS,
+  (numBits: number) => {
+    return new BN(2).pow(new BN(numBits));
+  },
+);
+
+export const WITHDRAWAL_FIELD_BIT_LENGTHS: { [K in keyof StarkwareWithdrawal]: number } = {
+  nonce: 16,
+  publicKey: 63,
+  amount: 42,
+  positionId: 32,
+  expirationTimestamp: 22,
+};
+
+export const WITHDRAWAL_MAX_VALUES: { [K in keyof StarkwareWithdrawal]: BN } = _.mapValues(
+  WITHDRAWAL_FIELD_BIT_LENGTHS,
   (numBits: number) => {
     return new BN(2).pow(new BN(numBits));
   },
