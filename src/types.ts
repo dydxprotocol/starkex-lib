@@ -61,6 +61,28 @@ export interface InternalOrder {
   expiresAt: string,
 }
 
+export enum METHODS {
+  POST = 'POST',
+  GET = 'GET',
+  DELETE = 'DELETE',
+}
+
+export interface InternalApiKey {
+  method: METHODS,
+  timestamp: string,
+  body: string,
+  requestPath: string,
+  starkKey: string,
+}
+
+export interface StarkwareApiKey extends StarkwareSignable {
+  method: METHODS,
+  timestamp: string,
+  body: string,
+  requestPath: string,
+  nonce: string; // For signature.
+}
+
 export interface StarkwareSignable {
   publicKey: string;
 }

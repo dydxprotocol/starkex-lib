@@ -5,6 +5,7 @@ import _ from 'lodash';
 import {
   Asset,
   PerpetualMarket,
+  StarkwareApiKey,
   StarkwareOrder,
   StarkwareWithdrawal,
   TokenStruct,
@@ -52,6 +53,22 @@ export const WITHDRAWAL_FIELD_BIT_LENGTHS: { [K in keyof StarkwareWithdrawal]: n
 
 export const WITHDRAWAL_MAX_VALUES: { [K in keyof StarkwareWithdrawal]: BN } = _.mapValues(
   WITHDRAWAL_FIELD_BIT_LENGTHS,
+  (numBits: number) => {
+    return new BN(2).pow(new BN(numBits));
+  },
+);
+
+export const API_KEY_FIELD_BIT_LENGTHS: { [K in keyof StarkwareApiKey]: number } = {
+  nonce: 16,
+  method: 16,
+  publicKey: 63,
+  body: 42,
+  requestPath: 32,
+  timestamp: 22,
+};
+
+export const API_KEY_MAX_VALUES: { [K in keyof StarkwareApiKey]: BN } = _.mapValues(
+  API_KEY_FIELD_BIT_LENGTHS,
   (numBits: number) => {
     return new BN(2).pow(new BN(numBits));
   },
