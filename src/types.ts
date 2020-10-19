@@ -61,6 +61,20 @@ export interface InternalOrder {
   expiresAt: string,
 }
 
+export enum ApiMethod {
+  POST = 'POST',
+  GET = 'GET',
+  DELETE = 'DELETE',
+}
+
+export interface InternalApiRequest {
+  method: ApiMethod,
+  expiresAt: string,
+  body: string,
+  requestPath: string,
+  publicKey: string,
+}
+
 export interface StarkwareSignable {
   publicKey: string;
 }
