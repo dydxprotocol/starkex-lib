@@ -72,14 +72,7 @@ export interface InternalApiRequest {
   expiresAt: string,
   body: string,
   requestPath: string,
-  starkKey: string,
-}
-
-export interface StarkwareApiRequest extends StarkwareSignable {
-  method: ApiMethod,
-  expiresAt: string,
-  body: string,
-  requestPath: string,
+  publicKey: string,
 }
 
 export interface StarkwareSignable {

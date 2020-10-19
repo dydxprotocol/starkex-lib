@@ -3,26 +3,22 @@ import nodeCrypto from 'crypto';
 import Signable from './signable';
 import {
   InternalApiRequest,
-  StarkwareApiRequest,
 } from './types';
 
 /**
  * Wrapper object to convert, hash, sign, or verify the signature of an api-key.
  */
-export default class ApiRequest extends Signable<StarkwareApiRequest> {
+export default class ApiRequest extends Signable<InternalApiRequest> {
 
   static fromInternal(
     apiKey: InternalApiRequest,
   ): ApiRequest {
-
-    const timestamp = `${Math.floor(new Date(apiKey.expiresAt).getTime() / 3600000)}`;
-
     return new ApiRequest({
       method: apiKey.method,
-      expiresAt: timestamp,
+      expiresAt: apiKey.expiresAt,
       body: apiKey.body,
       requestPath: apiKey.requestPath,
-      publicKey: apiKey.starkKey,
+      publicKey: apiKey.publicKey,
     });
   }
 
