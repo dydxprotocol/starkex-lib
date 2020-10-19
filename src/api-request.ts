@@ -13,13 +13,7 @@ export default class ApiRequest extends Signable<InternalApiRequest> {
   static fromInternal(
     apiKey: InternalApiRequest,
   ): ApiRequest {
-    return new ApiRequest({
-      method: apiKey.method,
-      expiresAt: apiKey.expiresAt,
-      body: apiKey.body,
-      requestPath: apiKey.requestPath,
-      publicKey: apiKey.publicKey,
-    });
+    return new ApiRequest(apiKey);
   }
 
   protected calculateHash(): string {
