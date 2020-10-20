@@ -63,6 +63,7 @@ export interface InternalOrder {
 
 export enum ApiMethod {
   POST = 'POST',
+  PUT = 'PUT',
   GET = 'GET',
   DELETE = 'DELETE',
 }
