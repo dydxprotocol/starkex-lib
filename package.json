@@ -25,10 +25,12 @@
   },
   "homepage": "https://github.com/dydxprotocol/starkex-lib#readme",
   "dependencies": {
-    "@types/elliptic": "^6.4.12",
+    "@truffle/hdwallet-provider": "^1.1.1",
     "@types/big.js": "^4.0.5",
+    "@types/elliptic": "^6.4.12",
     "big.js": "5.2.2",
-    "starkware-crypto": "^1.9.7"
+    "starkware-crypto": "^1.9.7",
+    "web3": "^1.3.0"
   },
   "devDependencies": {
     "@dydxprotocol/node-service-base-dev": "0.0.8"

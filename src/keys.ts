@@ -29,7 +29,9 @@ export function generateKeyPairFromMnemonic(
 }
 
 /**
- * Generate a StarKex key pair deterministically from a random Buffer or string.
+ * Generate a StarKex key pair deterministically from a random Buffer or hex string.
+ *
+ * The input must be a multiple of 4 bytes in length, with a min of 16 and max of 32 bytes.
  */
 export function generateKeyPairFromEntropy(
   entropy: Buffer | string,
