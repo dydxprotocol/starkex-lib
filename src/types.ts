@@ -76,6 +76,11 @@ export interface InternalApiRequest {
   publicKey: string,
 }
 
+export interface InternalRegistration {
+  ethereumAddress: string,
+  publicKey: string,
+}
+
 export interface StarkwareSignable {
   publicKey: string;
 }
