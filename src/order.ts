@@ -49,7 +49,7 @@ export default class Order extends Signable<StarkwareOrder> {
       assetIdSynthetic,
       assetIdCollateral,
       isBuyingSynthetic,
-    } = getStarkwareAmounts(order.market, order.side, order.size, order.price);
+    } = getStarkwareAmounts(order);
 
     // The fee is an amount, not a percentage, and is always denominated in the margin token.
     const amountFee = toQuantum(order.limitFee, MARGIN_TOKEN);

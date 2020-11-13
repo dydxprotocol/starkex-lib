@@ -6,6 +6,7 @@
  * why this is, but could have to do with how Jest handles module loading.
  */
 
+import Big from 'big.js';
 import _ from 'lodash';
 
 import {
@@ -80,6 +81,19 @@ describe('Orders', () => {
       const order: InternalOrder = signatureExample.order as InternalOrder;
       const privateKey: string = signatureExample.keyPairEvenY.privateKey;
       const expectedSignature: string = signatureExample.signatureEvenY;
+      const signature: string = Order.fromInternal(order).sign(privateKey);
+      expect(signature).toEqual(expectedSignature);
+    });
+
+    it('signs an order with quoteAmount instead of price', () => {
+      const originalOrder = signatureExample.order as InternalOrder;
+      const order: InternalOrder = {
+        ...originalOrder,
+        quoteAmount: new Big(originalOrder.size).times(originalOrder.price!).toFixed(),
+        price: undefined,
+      };
+      const privateKey: string = signatureExample.keyPair.privateKey;
+      const expectedSignature: string = signatureExample.signature;
       const signature: string = Order.fromInternal(order).sign(privateKey);
       expect(signature).toEqual(expectedSignature);
     });
