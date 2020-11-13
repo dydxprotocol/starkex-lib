@@ -49,17 +49,44 @@ export interface InternalWithdrawal {
   expiresAt: string;
 }
 
-export interface InternalOrder {
-  clientId: string,
+// The order must specify either quoteAmount or price.
+interface InternalOrderBase {
   starkKey: string,
   positionId: string,
   size: string,
-  price: string,
   limitFee: string,
   market: PerpetualMarket,
   side: OrderSide,
   expiresAt: string,
 }
+interface WithPrice {
+  price: string,
+  quoteAmount?: undefined,
+}
+interface WithQuoteAmount {
+  price?: undefined,
+  quoteAmount: string,
+}
+interface WithClientId {
+  clientId: string,
+  nonce?: undefined,
+}
+interface WithNonce {
+  clientId?: undefined,
+  nonce: string,
+}
+export type InternalOrderWithPriceAndClientId = InternalOrderBase & WithPrice & WithClientId;
+export type InternalOrderWithQuoteAmountAndClientId = (
+  InternalOrderBase & WithQuoteAmount & WithClientId
+);
+export type InternalOrderWithPriceAndNonce = InternalOrderBase & WithPrice & WithNonce;
+export type InternalOrderWithQuoteAmountAndNonce = InternalOrderBase & WithQuoteAmount & WithNonce;
+export type InternalOrder = (
+  InternalOrderWithPriceAndClientId |
+  InternalOrderWithQuoteAmountAndClientId |
+  InternalOrderWithPriceAndNonce |
+  InternalOrderWithQuoteAmountAndNonce
+);
 
 export enum ApiMethod {
   POST = 'POST',
@@ -92,15 +119,18 @@ export interface StarkwareWithdrawal extends StarkwareSignable {
   expirationTimestamp: string; // For signature.
 }
 
-export interface StarkwareOrder extends StarkwareSignable {
-  orderType: OrderType;
+export interface StarkwareAmounts {
   amountSynthetic: string;
   amountCollateral: string;
-  amountFee: string;
   assetIdSynthetic: Asset;
   assetIdCollateral: Asset;
-  positionId: string;
   isBuyingSynthetic: boolean;
+}
+
+export interface StarkwareOrder extends StarkwareAmounts, StarkwareSignable {
+  orderType: OrderType;
+  amountFee: string;
+  positionId: string;
   nonce: string; // For signature.
   expirationTimestamp: string; // For signature.
 }

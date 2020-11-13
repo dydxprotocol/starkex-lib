@@ -15,13 +15,14 @@ import {
   TOKEN_QUANTUM,
 } from './constants';
 import {
+  Asset,
   EcKeyPair,
   EcPublicKey,
+  InternalOrder,
   KeyPair,
   OrderSide,
-  PerpetualMarket,
   SignatureStruct,
-  Asset,
+  StarkwareAmounts,
 } from './types';
 import {
   bnToHex,
@@ -140,28 +141,31 @@ export function fromQuantum(quantum: string, tokenId: Asset): string {
 
 /**
  * Get Starkware order fields, given paramters from an order and/or fill.
+ *
+ * Must provide either quoteAmount or price.
  */
 export function getStarkwareAmounts(
-  market: PerpetualMarket,
-  side: OrderSide,
-  size: string,
-  price: string,
-): {
-  amountSynthetic: string;
-  amountCollateral: string;
-  assetIdSynthetic: Asset;
-  assetIdCollateral: Asset;
-  isBuyingSynthetic: boolean;
-} {
+  params: Pick<InternalOrder, 'market' | 'side' | 'size' | 'quoteAmount' | 'price'>,
+): StarkwareAmounts {
+  const {
+    market, side, size, quoteAmount, price,
+  } = params;
+
+  // Determine side and assets.
   const isBuyingSynthetic = side === OrderSide.BUY;
   const assetIdSynthetic = BASE_TOKEN[market];
   if (!assetIdSynthetic) {
     throw new Error(`Unknown market ${market}`);
   }
   const assetIdCollateral = MARGIN_TOKEN;
-  const cost = new Big(size).times(price).toFixed();
+
+  // Determine amounts.
+  const cost = typeof quoteAmount === 'string'
+    ? quoteAmount
+    : new Big(size).times(price!).toFixed(); // Safe non-null assertion based on InternalOrder type.
   const amountSynthetic = toQuantum(size, assetIdSynthetic);
   const amountCollateral = toQuantum(cost, assetIdCollateral);
+
   return {
     amountSynthetic,
     amountCollateral,
