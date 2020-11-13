@@ -51,7 +51,6 @@ export interface InternalWithdrawal {
 
 // The order must specify either quoteAmount or price.
 interface InternalOrderBase {
-  clientId: string,
   starkKey: string,
   positionId: string,
   size: string,
@@ -60,15 +59,34 @@ interface InternalOrderBase {
   side: OrderSide,
   expiresAt: string,
 }
-export interface InternalOrderWithPrice extends InternalOrderBase {
-  quoteAmount?: undefined,
+interface WithPrice {
   price: string,
+  quoteAmount?: undefined,
 }
-export interface InternalOrderWithQuoteAmount extends InternalOrderBase {
-  quoteAmount: string,
+interface WithQuoteAmount {
   price?: undefined,
+  quoteAmount: string,
 }
-export type InternalOrder = InternalOrderWithPrice | InternalOrderWithQuoteAmount;
+interface WithClientId {
+  clientId: string,
+  nonce?: undefined,
+}
+interface WithNonce {
+  clientId?: undefined,
+  nonce: string,
+}
+export type InternalOrderWithPriceAndClientId = InternalOrderBase & WithPrice & WithClientId;
+export type InternalOrderWithQuoteAmountAndClientId = (
+  InternalOrderBase & WithQuoteAmount & WithClientId
+);
+export type InternalOrderWithPriceAndNonce = InternalOrderBase & WithPrice & WithNonce;
+export type InternalOrderWithQuoteAmountAndNonce = InternalOrderBase & WithQuoteAmount & WithNonce;
+export type InternalOrder = (
+  InternalOrderWithPriceAndClientId |
+  InternalOrderWithQuoteAmountAndClientId |
+  InternalOrderWithPriceAndNonce |
+  InternalOrderWithQuoteAmountAndNonce
+);
 
 export enum ApiMethod {
   POST = 'POST',

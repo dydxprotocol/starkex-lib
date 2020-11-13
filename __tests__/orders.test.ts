@@ -11,12 +11,14 @@ import _ from 'lodash';
 
 import {
   InternalOrder,
+  InternalOrderWithPriceAndClientId,
   KeyPair,
   OrderSide,
   PerpetualMarket,
   StarkwareOrder,
 } from '../src/types';
 import { generateKeyPair } from '../src/keys';
+import { nonceFromClientId } from '../src/helpers';
 import { normalizeHex } from '../src/util';
 
 // Module under test.
@@ -98,9 +100,22 @@ describe('Orders', () => {
       expect(signature).toEqual(expectedSignature);
     });
 
+    it('signs an order with nonce instead of clientId', () => {
+      const originalOrder = signatureExample.order as InternalOrder;
+      const order: InternalOrder = {
+        ...originalOrder,
+        nonce: nonceFromClientId(originalOrder.clientId!),
+        clientId: undefined,
+      };
+      const privateKey: string = signatureExample.keyPair.privateKey;
+      const expectedSignature: string = signatureExample.signature;
+      const signature: string = Order.fromInternal(order).sign(privateKey);
+      expect(signature).toEqual(expectedSignature);
+    });
+
     it('generates a different signature when the client ID is different', () => {
       const privateKey: string = signatureExample.keyPair.privateKey;
-      const order: InternalOrder = signatureExample.order as InternalOrder;
+      const order = signatureExample.order as InternalOrderWithPriceAndClientId;
       const newOrder = {
         ...order,
         clientId: `${order.clientId}!`,

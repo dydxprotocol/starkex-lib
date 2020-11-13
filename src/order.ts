@@ -35,8 +35,10 @@ export default class Order extends Signable<StarkwareOrder> {
     // Within the Starkware system, there is only one order type.
     const orderType = OrderType.LIMIT;
 
-    // Make the nonce by hashing the client-provided ID. Does not need to be a secure hash.
-    const nonce = nonceFromClientId(order.clientId);
+    // Nonce may be created by hashing the client-provided ID. Does not need to be a secure hash.
+    const nonce = typeof order.nonce === 'string'
+      ? order.nonce
+      : nonceFromClientId(order.clientId!); // Safe non-null assertion based on InternalOrder type.
 
     // This is the public key x-coordinate as a hex string, without 0x prefix.
     const publicKey = order.starkKey;
