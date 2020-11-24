@@ -96,11 +96,11 @@ export enum ApiMethod {
 }
 
 export interface InternalApiRequest {
-  method: ApiMethod,
-  expiresAt: string,
-  body: string,
-  requestPath: string,
   publicKey: string,
+  timestamp: string,
+  method: ApiMethod,
+  requestPath: string,
+  body: string,
 }
 
 export interface InternalRegistration {
