@@ -8,10 +8,10 @@ import signatureExample from './data/signature_example.json';
 import ApiRequest from '../src/api-request';
 
 const internalApiRequest: Partial<InternalApiRequest> = {
+  timestamp: '2020-10-19T20:31:20.000Z',
   method: ApiMethod.GET,
-  expiresAt: '2020-10-19T20:31:20.000Z',
-  body: '',
   requestPath: 'v3/users',
+  body: '',
 };
 
 describe('ApiRequests', () => {

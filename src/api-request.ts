@@ -6,7 +6,7 @@ import {
 } from './types';
 
 /**
- * Wrapper object to convert, hash, sign, or verify the signature of an api-key.
+ * Wrapper object to hash, sign, or verify an API request.
  */
 export default class ApiRequest extends Signable<InternalApiRequest> {
 
@@ -19,7 +19,7 @@ export default class ApiRequest extends Signable<InternalApiRequest> {
   protected calculateHash(): string {
     const apiRequest = this.starkwareObject;
 
-    const message = apiRequest.expiresAt +
+    const message = apiRequest.timestamp +
       apiRequest.method +
       apiRequest.requestPath +
       apiRequest.body;
