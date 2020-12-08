@@ -1,33 +1,25 @@
-import * as elliptic from 'elliptic';
-import starkwareTypes from 'starkware-types';
-
-export enum OrderType {
-  LIMIT = 'LIMIT_ORDER_WITH_FEES',
+export enum StarkwareOrderType {
+  LIMIT_ORDER_WITH_FEES = 'LIMIT_ORDER_WITH_FEES',
 }
 
-// TODO: De-dup with the definition in stacks.
-export enum PerpetualMarket {
+export enum StarkwareOrderSide {
+  BUY = 'BUY',
+  SELL = 'SELL',
+}
+
+// TODO: De-dup with other definitions.
+export enum DydxMarket {
   BTC_USD = 'BTC-USD',
   ETH_USD = 'ETH-USD',
   LINK_USD = 'LINK-USD',
 }
 
-export enum Asset {
+export enum DydxAsset {
+  USDC = 'USDC',
   BTC = 'BTC',
   ETH = 'ETH',
   LINK = 'LINK',
-  USDC = 'USDC',
-  USDT = 'USDT',
 }
-
-export enum OrderSide {
-  BUY = 'BUY',
-  SELL = 'SELL',
-}
-
-export type EcKeyPair = elliptic.ec.KeyPair;
-export type EcPublicKey = elliptic.curve.base.BasePoint;
-export type EcSignature = elliptic.ec.Signature;
 
 // Key pair, represented as hex strings, no 0x prefix.
 export interface KeyPair {
@@ -41,52 +33,75 @@ export interface SignatureStruct {
   s: string;
 }
 
-export interface InternalWithdrawal {
-  clientId: string;
-  starkKey: string;
-  positionId: string;
-  debitAmount: string;
-  expiresAt: string;
-}
+// ============ Withdrawal Parameters ============
 
-// The order must specify either quoteAmount or price.
-interface InternalOrderBase {
-  starkKey: string,
-  positionId: string,
-  size: string,
-  limitFee: string,
-  market: PerpetualMarket,
-  side: OrderSide,
-  expiresAt: string,
-}
-interface WithPrice {
-  price: string,
-  quoteAmount?: undefined,
-}
-interface WithQuoteAmount {
-  price?: undefined,
-  quoteAmount: string,
+interface WithdrawalParamsBase {
+  positionId: string;
+  humanAmount: string;
+  expiresAt: string; // ISO timestamp.
 }
 interface WithClientId {
-  clientId: string,
-  nonce?: undefined,
+  clientId: string;
+  nonce?: undefined;
 }
 interface WithNonce {
-  clientId?: undefined,
-  nonce: string,
+  clientId?: undefined;
+  nonce: string;
 }
-export type InternalOrderWithPriceAndClientId = InternalOrderBase & WithPrice & WithClientId;
-export type InternalOrderWithQuoteAmountAndClientId = (
-  InternalOrderBase & WithQuoteAmount & WithClientId
-);
-export type InternalOrderWithPriceAndNonce = InternalOrderBase & WithPrice & WithNonce;
-export type InternalOrderWithQuoteAmountAndNonce = InternalOrderBase & WithQuoteAmount & WithNonce;
-export type InternalOrder = (
-  InternalOrderWithPriceAndClientId |
-  InternalOrderWithQuoteAmountAndClientId |
-  InternalOrderWithPriceAndNonce |
-  InternalOrderWithQuoteAmountAndNonce
-);
+export type WithdrawalWithClientId = WithdrawalParamsBase & WithClientId;
+export type WithdrawalWithNonce = WithdrawalParamsBase & WithNonce;
+
+export interface StarkwareWithdrawal {
+  positionId: string;
+  quantumsAmount: string;
+  nonce: string; // For signature. A base-10 integer.
+  expirationTimestamp: string; // For signature. Unix timestamp in seconds.
+}
+
+// ============ Order Parameters ============
+
+// The order must specify either quoteAmount or price.
+interface OrderParamsBase {
+  positionId: string;
+  humanSize: string;
+  humanLimitFee: string;
+  market: DydxMarket;
+  side: StarkwareOrderSide;
+  expiresAt: string; // ISO timestamp.
+}
+export interface WithPrice {
+  humanPrice: string;
+  humanQuoteAmount?: undefined;
+}
+export interface WithQuoteAmount {
+  humanPrice?: undefined;
+  humanQuoteAmount: string;
+}
+export type OrderWithClientId = OrderParamsBase & WithPrice & WithClientId;
+export type OrderWithNonce = OrderParamsBase & WithPrice & WithNonce;
+
+// FOR INTERNAL USE. Not recommended for external users.
+export type OrderWithClientIdAndQuoteAmount = OrderParamsBase & WithQuoteAmount & WithClientId;
+export type OrderWithNonceAndQuoteAmount = OrderParamsBase & WithQuoteAmount & WithNonce;
+
+export interface StarkwareAmounts {
+  quantumsAmountSynthetic: string;
+  quantumsAmountCollateral: string;
+  assetIdSynthetic: string;
+  assetIdCollateral: string;
+  isBuyingSynthetic: boolean;
+}
+
+export interface StarkwareOrder extends StarkwareAmounts {
+  orderType: StarkwareOrderType;
+  quantumsAmountFee: string;
+  assetIdFee: string;
+  positionId: string;
+  nonce: string; // For signature. A base-10 integer.
+  expirationTimestamp: string; // For signature. Unix timestamp in seconds.
+}
+
+// ============ API Request Parameters ============
 
 export enum ApiMethod {
   POST = 'POST',
@@ -95,53 +110,32 @@ export enum ApiMethod {
   DELETE = 'DELETE',
 }
 
-export interface InternalApiRequest {
-  publicKey: string,
-  timestamp: string,
-  method: ApiMethod,
-  requestPath: string,
-  body: string,
+export interface ApiRequestParams {
+  timestamp: string; // ISO timestamp.
+  method: ApiMethod;
+  requestPath: string;
+  body: string;
 }
 
-export interface InternalRegistration {
-  ethereumAddress: string,
-  publicKey: string,
+// ============ Regsistration Parameters ============
+
+export interface RegistrationParams {
+  ethereumAddress: string;
+  starkKey: string;
 }
 
-export interface StarkwareSignable {
-  publicKey: string;
+// ============ Oracle Price Parameters ============
+
+export interface OraclePriceWithAssetName {
+  assetName: string;
+  oracleName: string;
+  price: string;
+  timestamp: string; // Unix timestamp in seconds.
 }
 
-export interface StarkwareWithdrawal extends StarkwareSignable {
-  positionId: string;
-  amount: string;
-  nonce: string; // For signature.
-  expirationTimestamp: string; // For signature.
+export interface OraclePriceWithAssetId {
+  // Note: This ID is specific to oracle signing and differs from the normal Starkware asset ID.
+  signedAssetId: string;
+  price: string;
+  timestamp: string; // Unix timestamp in seconds.
 }
-
-export interface StarkwareAmounts {
-  amountSynthetic: string;
-  amountCollateral: string;
-  assetIdSynthetic: Asset;
-  assetIdCollateral: Asset;
-  isBuyingSynthetic: boolean;
-}
-
-export interface StarkwareOrder extends StarkwareAmounts, StarkwareSignable {
-  orderType: OrderType;
-  amountFee: string;
-  positionId: string;
-  nonce: string; // For signature.
-  expirationTimestamp: string; // For signature.
-}
-
-// Improve on the starkware-types token types.
-export interface EthToken extends starkwareTypes.Token {
-  type: 'ETH',
-  data: starkwareTypes.ETHTokenData,
-}
-export interface Erc20Token extends starkwareTypes.Token {
-  type: 'ERC20',
-  data: starkwareTypes.ERC20TokenData,
-}
-export type TokenStruct = EthToken | Erc20Token;

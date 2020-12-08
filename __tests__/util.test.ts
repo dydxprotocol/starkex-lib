@@ -4,27 +4,27 @@
 
 // Module under test.
 import {
-  normalizeHex,
-} from '../src/util';
+  normalizeHex32,
+} from '../src/lib/util';
 
-const HEX_64_RE_LOWER_NO_PREFIX = /^[0-9a-f]{64}$/;
+const HEX_32_BYTES_LOWER_NO_PREFIX_RE = /^[0-9a-f]{64}$/;
 
 describe('util', () => {
 
-  describe('normalizeHex()', () => {
+  describe('normalizeHex32()', () => {
 
-    it('returns a hex string without 0x prefix', () => {
-      expect(normalizeHex('0x00').match(HEX_64_RE_LOWER_NO_PREFIX)).not.toBeFalsy();
+    it('returns a 64-character hex string without 0x prefix', () => {
+      expect(normalizeHex32('0x00').match(HEX_32_BYTES_LOWER_NO_PREFIX_RE)).not.toBeFalsy();
     });
 
     it('pads a string to 32 bytes', () => {
-      expect(normalizeHex('00')).toEqual(`${'0'.repeat(64)}`);
+      expect(normalizeHex32('00')).toEqual(`${'0'.repeat(64)}`);
     });
 
     it('throws if the hex string is longer than 32 bytes', () => {
       expect(
-        () => normalizeHex(`0x${'0'.repeat(65)}`),
-      ).toThrow('Hex string is longer than 32 bytes');
+        () => normalizeHex32(`0x${'0'.repeat(65)}`),
+      ).toThrow('Input does not fit in 32 bytes');
     });
   });
 });

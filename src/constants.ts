@@ -1,99 +1,49 @@
-import Big from 'big.js';
-import BN from 'bn.js';
-import _ from 'lodash';
-
 import {
-  Asset,
-  PerpetualMarket,
-  StarkwareOrder,
-  StarkwareWithdrawal,
-  TokenStruct,
+  DydxAsset,
+  DydxMarket,
 } from './types';
 
-export const HEX_RE = /^0x[0-9a-fA-F]$/;
+export const COLLATERAL_ASSET = DydxAsset.USDC;
 
-// As derived in starkware-crypto with layer='starkex' and application='starkexdvf'.
-export const STARK_DERIVATION_PATH = 'm/2645\'/579218131\'/1393043894\'/0\'/0\'/0';
+export const ASSET_ID_MAP: Record<DydxAsset, string> = {
+  [DydxAsset.USDC]: '0x24d6ea88d53b68601dcf03b3f204cbe829d3689194f823bd6a7f74292c22334',
+  [DydxAsset.BTC]: '0x0',
+  [DydxAsset.ETH]: '0x1',
+  [DydxAsset.LINK]: '0x2',
+};
+export const COLLATERAL_ASSET_ID = ASSET_ID_MAP[COLLATERAL_ASSET];
 
-export const BASE_TOKEN: Record<PerpetualMarket, Asset> = {
-  [PerpetualMarket.BTC_USD]: Asset.BTC,
-  [PerpetualMarket.ETH_USD]: Asset.ETH,
-  [PerpetualMarket.LINK_USD]: Asset.LINK,
+export const SYNTHETIC_ASSET_MAP: Record<DydxMarket, DydxAsset> = {
+  [DydxMarket.BTC_USD]: DydxAsset.BTC,
+  [DydxMarket.ETH_USD]: DydxAsset.ETH,
+  [DydxMarket.LINK_USD]: DydxAsset.LINK,
 };
 
-export const ORDER_FIELD_BIT_LENGTHS: { [K in keyof StarkwareOrder]: number } = {
-  orderType: 1,
-  nonce: 16,
-  publicKey: 63,
-  amountSynthetic: 42,
-  amountCollateral: 42,
-  amountFee: 38,
-  assetIdSynthetic: 0,
-  assetIdCollateral: 0,
-  positionId: 32,
-  isBuyingSynthetic: 1,
-  expirationTimestamp: 22,
+// Asset signed by oracle price signers.
+export const SIGNED_ASSET_ID_MAP: Record<DydxMarket, string> = {
+  [DydxMarket.BTC_USD]: '0x425443555344000000000000000000004d616b6572',
+  [DydxMarket.ETH_USD]: '0x455448555344000000000000000000004d616b6572',
+  [DydxMarket.LINK_USD]: '0xf2',
 };
 
-export const ORDER_MAX_VALUES: { [K in keyof StarkwareOrder]: BN } = _.mapValues(
-  ORDER_FIELD_BIT_LENGTHS,
-  (numBits: number) => {
-    return new BN(2).pow(new BN(numBits));
-  },
-);
-
-export const WITHDRAWAL_FIELD_BIT_LENGTHS: { [K in keyof StarkwareWithdrawal]: number } = {
-  nonce: 16,
-  publicKey: 63,
-  amount: 42,
-  positionId: 32,
-  expirationTimestamp: 22,
+/**
+ * The value of one quantum of the asset in the Starkware system, represented in token base units.
+ */
+export const ASSET_QUANTIZATION: Record<DydxAsset, number> = {
+  [DydxAsset.USDC]: 0x10000000000,
+  [DydxAsset.BTC]: 0x2540be400,
+  [DydxAsset.ETH]: 0x5f5e100,
+  [DydxAsset.LINK]: 0x989680,
 };
 
-export const WITHDRAWAL_MAX_VALUES: { [K in keyof StarkwareWithdrawal]: BN } = _.mapValues(
-  WITHDRAWAL_FIELD_BIT_LENGTHS,
-  (numBits: number) => {
-    return new BN(2).pow(new BN(numBits));
-  },
-);
-
-export const MARGIN_TOKEN = Asset.USDC;
-
-// TODO: Update.
-export const TOKEN_QUANTUM: Record<Asset, Big> = {
-  [Asset.ETH]: new Big('1e-8'),
-  [Asset.BTC]: new Big('1e-10'),
-  [Asset.LINK]: new Big('1e-7'),
-  [Asset.USDC]: new Big('1e-6'),
-  [Asset.USDT]: new Big('1e-6'),
-};
-
-// TODO: Use the starkware-types structure for tokens for now.
-// Need to get rid of this or adapt later.
-export const TOKEN_STRUCTS: Record<Asset, TokenStruct> = {
-  [Asset.ETH]: { type: 'ETH', data: { quantum: '1' } },
-  [Asset.BTC]: {
-    type: 'ERC20',
-    data: {
-      quantum: '1', tokenAddress: '0x0000000000000000000000000000000000000000',
-    },
-  },
-  [Asset.LINK]: {
-    type: 'ERC20',
-    data: {
-      quantum: '1', tokenAddress: '0x0000000000000000000000000000000000000000',
-    },
-  },
-  [Asset.USDC]: {
-    type: 'ERC20',
-    data: {
-      quantum: '1', tokenAddress: '0x0000000000000000000000000000000000000000',
-    },
-  },
-  [Asset.USDT]: {
-    type: 'ERC20',
-    data: {
-      quantum: '1', tokenAddress: '0x0000000000000000000000000000000000000000',
-    },
-  },
+/**
+ * Decimals used by the token in its native representation, determining the size of its base unit.
+ *
+ * This can be used to convert between “human-readable” units (1 ETH, 1 BTC...) and base units.
+ */
+export const ASSET_TOKEN_DECIMALS: Record<DydxAsset, number> = {
+  [DydxAsset.USDC]: 14, // TODO: Update after Starkware changes the quantization on their end.
+  [DydxAsset.BTC]: 8,
+  [DydxAsset.ETH]: 18,
+  [DydxAsset.LINK]: 18,
 };
