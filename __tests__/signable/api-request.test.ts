@@ -12,7 +12,7 @@ import { generateKeyPair } from '../../src/keys';
 import { SignableApiRequest } from '../../src/signable/api-request';
 
 const mockApiRequest: ApiRequestParams = {
-  timestamp: '2020-10-19T20:31:20.000Z',
+  isoTimestamp: '2020-10-19T20:31:20.000Z',
   method: ApiMethod.GET,
   requestPath: 'v3/users',
   body: '',

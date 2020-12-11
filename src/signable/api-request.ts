@@ -19,7 +19,7 @@ export class SignableApiRequest extends Signable<ApiRequestParams> {
 
   protected calculateHash(): BN {
     const messageString = (
-      this.message.timestamp +
+      this.message.isoTimestamp +
       this.message.method +
       this.message.requestPath +
       this.message.body

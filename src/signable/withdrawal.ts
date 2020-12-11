@@ -4,8 +4,11 @@ import {
   COLLATERAL_ASSET,
   COLLATERAL_ASSET_ID,
 } from '../constants';
-import { humanAmountToQuantums } from '../helpers/assets';
-import { nonceFromClientId } from '../helpers/nonce';
+import {
+  humanAmountToQuantums,
+  isoTimestampToEpochSeconds,
+  nonceFromClientId,
+} from '../helpers';
 import { pedersen } from '../lib/starkex-resources';
 import { decToBn, hexToBn } from '../lib/util';
 import {
@@ -49,13 +52,13 @@ export class SignableWithdrawal extends Signable<StarkwareWithdrawal> {
     const quantumsAmount = humanAmountToQuantums(withdrawal.humanAmount, COLLATERAL_ASSET);
 
     // Convert to a Unix timestamp (in seconds).
-    const expirationTimestamp = `${Math.floor(new Date(withdrawal.expiresAt).getTime() / 1000)}`;
+    const expirationEpochSeconds = isoTimestampToEpochSeconds(withdrawal.expirationIsoTimestamp);
 
     return new SignableWithdrawal({
       positionId,
       nonce,
       quantumsAmount,
-      expirationTimestamp,
+      expirationEpochSeconds,
     });
   }
 
@@ -63,7 +66,7 @@ export class SignableWithdrawal extends Signable<StarkwareWithdrawal> {
     const positionIdBn = decToBn(this.message.positionId);
     const nonceBn = decToBn(this.message.nonce);
     const quantumsAmountBn = decToBn(this.message.quantumsAmount);
-    const expirationTimestampBn = decToBn(this.message.expirationTimestamp);
+    const expirationEpochSecondsBn = decToBn(this.message.expirationEpochSeconds);
 
     if (positionIdBn.bitLength() > WITHDRAWAL_FIELD_BIT_LENGTHS.positionId) {
       throw new Error('SignableOraclePrice: price exceeds max value');
@@ -74,7 +77,9 @@ export class SignableWithdrawal extends Signable<StarkwareWithdrawal> {
     if (quantumsAmountBn.bitLength() > WITHDRAWAL_FIELD_BIT_LENGTHS.quantumsAmount) {
       throw new Error('SignableOraclePrice: price exceeds max value');
     }
-    if (expirationTimestampBn.bitLength() > WITHDRAWAL_FIELD_BIT_LENGTHS.expirationTimestamp) {
+    if (
+      expirationEpochSecondsBn.bitLength() > WITHDRAWAL_FIELD_BIT_LENGTHS.expirationEpochSeconds
+    ) {
       throw new Error('SignableOraclePrice: price exceeds max value');
     }
 
@@ -82,7 +87,7 @@ export class SignableWithdrawal extends Signable<StarkwareWithdrawal> {
       .iushln(WITHDRAWAL_FIELD_BIT_LENGTHS.positionId).iadd(positionIdBn)
       .iushln(WITHDRAWAL_FIELD_BIT_LENGTHS.nonce).iadd(nonceBn)
       .iushln(WITHDRAWAL_FIELD_BIT_LENGTHS.quantumsAmount).iadd(quantumsAmountBn)
-      .iushln(WITHDRAWAL_FIELD_BIT_LENGTHS.expirationTimestamp).iadd(expirationTimestampBn)
+      .iushln(WITHDRAWAL_FIELD_BIT_LENGTHS.expirationEpochSeconds).iadd(expirationEpochSecondsBn)
       .iushln(WITHDRAWAL_PADDING_BITS);
 
     return pedersen(COLLATERAL_ASSET_ID_BN, packedWithdrawalBn);

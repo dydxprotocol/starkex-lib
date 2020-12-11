@@ -1,7 +1,13 @@
 import { keccak256 } from 'ethereum-cryptography/keccak';
 
-import { asEcKeyPair, asSimpleKeyPair } from './helpers/crypto';
-import { hexToBn, randomBuffer } from './lib/util';
+import {
+  asEcKeyPair,
+  asSimpleKeyPair,
+} from './helpers';
+import {
+  hexToBn,
+  randomBuffer,
+} from './lib/util';
 import { KeyPair } from './types';
 
 /**

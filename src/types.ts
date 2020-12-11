@@ -38,7 +38,7 @@ export interface SignatureStruct {
 interface WithdrawalParamsBase {
   positionId: string;
   humanAmount: string;
-  expiresAt: string; // ISO timestamp.
+  expirationIsoTimestamp: string;
 }
 interface WithClientId {
   clientId: string;
@@ -55,7 +55,7 @@ export interface StarkwareWithdrawal {
   positionId: string;
   quantumsAmount: string;
   nonce: string; // For signature. A base-10 integer.
-  expirationTimestamp: string; // For signature. Unix timestamp in seconds.
+  expirationEpochSeconds: string;
 }
 
 // ============ Order Parameters ============
@@ -67,7 +67,7 @@ interface OrderParamsBase {
   humanLimitFee: string;
   market: DydxMarket;
   side: StarkwareOrderSide;
-  expiresAt: string; // ISO timestamp.
+  expirationIsoTimestamp: string;
 }
 export interface WithPrice {
   humanPrice: string;
@@ -98,7 +98,7 @@ export interface StarkwareOrder extends StarkwareAmounts {
   assetIdFee: string;
   positionId: string;
   nonce: string; // For signature. A base-10 integer.
-  expirationTimestamp: string; // For signature. Unix timestamp in seconds.
+  expirationEpochSeconds: string;
 }
 
 // ============ API Request Parameters ============
@@ -111,7 +111,7 @@ export enum ApiMethod {
 }
 
 export interface ApiRequestParams {
-  timestamp: string; // ISO timestamp.
+  isoTimestamp: string;
   method: ApiMethod;
   requestPath: string;
   body: string;
@@ -130,12 +130,12 @@ export interface OraclePriceWithAssetName {
   assetName: string;
   oracleName: string;
   price: string;
-  timestamp: string; // Unix timestamp in seconds.
+  isoTimestamp: string;
 }
 
 export interface OraclePriceWithAssetId {
   // Note: This ID is specific to oracle signing and differs from the normal Starkware asset ID.
   signedAssetId: string;
   price: string;
-  timestamp: string; // Unix timestamp in seconds.
+  isoTimestamp: string;
 }

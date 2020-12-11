@@ -7,8 +7,9 @@ import {
 import {
   getStarkwareAmounts,
   humanAmountToQuantums,
-} from '../helpers/assets';
-import { nonceFromClientId } from '../helpers/nonce';
+  isoTimestampToEpochSeconds,
+  nonceFromClientId,
+} from '../helpers';
 import { pedersen } from '../lib/starkex-resources';
 import { decToBn, hexToBn } from '../lib/util';
 import {
@@ -70,7 +71,7 @@ export class SignableOrder extends Signable<StarkwareOrder> {
     const assetIdFee = ASSET_ID_MAP[COLLATERAL_ASSET];
 
     // Convert to a Unix timestamp (in seconds).
-    const expirationTimestamp = `${Math.floor(new Date(order.expiresAt).getTime() / 1000)}`;
+    const expirationEpochSeconds = isoTimestampToEpochSeconds(order.expirationIsoTimestamp);
 
     return new SignableOrder({
       orderType,
@@ -83,7 +84,7 @@ export class SignableOrder extends Signable<StarkwareOrder> {
       assetIdFee,
       positionId,
       isBuyingSynthetic,
-      expirationTimestamp,
+      expirationEpochSeconds,
     });
   }
 
@@ -96,7 +97,7 @@ export class SignableOrder extends Signable<StarkwareOrder> {
     const quantumsAmountFeeBn = decToBn(this.message.quantumsAmountFee);
     const nonceBn = decToBn(this.message.nonce);
     const positionIdBn = decToBn(this.message.positionId);
-    const expirationTimestampBn = decToBn(this.message.expirationTimestamp);
+    const expirationEpochSecondsBn = decToBn(this.message.expirationEpochSeconds);
 
     const [assetIdSellBn, assetIdBuyBn] = this.message.isBuyingSynthetic
       ? [assetIdCollateralBn, assetIdSyntheticBn]
@@ -129,8 +130,8 @@ export class SignableOrder extends Signable<StarkwareOrder> {
     if (positionIdBn.bitLength() > ORDER_FIELD_BIT_LENGTHS.positionId) {
       throw new Error('SignableOrder: positionId exceeds max value');
     }
-    if (expirationTimestampBn.bitLength() > ORDER_FIELD_BIT_LENGTHS.expirationTimestamp) {
-      throw new Error('SignableOrder: expirationTimestamp exceeds max value');
+    if (expirationEpochSecondsBn.bitLength() > ORDER_FIELD_BIT_LENGTHS.expirationEpochSeconds) {
+      throw new Error('SignableOrder: expirationEpochSeconds exceeds max value');
     }
 
     const orderPart1 = new BN(quantumsAmountSellBn)
@@ -142,7 +143,7 @@ export class SignableOrder extends Signable<StarkwareOrder> {
       .iushln(ORDER_FIELD_BIT_LENGTHS.positionId).iadd(positionIdBn) // Repeat (1/3).
       .iushln(ORDER_FIELD_BIT_LENGTHS.positionId).iadd(positionIdBn) // Repeat (2/3).
       .iushln(ORDER_FIELD_BIT_LENGTHS.positionId).iadd(positionIdBn) // Repeat (3/3).
-      .iushln(ORDER_FIELD_BIT_LENGTHS.expirationTimestamp).iadd(expirationTimestampBn)
+      .iushln(ORDER_FIELD_BIT_LENGTHS.expirationEpochSeconds).iadd(expirationEpochSecondsBn)
       .iushln(ORDER_PADDING_BITS);
 
     const assetsBn = pedersen(pedersen(assetIdSellBn, assetIdBuyBn), assetIdFeeBn);

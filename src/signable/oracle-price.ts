@@ -1,5 +1,6 @@
 import BN from 'bn.js';
 
+import { isoTimestampToEpochSeconds } from '../helpers';
 import { pedersen } from '../lib/starkex-resources/crypto';
 import { decToBn, hexToBn, utf8ToBn } from '../lib/util';
 import {
@@ -29,7 +30,7 @@ export class SignableOraclePrice extends Signable<OraclePriceWithAssetId> {
     return new SignableOraclePrice({
       signedAssetId: signedAssetId.toString(16),
       price: params.price,
-      timestamp: params.timestamp,
+      isoTimestamp: params.isoTimestamp,
     });
   }
 
@@ -41,19 +42,21 @@ export class SignableOraclePrice extends Signable<OraclePriceWithAssetId> {
 
   protected calculateHash(): BN {
     const priceBn = decToBn(this.message.price);
-    const timestampBn = decToBn(this.message.timestamp);
+    const timestampEpochSecondsBn = decToBn(isoTimestampToEpochSeconds(this.message.isoTimestamp));
     const signedAssetId = hexToBn(this.message.signedAssetId);
 
     if (priceBn.bitLength() > ORACLE_PRICE_FIELD_BIT_LENGTHS.price) {
       throw new Error('SignableOraclePrice: price exceeds max value');
     }
-    if (timestampBn.bitLength() > ORACLE_PRICE_FIELD_BIT_LENGTHS.timestamp) {
-      throw new Error('SignableOraclePrice: timestamp exceeds max value');
+    if (
+      timestampEpochSecondsBn.bitLength() > ORACLE_PRICE_FIELD_BIT_LENGTHS.timestampEpochSeconds
+    ) {
+      throw new Error('SignableOraclePrice: timestampEpochSeconds exceeds max value');
     }
 
     const priceAndTimestamp = priceBn
-      .iushln(ORACLE_PRICE_FIELD_BIT_LENGTHS.timestamp)
-      .iadd(timestampBn);
+      .iushln(ORACLE_PRICE_FIELD_BIT_LENGTHS.timestampEpochSeconds)
+      .iadd(timestampEpochSecondsBn);
 
     return pedersen(signedAssetId, priceAndTimestamp);
   }

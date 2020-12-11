@@ -12,7 +12,7 @@ import {
   asSimpleKeyPair,
   deserializeSignature,
   serializeSignature,
-} from '../src/helpers/crypto';
+} from '../src/helpers';
 
 // Mock params.
 const mockKeyPair: KeyPair = {

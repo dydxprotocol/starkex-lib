@@ -5,7 +5,7 @@ import {
   asEcKeyPairPublic,
   deserializeSignature,
   serializeSignature,
-} from '../helpers/crypto';
+} from '../helpers';
 import {
   sign,
   verify,

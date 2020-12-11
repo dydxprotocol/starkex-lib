@@ -21,7 +21,7 @@ const mockKeyPair: KeyPair = {
 const mockOraclePrice: OraclePriceWithAssetName = {
   assetName: 'BTCUSD',
   oracleName: 'Maker',
-  timestamp: Math.floor(new Date('2020-01-01T00:00:00.000Z').getTime() / 1000).toString(),
+  isoTimestamp: '2020-01-01T00:00:00.000Z',
   price: '11512340000000000000000',
 };
 const mockSignedAssetId = '425443555344000000000000000000004d616b6572';
@@ -96,7 +96,7 @@ describe('SignableOraclePrice', () => {
     it('generates a different signature when the timestamp is different', () => {
       const oraclePrice = {
         ...mockOraclePrice,
-        timestamp: Math.floor(Date.now() / 1000).toString(),
+        timestamp: new Date().toISOString(),
       };
       const signature = SignableOraclePrice
         .fromPrice(oraclePrice)

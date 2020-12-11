@@ -14,7 +14,7 @@ import {
   OrderWithNonce,
 } from '../../src/types';
 import { generateKeyPair } from '../../src/keys';
-import { nonceFromClientId } from '../../src/helpers/nonce';
+import { nonceFromClientId } from '../../src/helpers';
 import { mutateHexStringAt } from './util';
 
 // Module under test.
@@ -35,7 +35,7 @@ const mockOrder: OrderWithClientId = {
   humanLimitFee: '0.03298534883328', // Quantum * 3
   market: DydxMarket.ETH_USD,
   side: StarkwareOrderSide.BUY,
-  expiresAt: '2020-09-17T04:15:55.028Z',
+  expirationIsoTimestamp: '2020-09-17T04:15:55.028Z',
   humanPrice: '350.00067',
   clientId: 'This is an ID that the client came up with to describe this order',
 };
