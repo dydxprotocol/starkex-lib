@@ -83,7 +83,7 @@ describe('SignableOraclePrice', () => {
     });
 
     it('generates a different signature when the asset ID is different', () => {
-      const oraclePrice = {
+      const oraclePrice: OraclePriceWithAssetId = {
         ...mockOraclePrice,
         signedAssetId: `${mockSignedAssetId}0`,
       };
@@ -94,25 +94,14 @@ describe('SignableOraclePrice', () => {
     });
 
     it('generates a different signature when the timestamp is different', () => {
-      const oraclePrice = {
+      const oraclePrice: OraclePriceWithAssetName = {
         ...mockOraclePrice,
-        timestamp: new Date().toISOString(),
+        isoTimestamp: new Date().toISOString(),
       };
       const signature = SignableOraclePrice
         .fromPrice(oraclePrice)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
-    });
-
-    it('throws an error if the timestamp is too large', () => {
-      const oraclePrice = {
-        ...mockOraclePrice,
-        timestamp: Date.now().toString(),
-      };
-      expect(
-        () => SignableOraclePrice.fromPrice(oraclePrice)
-          .sign(mockKeyPair.privateKey),
-      ).toThrow('timestamp exceeds max value');
     });
   });
 

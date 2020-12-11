@@ -27,8 +27,8 @@ const mockWithdrawal: WithdrawalWithClientId = {
   clientId: 'This is an ID that the client came up with to describe this withdrawal',
 };
 const mockSignature = (
-  '03d79a1f66548718cbe42f40c7528ebdc1b5201633100a2696f10dc031c184fe' +
-  '0466c1e8d25e67c1854a6ed60aa8146917c5923777cc4b1421272f281697dc6e'
+  '04baff76d91d155e6fbe8f5ff4a997cdd2b865506db10656fda040d94ca2f86c' +
+  '03622618798e85ef45adf60dc16bac632bd4f7f21bb2aa88777d65ca0fc011b6'
 );
 
 describe('SignableWithdrawal', () => {
