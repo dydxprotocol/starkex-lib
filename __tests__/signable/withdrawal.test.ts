@@ -8,7 +8,7 @@ import {
   WithdrawalWithClientId,
   WithdrawalWithNonce,
 } from '../../src/types';
-import { generateKeyPair } from '../../src/keys';
+import { generateKeyPairUnsafe } from '../../src/keys';
 import { nonceFromClientId } from '../../src/helpers';
 import { mutateHexStringAt } from './util';
 
@@ -120,7 +120,7 @@ describe('SignableWithdrawal', () => {
   it('end-to-end', () => {
     // Repeat some number of times.
     for (let i = 0; i < 1; i++) {
-      const keyPair: KeyPair = generateKeyPair();
+      const keyPair: KeyPair = generateKeyPairUnsafe();
       const signableWithdrawal = SignableWithdrawal.fromWithdrawal(mockWithdrawal);
       const signature = signableWithdrawal.sign(keyPair.privateKey);
 

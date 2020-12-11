@@ -13,7 +13,7 @@ import { KeyPair } from './types';
 /**
  * Generate a pseudorandom StarkEx key pair. NOT FOR USE IN PRODUCTION.
  */
-export function generateKeyPair(): KeyPair {
+export function generateKeyPairUnsafe(): KeyPair {
   return keyPairFromData(randomBuffer(32));
 }
 

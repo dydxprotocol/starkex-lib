@@ -7,7 +7,7 @@ import {
   OraclePriceWithAssetId,
   OraclePriceWithAssetName,
 } from '../../src/types';
-import { generateKeyPair } from '../../src/keys';
+import { generateKeyPairUnsafe } from '../../src/keys';
 import { mutateHexStringAt } from './util';
 
 // Module under test.
@@ -119,7 +119,7 @@ describe('SignableOraclePrice', () => {
   it('end-to-end', () => {
     // Repeat some number of times.
     for (let i = 0; i < 1; i++) {
-      const keyPair: KeyPair = generateKeyPair();
+      const keyPair: KeyPair = generateKeyPairUnsafe();
       const signableOraclePrice = SignableOraclePrice.fromPrice(mockOraclePrice);
       const signature = signableOraclePrice.sign(keyPair.privateKey);
 

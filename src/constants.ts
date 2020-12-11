@@ -27,23 +27,13 @@ export const SIGNED_ASSET_ID_MAP: Record<DydxMarket, string> = {
 };
 
 /**
- * The value of one quantum of the asset in the Starkware system, represented in token base units.
- */
-export const ASSET_QUANTIZATION: Record<DydxAsset, number> = {
-  [DydxAsset.USDC]: 0x10000000000,
-  [DydxAsset.BTC]: 0x2540be400,
-  [DydxAsset.ETH]: 0x5f5e100,
-  [DydxAsset.LINK]: 0x989680,
-};
-
-/**
- * Decimals used by the token in its native representation, determining the size of its base unit.
+ * The smallest unit of the asset in the Starkware system, represented in canonical (human) units.
  *
- * This can be used to convert between “human-readable” units (1 ETH, 1 BTC...) and base units.
+ * TODO: Update these after hearing back from Starkware.
  */
-export const ASSET_TOKEN_DECIMALS: Record<DydxAsset, number> = {
-  [DydxAsset.USDC]: 14, // TODO: Update after Starkware changes the quantization on their end.
-  [DydxAsset.BTC]: 8,
-  [DydxAsset.ETH]: 18,
-  [DydxAsset.LINK]: 18,
+export const ASSET_QUANTUM_SIZE: Record<DydxAsset, string> = {
+  [DydxAsset.USDC]: '0.01099511627776', // Pretending, for now, that USDC has 14 decimals.
+  [DydxAsset.BTC]: '100',
+  [DydxAsset.ETH]: '1e-10',
+  [DydxAsset.LINK]: '1e-11',
 };

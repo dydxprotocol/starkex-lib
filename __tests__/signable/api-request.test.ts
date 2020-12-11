@@ -6,7 +6,7 @@ import {
   ApiMethod,
   ApiRequestParams,
 } from '../../src/types';
-import { generateKeyPair } from '../../src/keys';
+import { generateKeyPairUnsafe } from '../../src/keys';
 
 // Module under test.
 import { SignableApiRequest } from '../../src/signable/api-request';
@@ -21,7 +21,7 @@ const mockApiRequest: ApiRequestParams = {
 describe('SignableApiRequest', () => {
 
   it('signs and verifies a signature', () => {
-    const keyPair = generateKeyPair();
+    const keyPair = generateKeyPairUnsafe();
     const signable = new SignableApiRequest(mockApiRequest);
     const signature = signable.sign(keyPair.privateKey);
     const isValid = signable.verifySignature(signature, keyPair.publicKey);
@@ -29,10 +29,10 @@ describe('SignableApiRequest', () => {
   });
 
   it('signs and fails verification with the wrong public key', () => {
-    const keyPair = generateKeyPair();
+    const keyPair = generateKeyPairUnsafe();
     const signable = new SignableApiRequest(mockApiRequest);
     const signature = signable.sign(keyPair.privateKey);
-    const isValid = signable.verifySignature(signature, generateKeyPair().publicKey);
+    const isValid = signable.verifySignature(signature, generateKeyPairUnsafe().publicKey);
     expect(isValid).toBe(false);
   });
 });

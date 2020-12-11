@@ -9,7 +9,7 @@ import { randomBuffer } from '../src/lib/util';
 
 // Module under test.
 import {
-  generateKeyPair,
+  generateKeyPairUnsafe,
   keyPairFromData,
 } from '../src/keys';
 
@@ -20,16 +20,16 @@ describe('Key generation functions', () => {
   describe('generateKeyPair()', () => {
 
     it('generates a key pair', () => {
-      const keyPair: KeyPair = generateKeyPair();
+      const keyPair: KeyPair = generateKeyPairUnsafe();
       expect(keyPair.publicKey).toMatch(HEX_32_BYTES_LOWER_NO_PREFIX_RE);
       expect(keyPair.privateKey).toMatch(HEX_32_BYTES_LOWER_NO_PREFIX_RE);
     });
 
     it('generates different key pairs', () => {
       expect(
-        generateKeyPair(),
+        generateKeyPairUnsafe(),
       ).not.toEqual(
-        generateKeyPair(),
+        generateKeyPairUnsafe(),
       );
     });
   });

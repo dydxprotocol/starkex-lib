@@ -110,10 +110,10 @@ export function verify(
 
 function bnInRange(
   input: BN,
-  lowerBound: BN,
-  upperBound: BN,
+  lowerBoundInclusive: BN,
+  upperBoundExclusive: BN,
 ) {
-  return input.gte(lowerBound) && input.lt(upperBound);
+  return input.gte(lowerBoundInclusive) && input.lt(upperBoundExclusive);
 }
 
 function fixHashLength(
