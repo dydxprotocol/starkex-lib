@@ -1,74 +1,33 @@
-import * as bip39 from 'bip39';
-import * as crypto from 'starkware-crypto';
+import { keccak256 } from 'ethereum-cryptography/keccak';
 
 import {
-  HEX_RE,
-  STARK_DERIVATION_PATH,
-} from './constants';
-import {
+  asEcKeyPair,
   asSimpleKeyPair,
 } from './helpers';
 import {
-  KeyPair,
-} from './types';
+  hexToBn,
+  randomBuffer,
+} from './lib/util';
+import { KeyPair } from './types';
 
 /**
- * Generate a pseudorandom StarkEx key pair.
+ * Generate a pseudorandom StarkEx key pair. NOT FOR USE IN PRODUCTION.
  */
-export function generateKeyPair(): KeyPair {
-  return asSimpleKeyPair(crypto.ec.genKeyPair());
+export function generateKeyPairUnsafe(): KeyPair {
+  return keyPairFromData(randomBuffer(32));
 }
 
 /**
- * Generate a StarKex key pair deterministically from a BIP39 seed phrase.
+ * Generate a STARK key pair deterministically from a Buffer.
  */
-export function generateKeyPairFromMnemonic(
-  mnemonic: string,
+export function keyPairFromData(
+  data: Buffer,
 ): KeyPair {
-  return asSimpleKeyPair(crypto.getKeyPairFromPath(mnemonic, STARK_DERIVATION_PATH));
-}
-
-/**
- * Generate a StarKex key pair deterministically from a random Buffer or string.
- */
-export function generateKeyPairFromEntropy(
-  entropy: Buffer | string,
-): KeyPair {
-  const mnemonic = bip39.entropyToMnemonic(entropy);
-  return generateKeyPairFromMnemonic(mnemonic);
-}
-
-/**
- * Generate a StarKex key pair deterministically from a seed.
- *
- * This can be used during testing and development to generate a deterministic key pair from a
- * low-entropy seed value, which may be a Buffer, hex string, other string, or number.
- */
-export function generateKeyPairFromSeedUnsafe(
-  seed: Buffer | string | number,
-): KeyPair {
-  // Convert to string.
-  let asString: string;
-  switch (typeof seed) {
-    case 'string':
-      asString = seed;
-      break;
-    case 'number':
-      asString = `0x${seed.toString(16)}`;
-      break;
-    default:
-      asString = `0x${seed.toString('hex')}`;
-      break;
+  if (data.length === 0) {
+    throw new Error('keyPairFromData: Empty buffer');
   }
-
-  // Convert to hex string without 0x prefix.
-  const asHex: string = asString.match(HEX_RE)
-    ? asString.slice(2)
-    : Buffer.from(asString).toString('hex');
-
-  // Pad and slice to exactly 32 bytes.
-  const paddedHex = asHex.padStart(64, '0').slice(0, 64);
-  const paddedBuffer = Buffer.from(paddedHex, 'hex');
-
-  return generateKeyPairFromEntropy(paddedBuffer);
+  const hashedData = keccak256(data);
+  const hashBN = hexToBn(hashedData.toString('hex'));
+  const privateKey = hashBN.iushrn(5).toString('hex'); // Remove the last five bits.
+  return asSimpleKeyPair(asEcKeyPair(privateKey));
 }

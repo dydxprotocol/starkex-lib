@@ -8,5 +8,7 @@ module.exports = {
 
   rules: {
     'newline-per-chained-call': 'off',
+    'no-useless-constructor': 'off',
+    '@typescript-eslint/no-useless-constructor': 'error',
   },
 };

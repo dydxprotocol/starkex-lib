@@ -1,6 +1,6 @@
 {
   "name": "@dydxprotocol/starkex-lib",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Cryptographic functions for use with StarkEx",
   "main": "build/src/index.js",
   "scripts": {
@@ -25,12 +25,14 @@
   },
   "homepage": "https://github.com/dydxprotocol/starkex-lib#readme",
   "dependencies": {
+    "@types/big.js": "^6.0.0",
     "@types/elliptic": "^6.4.12",
-    "@types/big.js": "^4.0.5",
-    "big.js": "5.2.2",
-    "starkware-crypto": "^1.9.7"
+    "big.js": "^6.0.3",
+    "bip39": "^3.0.3",
+    "ethereum-cryptography": "^0.1.3",
+    "hash.js": "^1.1.7"
   },
   "devDependencies": {
-    "@dydxprotocol/node-service-base-dev": "0.0.8"
+    "@dydxprotocol/node-service-base-dev": "0.0.11"
   }
 }
