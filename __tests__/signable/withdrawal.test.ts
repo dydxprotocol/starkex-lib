@@ -22,7 +22,7 @@ const mockKeyPair: KeyPair = {
 };
 const mockWithdrawal: WithdrawalWithClientId = {
   positionId: '12345',
-  humanAmount: '49.47802324992',
+  humanAmount: '49.478023',
   expirationIsoTimestamp: '2020-09-17T04:15:55.028Z',
   clientId: 'This is an ID that the client came up with to describe this withdrawal',
 };
@@ -65,7 +65,7 @@ describe('SignableWithdrawal', () => {
 
   describe('sign()', () => {
 
-    it('signs a withdrawal', () => {
+    it.only('signs a withdrawal', () => {
       const signature = SignableWithdrawal
         .fromWithdrawal(mockWithdrawal)
         .sign(mockKeyPair.privateKey);

@@ -24,7 +24,7 @@ export class SignableApiRequest extends Signable<ApiRequestParams> {
       this.message.requestPath +
       this.message.body
     );
-    const hashHex = nodeCrypto.createHmac('sha256', '').update(messageString).digest('hex');
+    const hashHex = nodeCrypto.createHash('sha256').update(messageString).digest('hex');
     return hexToBn(hashHex).iushrn(5); // Remove the last five bits.
   }
 }

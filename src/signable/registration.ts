@@ -22,7 +22,7 @@ export class SignableRegistration extends Signable<RegistrationParams> {
       this.message.ethereumAddress +
       this.message.starkKey
     );
-    const hashHex = nodeCrypto.createHmac('sha256', '').update(messageString).digest('hex');
+    const hashHex = nodeCrypto.createHash('sha256').update(messageString).digest('hex');
     return hexToBn(hashHex).iushrn(5); // Remove the last five bits.
   }
 }

@@ -32,8 +32,8 @@ export const SIGNED_ASSET_ID_MAP: Record<DydxMarket, string> = {
  * TODO: Update these after hearing back from Starkware.
  */
 export const ASSET_QUANTUM_SIZE: Record<DydxAsset, string> = {
-  [DydxAsset.USDC]: '0.01099511627776', // Pretending, for now, that USDC has 14 decimals.
-  [DydxAsset.BTC]: '100',
-  [DydxAsset.ETH]: '1e-10',
-  [DydxAsset.LINK]: '1e-11',
+  [DydxAsset.USDC]: '1e-6',
+  [DydxAsset.BTC]: '1e-10',
+  [DydxAsset.ETH]: '1e-8',
+  [DydxAsset.LINK]: '1e-7',
 };
