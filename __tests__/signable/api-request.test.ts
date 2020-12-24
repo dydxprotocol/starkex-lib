@@ -5,26 +5,40 @@
 import {
   ApiMethod,
   ApiRequestParams,
+  KeyPair,
 } from '../../src/types';
 import { generateKeyPairUnsafe } from '../../src/keys';
 
 // Module under test.
 import { SignableApiRequest } from '../../src/signable/api-request';
 
+// Mock params.
+const mockKeyPair: KeyPair = {
+  publicKey: '3b865a18323b8d147a12c556bfb1d502516c325b1477a23ba6c77af31f020fd',
+  privateKey: '58c7d5a90b1776bde86ebac077e053ed85b0f7164f53b080304a531947f46e3',
+};
 const mockApiRequest: ApiRequestParams = {
   isoTimestamp: '2020-10-19T20:31:20.000Z',
   method: ApiMethod.GET,
   requestPath: 'v3/users',
   body: '',
 };
+const mockSignature = (
+  '04940eee8f6d42c16cff2f5fd4e796aa194172076344e9ccf918b2bcccc97064' +
+  '068c11003b1ad010c5d0c6c9e8fe36d296fcac4c01cdaf3b455f8f6fee62784a'
+);
 
 describe('SignableApiRequest', () => {
 
-  it('signs and verifies a signature', () => {
-    const keyPair = generateKeyPairUnsafe();
+  it('produces the expected signature', () => {
     const signable = new SignableApiRequest(mockApiRequest);
-    const signature = signable.sign(keyPair.privateKey);
-    const isValid = signable.verifySignature(signature, keyPair.publicKey);
+    const signature = signable.sign(mockKeyPair.privateKey);
+    expect(signature).toBe(mockSignature);
+  });
+
+  it('verifies a signature', () => {
+    const signable = new SignableApiRequest(mockApiRequest);
+    const isValid = signable.verifySignature(mockSignature, mockKeyPair.publicKey);
     expect(isValid).toBe(true);
   });
 

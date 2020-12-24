@@ -2,7 +2,7 @@
  * Helper functions for converting asset IDs and amounts.
  */
 
-import Big from 'big.js';
+import Big, { RoundingMode } from 'big.js';
 
 import {
   ASSET_ID_MAP,
@@ -23,16 +23,44 @@ import {
 /**
  * Convert a human-readable asset amount to an integer amount of the asset's quantum size.
  *
- * Optionally, throw if the provided value is not a multiple of the quantum size.
- *
- * Example:
- *   Suppose the quantum size in Starkware for synthetic ETH is 10^12 (1000 Gwei).
- *   Then humanAmountToQuantums(0.01), representing 0.01 ETH, will return a value of 10,000.
+ * If the provided value is not a multiple of the quantum size, throw an error.
  */
-export function toQuantums(
+export function toQuantumsExact(
   humanAmount: string,
   asset: DydxAsset,
-  assertIntegerResult: boolean = true,
+): string {
+  return toQuantumsHelper(humanAmount, asset, RoundingMode.RoundDown, true);
+}
+
+/**
+ * Convert a human-readable asset amount to an integer amount of the asset's quantum size.
+ *
+ * If the provided value is not a multiple of the quantum size, round down.
+ */
+export function toQuantumsRoundDown(
+  humanAmount: string,
+  asset: DydxAsset,
+): string {
+  return toQuantumsHelper(humanAmount, asset, RoundingMode.RoundDown, false);
+}
+
+/**
+ * Convert a human-readable asset amount to an integer amount of the asset's quantum size.
+ *
+ * If the provided value is not a multiple of the quantum size, round up.
+ */
+export function toQuantumsRoundUp(
+  humanAmount: string,
+  asset: DydxAsset,
+): string {
+  return toQuantumsHelper(humanAmount, asset, RoundingMode.RoundUp, false);
+}
+
+function toQuantumsHelper(
+  humanAmount: string,
+  asset: DydxAsset,
+  rm: RoundingMode,
+  assertIntegerResult: boolean,
 ): string {
   const amountBig = new Big(humanAmount);
   const quantumSize = ASSET_QUANTUM_SIZE[asset];
@@ -42,21 +70,25 @@ export function toQuantums(
       `toQuantums: Amount ${humanAmount} is not a multiple of the quantum size ${quantumSize}`,
     );
   }
-  return amountBig.div(quantumSize).toFixed(0);
+  return amountBig.div(quantumSize).round(0, rm).toFixed(0);
 }
 
 /**
  * Convert a number of quantums to a human-readable asset amount.
  *
  * Example:
- *   Suppose the quantum size in Starkware for synthetic ETH is 10^12 (1000 Gwei).
- *   Then fromQuantums(100), representing 100,000 Gwei, will return a value of 0.0001.
+ *   Suppose the quantum size in Starkware for synthetic ETH is 10^10 (10 Gwei).
+ *   Then fromQuantums(1000, DydxAsset.ETH), representing 10,000 Gwei, returns a value of 0.00001.
  */
 export function fromQuantums(
   quantumAmount: string,
   asset: DydxAsset,
 ): string {
-  return new Big(quantumAmount).mul(ASSET_QUANTUM_SIZE[asset]).toFixed();
+  const quantumSize = ASSET_QUANTUM_SIZE[asset];
+  if (!quantumSize) {
+    throw new Error(`Unknown asset ${asset}`);
+  }
+  return new Big(quantumAmount).mul(quantumSize).toFixed();
 }
 
 /**
@@ -83,12 +115,23 @@ export function getStarkwareAmounts(
     throw new Error(`Unknown market ${market}`);
   }
 
-  // Determine amounts.
-  const humanCost = typeof humanQuoteAmount === 'string'
+  // Convert the synthetic amount to Starkware quantums.
+  const quantumsAmountSynthetic = toQuantumsExact(humanSize, syntheticAsset);
+
+  // Get the human-readable collateral asset amount (a.k.a. "quote amount").
+  const humanAmountCollateral = typeof humanQuoteAmount === 'string'
     ? humanQuoteAmount
     : new Big(humanSize).times(humanPrice!).toFixed(); // Non-null assertion safe based on types.
-  const quantumsAmountSynthetic = toQuantums(humanSize, syntheticAsset);
-  const quantumsAmountCollateral = toQuantums(humanCost, COLLATERAL_ASSET, false);
+
+  // If quoteAmount was specified, don't allow rounding.
+  // Otherwise, round differently depending on the order side.
+  let toQuantumsFnForCost = toQuantumsExact;
+  if (typeof humanQuoteAmount !== 'string') {
+    toQuantumsFnForCost = isBuyingSynthetic
+      ? toQuantumsRoundUp
+      : toQuantumsRoundDown;
+  }
+  const quantumsAmountCollateral = toQuantumsFnForCost(humanAmountCollateral, COLLATERAL_ASSET);
 
   return {
     quantumsAmountSynthetic,

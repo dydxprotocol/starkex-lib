@@ -1,8 +1,8 @@
 /**
- * Unit tests for helpers.
+ * Unit tests for helpers/crypto.
  */
 
-import { KeyPair } from '../src/types';
+import { KeyPair } from '../../src/types';
 
 // Module under test.
 import {
@@ -12,7 +12,7 @@ import {
   asSimpleKeyPair,
   deserializeSignature,
   serializeSignature,
-} from '../src/helpers';
+} from '../../src/helpers/crypto';
 
 // Mock params.
 const mockKeyPair: KeyPair = {
@@ -36,7 +36,7 @@ const mockSignature = (
   '0469298bdf292a304af14f5043f0902b30ba927488ccc221fe8925740c40edbf'
 );
 
-describe('helpers', () => {
+describe('crypto helpers', () => {
 
   describe('asEcKeyPair()', () => {
 
