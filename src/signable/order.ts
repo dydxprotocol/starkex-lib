@@ -8,7 +8,7 @@ import {
   getStarkwareAmounts,
   isoTimestampToEpochSeconds,
   nonceFromClientId,
-  toQuantums,
+  toQuantumsExact,
 } from '../helpers';
 import { pedersen } from '../lib/starkex-resources';
 import { decToBn, hexToBn } from '../lib/util';
@@ -67,7 +67,7 @@ export class SignableOrder extends Signable<StarkwareOrder> {
     } = getStarkwareAmounts(order);
 
     // The fee is an amount, not a percentage, and is always denominated in the collateral asset.
-    const quantumsAmountFee = toQuantums(order.humanLimitFee, COLLATERAL_ASSET);
+    const quantumsAmountFee = toQuantumsExact(order.humanLimitFee, COLLATERAL_ASSET);
     const assetIdFee = ASSET_ID_MAP[COLLATERAL_ASSET];
 
     // Convert to a Unix timestamp (in seconds).
