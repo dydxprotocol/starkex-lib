@@ -2,14 +2,17 @@
  * Unit tests for helpers/assets.
  */
 
-// Module under test.
 import {
   ASSET_ID_MAP,
   COLLATERAL_ASSET_ID,
+} from '../../src/constants';
+import {
   DydxAsset,
   DydxMarket,
   StarkwareOrderSide,
-} from '../../src';
+} from '../../src/types';
+
+// Module under test.
 import {
   fromQuantums,
   getStarkwareAmounts,

@@ -28,6 +28,6 @@ export function keyPairFromData(
   }
   const hashedData = keccak256(data);
   const hashBN = hexToBn(hashedData.toString('hex'));
-  const privateKey = hashBN.iushrn(5).toString('hex'); // Remove the last five bits.
+  const privateKey = hashBN.iushrn(5).toString('hex'); // Remove the last five bits so it fits in 251 bits.
   return asSimpleKeyPair(asEcKeyPair(privateKey));
 }
