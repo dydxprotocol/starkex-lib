@@ -2,7 +2,7 @@
  * Unit tests for signable/orders.ts.
  */
 
-import Big from 'big.js';
+import Big, { RoundingMode } from 'big.js';
 
 import {
   OrderWithClientId,
@@ -40,12 +40,12 @@ const mockOrder: OrderWithClientId = {
   clientId: 'This is an ID that the client came up with to describe this order',
 };
 const mockSignature = (
-  '0129093699a5bfc06291256b20f0601fdca591bebd55bd1f99d8d3d14fac36f7' +
-  '017f2023a2f626f1fc8face13d3baa799ca0e51289a0dac007847a8bbb74f565'
+  '073b286b35acfdee9d3c5e7b07fc1392d53a0fae2f960c9cf4e66b5cac0b8de5' +
+  '04c26bdadd93668d82668e3e3dd4e603093f4bfefb4e3570249024d074dbf182'
 );
 const mockSignatureEvenY = (
-  '01441d9cd615b1ce9bedbfe657b82e42ee073b04d9e9d2e07484675e02fbff43' +
-  '032a5f77482fedd617d2ebc5944b1585919dae99ede4468c07298ff78dca3694'
+  '032ec9c1a22f939a16bf729402a376fda3420d24a8f93b886b1f1664f10ec4de' +
+  '0532951bcb4f733ebb17e44d3fc368f4bd441dc74a2757f79531708165730333'
 );
 
 describe('SignableOrder', () => {
@@ -89,13 +89,11 @@ describe('SignableOrder', () => {
 
   describe('sign()', () => {
 
-    it.only('signs an order (odd y)', () => {
+    it('signs an order (odd y)', () => {
       const signature = SignableOrder
         .fromOrder(mockOrder)
-        .toStarkware();
-      console.log(`signature: ${JSON.stringify(signature, null, 2)}`);
-      //   .sign(mockKeyPair.privateKey);
-      // expect(signature).toEqual(mockSignature);
+        .sign(mockKeyPair.privateKey);
+      expect(signature).toEqual(mockSignature);
     });
 
     it('signs an order (even y)', () => {
@@ -106,10 +104,14 @@ describe('SignableOrder', () => {
     });
 
     it('signs an order with quoteAmount instead of price', () => {
+      const roundedQuoteAmount = new Big(mockOrder.humanSize)
+        .times(mockOrder.humanPrice)
+        .round(6, RoundingMode.RoundUp)
+        .toFixed();
       const orderWithQuoteAmount: OrderWithClientIdAndQuoteAmount = {
         ...mockOrder,
         humanPrice: undefined,
-        humanQuoteAmount: new Big(mockOrder.humanSize).times(mockOrder.humanPrice).toFixed(),
+        humanQuoteAmount: roundedQuoteAmount,
       };
       const signature = SignableOrder
         .fromOrder(orderWithQuoteAmount)
@@ -169,9 +171,9 @@ describe('SignableOrder', () => {
       const starkwareOrder: StarkwareOrder = SignableOrder
         .fromOrder(mockOrder)
         .toStarkware();
-      expect(starkwareOrder.quantumsAmountSynthetic).toEqual('1450005000000');
-      expect(starkwareOrder.quantumsAmountCollateral).toEqual('4615710');
-      expect(starkwareOrder.quantumsAmountFee).toEqual('3');
+      expect(starkwareOrder.quantumsAmountSynthetic).toEqual('14500050000');
+      expect(starkwareOrder.quantumsAmountCollateral).toEqual('50750272151');
+      expect(starkwareOrder.quantumsAmountFee).toEqual('32985');
     });
 
     it('throws if the market is unknown', () => {
