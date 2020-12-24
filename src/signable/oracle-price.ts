@@ -8,12 +8,12 @@ import {
   OraclePriceWithAssetId,
 } from '../types';
 import { ORACLE_PRICE_FIELD_BIT_LENGTHS } from './constants';
-import { Signable } from './signable';
+import { StarkSignable } from './stark-signable';
 
 /**
  * Wrapper object to hash, sign, and verify an oracle price.
  */
-export class SignableOraclePrice extends Signable<OraclePriceWithAssetId> {
+export class SignableOraclePrice extends StarkSignable<OraclePriceWithAssetId> {
 
   static fromPrice = SignableOraclePrice.fromPriceWithAssetName; // Alias.
 
