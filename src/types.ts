@@ -117,13 +117,6 @@ export interface ApiRequestParams {
   body: string;
 }
 
-// ============ Regsistration Parameters ============
-
-export interface RegistrationParams {
-  ethereumAddress: string;
-  starkKey: string;
-}
-
 // ============ Oracle Price Parameters ============
 
 export interface OraclePriceWithAssetName {
