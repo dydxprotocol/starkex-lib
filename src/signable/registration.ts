@@ -4,12 +4,12 @@ import BN from 'bn.js';
 
 import { hexToBn } from '../lib/util';
 import { RegistrationParams } from '../types';
-import { Signable } from './signable';
+import { StarkSignable } from './stark-signable';
 
 /**
  * Wrapper object to hash, sign, and verify an Ethereum + STARK key registration.
  */
-export class SignableRegistration extends Signable<RegistrationParams> {
+export class SignableRegistration extends StarkSignable<RegistrationParams> {
 
   public constructor(
     registration: RegistrationParams,

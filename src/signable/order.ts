@@ -23,7 +23,7 @@ import {
 import {
   ORDER_FIELD_BIT_LENGTHS,
 } from './constants';
-import { Signable } from './signable';
+import { StarkSignable } from './stark-signable';
 
 const LIMIT_ORDER_WITH_FEES = 3;
 const ORDER_PADDING_BITS = 17;
@@ -31,7 +31,7 @@ const ORDER_PADDING_BITS = 17;
 /**
  * Wrapper object to convert an order, and hash, sign, and verify its signature.
  */
-export class SignableOrder extends Signable<StarkwareOrder> {
+export class SignableOrder extends StarkSignable<StarkwareOrder> {
 
   static fromOrder = SignableOrder.fromOrderWithClientId; // Alias.
 
