@@ -1,10 +1,24 @@
-# starkex-lib
+<p align="center"><img src="https://s3.amazonaws.com/dydx-assets/dydx_logo_black.svg" width="256" /></p>
 
-[![CircleCI Status](https://img.shields.io/circleci/project/dydxprotocol/starkex-lib.svg?token=446e78d103fea7b64b2e490215ce2a9669431c96)](https://circleci.com/gh/dydxprotocol/starkex-lib)
-[![Coverage Status](https://coveralls.io/repos/github/dydxprotocol/starkex-lib/badge.svg?t=xQcJRh)](https://coveralls.io/github/dydxprotocol/starkex-lib)
+<div align="center">
+  <a href="https://circleci.com/gh/dydxprotocol/workflows/starkex-lib/tree/master">
+    <img src="https://img.shields.io/circleci/project/github/dydxprotocol/starkex-lib.svg?token=446e78d103fea7b64b2e490215ce2a9669431c96" alt='CI' />
+  </a>
+  <a href='https://www.npmjs.com/package/@dydxprotocol/starkex-lib'>
+    <img src='https://img.shields.io/npm/v/starkex-lib.svg' alt='NPM'/>
+  </a>
+  <a href='https://github.com/dydxprotocol/starkex-lib/blob/master/LICENSE'>
+    <img src='https://img.shields.io/github/license/dydxprotocol/starkex-lib.svg' alt='License' />
+  </a>
+</div>
+<br>
 
-Cryptographic functions for use with StarkEx.
+Cryptographic functions for use with dYdX (API v3).
 
-See [`signature_example.json`](./__tests__/data/signature_example.json) for example objects.
+Draws from [starkex-resources](https://github.com/starkware-libs/starkex-resources) for the cryptographic primitives.
 
-Based on [starkex-resources](https://github.com/starkware-libs/starkex-resources).
+## Installation
+
+```bash
+npm install @dydxprotocol/starkex-lib
+```
