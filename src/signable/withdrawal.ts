@@ -17,7 +17,7 @@ import {
   WithdrawalWithClientId,
 } from '../types';
 import { WITHDRAWAL_FIELD_BIT_LENGTHS } from './constants';
-import { Signable } from './signable';
+import { StarkSignable } from './stark-signable';
 
 const COLLATERAL_ASSET_ID_BN = hexToBn(COLLATERAL_ASSET_ID);
 const WITHDRAWAL_PREFIX = 6;
@@ -26,7 +26,7 @@ const WITHDRAWAL_PADDING_BITS = 49;
 /**
  * Wrapper object to convert a withdrawal, and hash, sign, and verify its signature.
  */
-export class SignableWithdrawal extends Signable<StarkwareWithdrawal> {
+export class SignableWithdrawal extends StarkSignable<StarkwareWithdrawal> {
 
   static fromWithdrawal = SignableWithdrawal.fromWithdrawalWithClientId; // Alias.
 

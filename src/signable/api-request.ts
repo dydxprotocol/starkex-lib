@@ -4,12 +4,12 @@ import BN from 'bn.js';
 
 import { hexToBn } from '../lib/util';
 import { ApiRequestParams } from '../types';
-import { Signable } from './signable';
+import { StarkSignable } from './stark-signable';
 
 /**
  * Wrapper object to hash, sign, and verify an API request.
  */
-export class SignableApiRequest extends Signable<ApiRequestParams> {
+export class SignableApiRequest extends StarkSignable<ApiRequestParams> {
 
   public constructor(
     apiRequest: ApiRequestParams,

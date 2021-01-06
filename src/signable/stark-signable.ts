@@ -14,9 +14,9 @@ import { bnToHex32 } from '../lib/util';
 import { KeyPair } from '../types';
 
 /**
- * Base class for a Starkware signable message.
+ * Base class for a STARK key signable message.
  */
-export abstract class Signable<T> {
+export abstract class StarkSignable<T> {
   protected readonly message: T;
 
   private _hashBN: BN | null = null;
@@ -27,6 +27,9 @@ export abstract class Signable<T> {
     this.message = message;
   }
 
+  /**
+   * Return the message hash as a hex string, no 0x prefix.
+   */
   get hash(): string {
     return this.hashBN.toString(16);
   }
