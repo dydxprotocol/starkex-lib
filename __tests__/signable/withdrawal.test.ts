@@ -2,6 +2,8 @@
  * Unit tests for signable/withdrawals.ts.
  */
 
+import expect from 'expect';
+
 import {
   KeyPair,
   StarkwareWithdrawal,

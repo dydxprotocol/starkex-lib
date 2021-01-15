@@ -3,6 +3,7 @@
  */
 
 import Big, { RoundingMode } from 'big.js';
+import expect from 'expect';
 
 import {
   OrderWithClientId,

@@ -2,6 +2,8 @@
  * Unit tests for helpers/crypto.
  */
 
+import expect from 'expect';
+
 import { KeyPair } from '../../src/types';
 
 // Module under test.

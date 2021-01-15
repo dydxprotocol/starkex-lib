@@ -2,6 +2,8 @@
  * Unit tests for helpers/assets.
  */
 
+import expect from 'expect';
+
 import {
   ASSET_ID_MAP,
   COLLATERAL_ASSET_ID,

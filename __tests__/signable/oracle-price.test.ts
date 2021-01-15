@@ -2,6 +2,8 @@
  * Unit tests for signable/oracle-price.ts.
  */
 
+import expect from 'expect';
+
 import {
   KeyPair,
   OraclePriceWithAssetId,

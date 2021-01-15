@@ -2,6 +2,8 @@
  * Unit tests for util.ts.
  */
 
+import expect from 'expect';
+
 // Module under test.
 import {
   normalizeHex32,

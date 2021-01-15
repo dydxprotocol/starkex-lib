@@ -2,6 +2,8 @@
  * Unit tests for keys.ts.
  */
 
+import expect from 'expect';
+
 import {
   KeyPair,
 } from '../src/types';

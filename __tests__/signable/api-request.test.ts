@@ -2,6 +2,8 @@
  * Unit tests for signable/api-request.ts.
  */
 
+import expect from 'expect';
+
 import {
   ApiMethod,
   ApiRequestParams,
