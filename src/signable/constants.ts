@@ -16,6 +16,16 @@ export const WITHDRAWAL_FIELD_BIT_LENGTHS = {
   expirationEpochSeconds: 32,
 };
 
+export const CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS = {
+  assetId: 250,
+  receiverPublicKey: 251,
+  positionId: 64,
+  nonce: 32,
+  quantumsAmount: 64,
+  expirationEpochSeconds: 32,
+  condition: 251,
+};
+
 export const ORACLE_PRICE_FIELD_BIT_LENGTHS = {
   assetName: 128,
   oracleName: 40,

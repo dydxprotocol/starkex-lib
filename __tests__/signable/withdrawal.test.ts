@@ -1,5 +1,5 @@
 /**
- * Unit tests for signable/withdrawals.ts.
+ * Unit tests for signable/withdrawal.ts.
  */
 
 import expect from 'expect';

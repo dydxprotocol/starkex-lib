@@ -69,18 +69,18 @@ export class SignableWithdrawal extends StarkSignable<StarkwareWithdrawal> {
     const expirationEpochSecondsBn = decToBn(this.message.expirationEpochSeconds);
 
     if (positionIdBn.bitLength() > WITHDRAWAL_FIELD_BIT_LENGTHS.positionId) {
-      throw new Error('SignableOraclePrice: price exceeds max value');
+      throw new Error('SignableOraclePrice: positionId exceeds max value');
     }
     if (nonceBn.bitLength() > WITHDRAWAL_FIELD_BIT_LENGTHS.nonce) {
-      throw new Error('SignableOraclePrice: price exceeds max value');
+      throw new Error('SignableOraclePrice: nonce exceeds max value');
     }
     if (quantumsAmountBn.bitLength() > WITHDRAWAL_FIELD_BIT_LENGTHS.quantumsAmount) {
-      throw new Error('SignableOraclePrice: price exceeds max value');
+      throw new Error('SignableOraclePrice: quantumsAmount exceeds max value');
     }
     if (
       expirationEpochSecondsBn.bitLength() > WITHDRAWAL_FIELD_BIT_LENGTHS.expirationEpochSeconds
     ) {
-      throw new Error('SignableOraclePrice: price exceeds max value');
+      throw new Error('SignableOraclePrice: expirationEpochSeconds exceeds max value');
     }
 
     const packedWithdrawalBn = new BN(WITHDRAWAL_PREFIX)

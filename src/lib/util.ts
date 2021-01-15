@@ -42,6 +42,13 @@ export function randomBuffer(numBytes: number): Buffer {
 // ============ Creating BNs ============
 
 /**
+ * Convert a node Buffer to a BN.
+ */
+export function bufferToBn(buffer: Buffer): BN {
+  return new BN(buffer.toString('hex'), 16);
+}
+
+/**
  * Convert a hex string with optional 0x prefix to a BN.
  */
 export function hexToBn(hex: string): BN {
