@@ -3,6 +3,7 @@
  */
 
 import Big, { RoundingMode } from 'big.js';
+import expect from 'expect';
 
 import {
   OrderWithClientId,
@@ -189,7 +190,7 @@ describe('SignableOrder', () => {
 
   it('end-to-end', () => {
     // Repeat some number of times.
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < 3; i++) {
       const keyPair: KeyPair = generateKeyPairUnsafe();
       const signableOrder = SignableOrder.fromOrder(mockOrder);
       const signature = signableOrder.sign(keyPair.privateKey);

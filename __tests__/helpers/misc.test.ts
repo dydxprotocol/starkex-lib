@@ -2,6 +2,8 @@
  * Unit tests for helpers/misc.
  */
 
+import expect from 'expect';
+
 // Module under test.
 import {
   nonceFromClientId,
