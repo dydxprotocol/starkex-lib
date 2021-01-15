@@ -121,7 +121,7 @@ describe('SignableWithdrawal', () => {
 
   it('end-to-end', () => {
     // Repeat some number of times.
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < 3; i++) {
       const keyPair: KeyPair = generateKeyPairUnsafe();
       const signableWithdrawal = SignableWithdrawal.fromWithdrawal(mockWithdrawal);
       const signature = signableWithdrawal.sign(keyPair.privateKey);
