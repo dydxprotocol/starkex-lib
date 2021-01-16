@@ -41,12 +41,12 @@ const mockOrder: OrderWithClientId = {
   clientId: 'This is an ID that the client came up with to describe this order',
 };
 const mockSignature = (
-  '073b286b35acfdee9d3c5e7b07fc1392d53a0fae2f960c9cf4e66b5cac0b8de5' +
-  '04c26bdadd93668d82668e3e3dd4e603093f4bfefb4e3570249024d074dbf182'
+  '01ac25fb542c7f58953cbbaec0bd774e480d6e22d7c7145f531986c32ce28e09' +
+  '0038738abd1a7a960a45376c926fc7e41889d0f365c8749a80306e355dcf78ec'
 );
 const mockSignatureEvenY = (
-  '032ec9c1a22f939a16bf729402a376fda3420d24a8f93b886b1f1664f10ec4de' +
-  '0532951bcb4f733ebb17e44d3fc368f4bd441dc74a2757f79531708165730333'
+  '05de75d37686126262e31560aca7e3e3782210d1ed5395b8c8704b1a51831a7a' +
+  '01427d9b50773cd537e357c969aeb8dc24e23365418b641a11b5902d1140b8de'
 );
 
 describe('SignableOrder', () => {
