@@ -66,7 +66,7 @@ export class SignableOrder extends StarkSignable<StarkwareOrder> {
       isBuyingSynthetic,
     } = getStarkwareAmounts(order);
 
-    // The fee is an amount, not a percentage, and is always denominated in the collateral asset.
+    // The humanLimitFee is a fraction, e.g. 0.01 is a 1% fee. It is paid in the collateral asset.
     const quantumsAmountFee = toQuantumsExact(order.humanLimitFee, COLLATERAL_ASSET);
     const assetIdFee = ASSET_ID_MAP[COLLATERAL_ASSET];
 
