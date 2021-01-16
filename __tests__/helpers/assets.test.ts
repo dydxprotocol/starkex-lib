@@ -18,6 +18,7 @@ import {
 import {
   fromQuantums,
   getStarkwareAmounts,
+  getStarkwareLimitFeeAmount,
   toQuantumsExact,
   toQuantumsRoundDown,
   toQuantumsRoundUp,
@@ -141,6 +142,18 @@ describe('assets helpers', () => {
       expect(
         toQuantumsRoundUp('12.00000031', DydxAsset.LINK),
       ).toBe('120000004');
+    });
+  });
+
+  describe('getStarkwareLimitFeeAmount()', () => {
+
+    it('converts the order limit fee as expected (edge case)', () => {
+      expect(
+        getStarkwareLimitFeeAmount(
+          '0.000001999999999999999999999999999999999999999999',
+          '50750272151',
+        ),
+      ).toBe('50751');
     });
   });
 });

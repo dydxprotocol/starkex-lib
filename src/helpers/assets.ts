@@ -141,3 +141,18 @@ export function getStarkwareAmounts(
     isBuyingSynthetic,
   };
 }
+
+/**
+ * Convert a limit fee fraction for an order into a collateral quantums amount.
+ */
+export function getStarkwareLimitFeeAmount(
+  limitFee: string,
+  quantumsAmountCollateral: string,
+): string {
+  // Constrain the limit fee to six decimals of precision. The final fee amount must be rounded up.
+  return new Big(limitFee)
+    .round(6, RoundingMode.RoundDown)
+    .times(quantumsAmountCollateral)
+    .round(0, RoundingMode.RoundUp)
+    .toFixed(0);
+}

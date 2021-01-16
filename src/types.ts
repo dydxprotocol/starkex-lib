@@ -86,7 +86,7 @@ export interface StarkwareConditionalTransfer {
 interface OrderParamsBase {
   positionId: string;
   humanSize: string;
-  humanLimitFee: string; // Fee fraction, e.g. 0.01 is a 1% fee.
+  limitFee: string; // Max fee fraction, e.g. 0.01 is a max 1% fee.
   market: DydxMarket;
   side: StarkwareOrderSide;
   expirationIsoTimestamp: string;

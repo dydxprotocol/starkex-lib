@@ -8,7 +8,7 @@ import {
   getStarkwareAmounts,
   isoTimestampToEpochSeconds,
   nonceFromClientId,
-  toQuantumsExact,
+  getStarkwareLimitFeeAmount,
 } from '../helpers';
 import { pedersen } from '../lib/starkex-resources';
 import { decToBn, hexToBn } from '../lib/util';
@@ -66,8 +66,8 @@ export class SignableOrder extends StarkSignable<StarkwareOrder> {
       isBuyingSynthetic,
     } = getStarkwareAmounts(order);
 
-    // The humanLimitFee is a fraction, e.g. 0.01 is a 1% fee. It is paid in the collateral asset.
-    const quantumsAmountFee = toQuantumsExact(order.humanLimitFee, COLLATERAL_ASSET);
+    // The limitFee is a fraction, e.g. 0.01 is a 1% fee. It is always paid in the collateral asset.
+    const quantumsAmountFee = getStarkwareLimitFeeAmount(order.limitFee, quantumsAmountCollateral);
     const assetIdFee = ASSET_ID_MAP[COLLATERAL_ASSET];
 
     // Convert to a Unix timestamp (in seconds).
