@@ -28,8 +28,6 @@ export const SIGNED_ASSET_ID_MAP: Record<DydxMarket, string> = {
 
 /**
  * The smallest unit of the asset in the Starkware system, represented in canonical (human) units.
- *
- * TODO: Update these after hearing back from Starkware.
  */
 export const ASSET_QUANTUM_SIZE: Record<DydxAsset, string> = {
   [DydxAsset.USDC]: '1e-6',

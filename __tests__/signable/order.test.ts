@@ -33,7 +33,7 @@ const mockKeyPairEvenY: KeyPair = {
 const mockOrder: OrderWithClientId = {
   positionId: '12345',
   humanSize: '145.0005',
-  humanLimitFee: '0.032985',
+  limitFee: '0.125',
   market: DydxMarket.ETH_USD,
   side: StarkwareOrderSide.BUY,
   expirationIsoTimestamp: '2020-09-17T04:15:55.028Z',
@@ -41,12 +41,12 @@ const mockOrder: OrderWithClientId = {
   clientId: 'This is an ID that the client came up with to describe this order',
 };
 const mockSignature = (
-  '01ac25fb542c7f58953cbbaec0bd774e480d6e22d7c7145f531986c32ce28e09' +
-  '0038738abd1a7a960a45376c926fc7e41889d0f365c8749a80306e355dcf78ec'
+  '059487ea7c537f34516f4dc7c54ad30ab0096823269ba18aea0e64e13fb03462' +
+  '03be73ed4dafbf99baeeaee6dce315cd834b5e3257d4e74371d14cf8f2189a59'
 );
 const mockSignatureEvenY = (
-  '05de75d37686126262e31560aca7e3e3782210d1ed5395b8c8704b1a51831a7a' +
-  '01427d9b50773cd537e357c969aeb8dc24e23365418b641a11b5902d1140b8de'
+  '030644ef5b2de9e93f13df5a4cf8284e7256223366b5da29bf2002ed40825171' +
+  '03961ec47c34c49e97095c546895cc22afa6e563474615729720fd8b768c5b87'
 );
 
 describe('SignableOrder', () => {
@@ -174,7 +174,7 @@ describe('SignableOrder', () => {
         .toStarkware();
       expect(starkwareOrder.quantumsAmountSynthetic).toEqual('14500050000');
       expect(starkwareOrder.quantumsAmountCollateral).toEqual('50750272151');
-      expect(starkwareOrder.quantumsAmountFee).toEqual('32985');
+      expect(starkwareOrder.quantumsAmountFee).toEqual('6343784019');
     });
 
     it('throws if the market is unknown', () => {
