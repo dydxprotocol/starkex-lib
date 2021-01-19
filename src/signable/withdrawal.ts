@@ -70,7 +70,7 @@ export class SignableWithdrawal extends StarkSignable<StarkwareWithdrawal> {
     const positionIdBn = decToBn(this.message.positionId);
     const nonceBn = decToBn(this.message.nonce);
     const quantumsAmountBn = decToBn(this.message.quantumsAmount);
-    const expirationEpochSecondsBn = intToBn(this.message.expirationEpochHours);
+    const expirationEpochHoursBn = intToBn(this.message.expirationEpochHours);
 
     if (positionIdBn.bitLength() > WITHDRAWAL_FIELD_BIT_LENGTHS.positionId) {
       throw new Error('SignableOraclePrice: positionId exceeds max value');
@@ -82,7 +82,7 @@ export class SignableWithdrawal extends StarkSignable<StarkwareWithdrawal> {
       throw new Error('SignableOraclePrice: quantumsAmount exceeds max value');
     }
     if (
-      expirationEpochSecondsBn.bitLength() > WITHDRAWAL_FIELD_BIT_LENGTHS.expirationEpochHours
+      expirationEpochHoursBn.bitLength() > WITHDRAWAL_FIELD_BIT_LENGTHS.expirationEpochHours
     ) {
       throw new Error('SignableOraclePrice: expirationEpochHours exceeds max value');
     }
@@ -91,7 +91,7 @@ export class SignableWithdrawal extends StarkSignable<StarkwareWithdrawal> {
       .iushln(WITHDRAWAL_FIELD_BIT_LENGTHS.positionId).iadd(positionIdBn)
       .iushln(WITHDRAWAL_FIELD_BIT_LENGTHS.nonce).iadd(nonceBn)
       .iushln(WITHDRAWAL_FIELD_BIT_LENGTHS.quantumsAmount).iadd(quantumsAmountBn)
-      .iushln(WITHDRAWAL_FIELD_BIT_LENGTHS.expirationEpochHours).iadd(expirationEpochSecondsBn)
+      .iushln(WITHDRAWAL_FIELD_BIT_LENGTHS.expirationEpochHours).iadd(expirationEpochHoursBn)
       .iushln(WITHDRAWAL_PADDING_BITS);
 
     return pedersen(COLLATERAL_ASSET_ID_BN, packedWithdrawalBn);

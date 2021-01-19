@@ -104,7 +104,7 @@ export class SignableOrder extends StarkSignable<StarkwareOrder> {
     const quantumsAmountFeeBn = decToBn(this.message.quantumsAmountFee);
     const nonceBn = decToBn(this.message.nonce);
     const positionIdBn = decToBn(this.message.positionId);
-    const expirationEpochSecondsBn = intToBn(this.message.expirationEpochHours);
+    const expirationEpochHours = intToBn(this.message.expirationEpochHours);
 
     const [assetIdSellBn, assetIdBuyBn] = this.message.isBuyingSynthetic
       ? [assetIdCollateralBn, assetIdSyntheticBn]
@@ -137,7 +137,7 @@ export class SignableOrder extends StarkSignable<StarkwareOrder> {
     if (positionIdBn.bitLength() > ORDER_FIELD_BIT_LENGTHS.positionId) {
       throw new Error('SignableOrder: positionId exceeds max value');
     }
-    if (expirationEpochSecondsBn.bitLength() > ORDER_FIELD_BIT_LENGTHS.expirationEpochHours) {
+    if (expirationEpochHours.bitLength() > ORDER_FIELD_BIT_LENGTHS.expirationEpochHours) {
       throw new Error('SignableOrder: expirationEpochHours exceeds max value');
     }
 
@@ -150,7 +150,7 @@ export class SignableOrder extends StarkSignable<StarkwareOrder> {
       .iushln(ORDER_FIELD_BIT_LENGTHS.positionId).iadd(positionIdBn) // Repeat (1/3).
       .iushln(ORDER_FIELD_BIT_LENGTHS.positionId).iadd(positionIdBn) // Repeat (2/3).
       .iushln(ORDER_FIELD_BIT_LENGTHS.positionId).iadd(positionIdBn) // Repeat (3/3).
-      .iushln(ORDER_FIELD_BIT_LENGTHS.expirationEpochHours).iadd(expirationEpochSecondsBn)
+      .iushln(ORDER_FIELD_BIT_LENGTHS.expirationEpochHours).iadd(expirationEpochHours)
       .iushln(ORDER_PADDING_BITS);
 
     const assetsBn = pedersen(pedersen(assetIdSellBn, assetIdBuyBn), assetIdFeeBn);
