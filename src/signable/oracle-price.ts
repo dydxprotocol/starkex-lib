@@ -2,7 +2,12 @@ import BN from 'bn.js';
 
 import { isoTimestampToEpochSeconds } from '../helpers';
 import { pedersen } from '../lib/starkex-resources/crypto';
-import { decToBn, hexToBn, utf8ToBn } from '../lib/util';
+import {
+  decToBn,
+  hexToBn,
+  intToBn,
+  utf8ToBn,
+} from '../lib/util';
 import {
   OraclePriceWithAssetName,
   OraclePriceWithAssetId,
@@ -42,7 +47,7 @@ export class SignableOraclePrice extends StarkSignable<OraclePriceWithAssetId> {
 
   protected calculateHash(): BN {
     const priceBn = decToBn(this.message.price);
-    const timestampEpochSecondsBn = decToBn(isoTimestampToEpochSeconds(this.message.isoTimestamp));
+    const timestampEpochSecondsBn = intToBn(isoTimestampToEpochSeconds(this.message.isoTimestamp));
     const signedAssetId = hexToBn(this.message.signedAssetId);
 
     if (priceBn.bitLength() > ORACLE_PRICE_FIELD_BIT_LENGTHS.price) {

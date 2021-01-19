@@ -41,12 +41,12 @@ const mockOrder: OrderWithClientId = {
   clientId: 'This is an ID that the client came up with to describe this order',
 };
 const mockSignature = (
-  '059487ea7c537f34516f4dc7c54ad30ab0096823269ba18aea0e64e13fb03462' +
-  '03be73ed4dafbf99baeeaee6dce315cd834b5e3257d4e74371d14cf8f2189a59'
+  '0398287472161cba0e6386ff0b2f25f39ba37c646b7bbadace80eee6b8e7157d' +
+  '01ba924272e1e42b3211b96bbbe012e7e8101e1b3e5b83ea90d161ad11fcced4'
 );
 const mockSignatureEvenY = (
-  '030644ef5b2de9e93f13df5a4cf8284e7256223366b5da29bf2002ed40825171' +
-  '03961ec47c34c49e97095c546895cc22afa6e563474615729720fd8b768c5b87'
+  '05cf391a69386f53693344bada2e0d245879f3c6a98971498b2862ff2f359c49' +
+  '0737deea7e201eaa86c8d6eeb2c1ca3ce89ac248b3fe1a6182301aa72d6e8e4f'
 );
 
 describe('SignableOrder', () => {
@@ -168,13 +168,16 @@ describe('SignableOrder', () => {
 
   describe('toStarkware()', () => {
 
-    it('converts human amounts to quantum amounts', () => {
+    it('converts human amounts to quantum amounts and converts expiration to hours', () => {
       const starkwareOrder: StarkwareOrder = SignableOrder
         .fromOrder(mockOrder)
         .toStarkware();
-      expect(starkwareOrder.quantumsAmountSynthetic).toEqual('14500050000');
-      expect(starkwareOrder.quantumsAmountCollateral).toEqual('50750272151');
-      expect(starkwareOrder.quantumsAmountFee).toEqual('6343784019');
+      expect(starkwareOrder.quantumsAmountSynthetic).toBe('14500050000');
+      expect(starkwareOrder.quantumsAmountCollateral).toBe('50750272151');
+      expect(starkwareOrder.quantumsAmountFee).toBe('6343784019');
+
+      // Order expiration should be rounded up, and should have a buffer added.
+      expect(starkwareOrder.expirationEpochHours).toBe(444581);
     });
 
     it('throws if the market is unknown', () => {

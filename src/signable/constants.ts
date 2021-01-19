@@ -1,3 +1,5 @@
+export const STARK_SIGNATURE_EXPIRATION_BUFFER_HOURS = 24 * 2; // Two days.
+
 export const ORDER_FIELD_BIT_LENGTHS = {
   assetIdSynthetic: 128,
   assetIdCollateral: 250,
@@ -5,7 +7,7 @@ export const ORDER_FIELD_BIT_LENGTHS = {
   quantumsAmount: 64,
   nonce: 32,
   positionId: 64,
-  expirationEpochSeconds: 32,
+  expirationEpochHours: 32,
 };
 
 export const WITHDRAWAL_FIELD_BIT_LENGTHS = {
@@ -13,7 +15,7 @@ export const WITHDRAWAL_FIELD_BIT_LENGTHS = {
   positionId: 64,
   nonce: 32,
   quantumsAmount: 64,
-  expirationEpochSeconds: 32,
+  expirationEpochHours: 32,
 };
 
 export const CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS = {
@@ -22,7 +24,7 @@ export const CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS = {
   positionId: 64,
   nonce: 32,
   quantumsAmount: 64,
-  expirationEpochSeconds: 32,
+  expirationEpochHours: 32,
   condition: 251,
 };
 
