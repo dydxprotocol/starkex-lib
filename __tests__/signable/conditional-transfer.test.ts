@@ -30,8 +30,8 @@ const mockParams: ConditionalTransferParams = {
   condition: Buffer.from('mock-condition'),
 };
 const mockSignature = (
-  '014dedad7bd42da36e81ce627e55be508a4afe019700dd478ea8134b3549d327' +
-  '0571d1dcbab6f25f4d2f3af054f359773289266c69df91c9608882f0a9b201d8'
+  '067e90143a21d8a6aca85207de5e124e9644f7adc18deb42c5cf1240766e57bb' +
+  '04a39c4fdadf214d7282a59d37b21e0d3ea7fe1fc0d0ee25c22a3dd9d5cb8307'
 );
 
 describe('SignableConditionalTransfer', () => {
@@ -90,11 +90,12 @@ describe('SignableConditionalTransfer', () => {
 
   describe('toStarkware()', () => {
 
-    it('converts human amounts to quantum amounts', () => {
+    it('converts human amounts to quantum amounts and converts expiration to hours', () => {
       const starkwareConditionalTransfer: StarkwareConditionalTransfer = (
         new SignableConditionalTransfer(mockParams).toStarkware()
       );
       expect(starkwareConditionalTransfer.quantumsAmount).toEqual('49478023');
+      expect(starkwareConditionalTransfer.expirationEpochHours).toBe(444533);
     });
   });
 

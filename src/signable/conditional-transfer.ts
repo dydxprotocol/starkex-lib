@@ -5,7 +5,7 @@ import {
   COLLATERAL_ASSET_ID,
 } from '../constants';
 import {
-  isoTimestampToEpochSeconds,
+  isoTimestampToEpochHours,
   nonceFromClientId,
   toQuantumsExact,
 } from '../helpers';
@@ -14,6 +14,7 @@ import {
   bufferToBn,
   decToBn,
   hexToBn,
+  intToBn,
 } from '../lib/util';
 import {
   ConditionalTransferParams,
@@ -43,8 +44,8 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
     // The transfer asset is always the collateral asset.
     const quantumsAmount = toQuantumsExact(transfer.humanAmount, COLLATERAL_ASSET);
 
-    // Convert to a Unix timestamp (in seconds).
-    const expirationEpochSeconds = isoTimestampToEpochSeconds(transfer.expirationIsoTimestamp);
+    // Convert to a Unix timestamp (in hours).
+    const expirationEpochHours = isoTimestampToEpochHours(transfer.expirationIsoTimestamp);
 
     super({
       senderPositionId: transfer.senderPositionId,
@@ -53,7 +54,7 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
       condition: transfer.condition,
       quantumsAmount,
       nonce,
-      expirationEpochSeconds,
+      expirationEpochHours,
     });
   }
 
@@ -64,7 +65,7 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
     const conditionBn = bufferToBn(this.message.condition);
     const quantumsAmountBn = decToBn(this.message.quantumsAmount);
     const nonceBn = decToBn(this.message.nonce);
-    const expirationEpochSecondsBn = decToBn(this.message.expirationEpochSeconds);
+    const expirationEpochSecondsBn = intToBn(this.message.expirationEpochHours);
 
     if (senderPositionIdBn.bitLength() > CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.positionId) {
       throw new Error('SignableOraclePrice: senderPositionId exceeds max value');
@@ -90,9 +91,9 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
     }
     if (
       expirationEpochSecondsBn.bitLength() >
-      CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.expirationEpochSeconds
+      CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.expirationEpochHours
     ) {
-      throw new Error('SignableOraclePrice: expirationEpochSeconds exceeds max value');
+      throw new Error('SignableOraclePrice: expirationEpochHours exceeds max value');
     }
 
     // The transfer asset and fee asset are always the collateral asset.
@@ -113,7 +114,7 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
     const transferPart3 = new BN(CONDITIONAL_TRANSFER_PREFIX)
       .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.quantumsAmount).iadd(quantumsAmountBn)
       .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.quantumsAmount).iadd(MAX_AMOUNT_FEE_BN)
-      .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.expirationEpochSeconds).iadd(
+      .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.expirationEpochHours).iadd(
         expirationEpochSecondsBn,
       )
       .iushln(CONDITIONAL_TRANSFER_PADDING_BITS);

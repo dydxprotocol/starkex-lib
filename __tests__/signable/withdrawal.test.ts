@@ -29,8 +29,8 @@ const mockWithdrawal: WithdrawalWithClientId = {
   clientId: 'This is an ID that the client came up with to describe this withdrawal',
 };
 const mockSignature = (
-  '0214a0ab2f3c065c5848ad9dbac6cc98509b66e76a8f563d5c8ffda01b0fa2e0' +
-  '07242b1c65d039fe645d122ecea7c3e58c8fda5814e0c152dbdeef4af706ad06'
+  '05e48c33f8205a5359c95f1bd7385c1c1f587e338a514298c07634c0b6c952ba' +
+  '0687d6980502a5d7fa84ef6fdc00104db22c43c7fb83e88ca84f19faa9ee3de1'
 );
 
 describe('SignableWithdrawal', () => {
@@ -111,11 +111,12 @@ describe('SignableWithdrawal', () => {
 
   describe('toStarkware()', () => {
 
-    it('converts human amounts to quantum amounts', () => {
+    it('converts human amounts to quantum amounts and converts expiration to hours', () => {
       const starkwareWithdrawal: StarkwareWithdrawal = SignableWithdrawal
         .fromWithdrawal(mockWithdrawal)
         .toStarkware();
-      expect(starkwareWithdrawal.quantumsAmount).toEqual('49478023');
+      expect(starkwareWithdrawal.quantumsAmount).toBe('49478023');
+      expect(starkwareWithdrawal.expirationEpochHours).toBe(444533);
     });
   });
 

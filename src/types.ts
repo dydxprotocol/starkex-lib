@@ -55,7 +55,7 @@ export interface StarkwareWithdrawal {
   positionId: string;
   quantumsAmount: string;
   nonce: string; // For signature. A base-10 integer.
-  expirationEpochSeconds: string;
+  expirationEpochHours: number;
 }
 
 // ============ Conditional Transfer Parameters ============
@@ -77,7 +77,7 @@ export interface StarkwareConditionalTransfer {
   condition: Buffer;
   quantumsAmount: string;
   nonce: string; // For signature. A base-10 integer.
-  expirationEpochSeconds: string;
+  expirationEpochHours: number;
 }
 
 // ============ Order Parameters ============
@@ -120,7 +120,7 @@ export interface StarkwareOrder extends StarkwareAmounts {
   assetIdFee: string;
   positionId: string;
   nonce: string; // For signature. A base-10 integer.
-  expirationEpochSeconds: string;
+  expirationEpochHours: number;
 }
 
 // ============ API Request Parameters ============

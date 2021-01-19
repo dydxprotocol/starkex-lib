@@ -70,6 +70,16 @@ export function decToBn(dec: string): BN {
 }
 
 /**
+ * Convert an integer number to a BN.
+ */
+export function intToBn(int: number): BN {
+  if (!Number.isInteger(int)) {
+    throw new Error('intToBn: Input is not an integer');
+  }
+  return new BN(int);
+}
+
+/**
  * Convert a string to a BN equal to the left-aligned UTF-8 representation with a fixed bit length.
  *
  * The specified numBits is expected to be a multiple of four.
