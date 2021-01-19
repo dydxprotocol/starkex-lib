@@ -65,7 +65,7 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
     const conditionBn = bufferToBn(this.message.condition);
     const quantumsAmountBn = decToBn(this.message.quantumsAmount);
     const nonceBn = decToBn(this.message.nonce);
-    const expirationEpochSecondsBn = intToBn(this.message.expirationEpochHours);
+    const expirationEpochHoursBn = intToBn(this.message.expirationEpochHours);
 
     if (senderPositionIdBn.bitLength() > CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.positionId) {
       throw new Error('SignableOraclePrice: senderPositionId exceeds max value');
@@ -90,7 +90,7 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
       throw new Error('SignableOraclePrice: nonce exceeds max value');
     }
     if (
-      expirationEpochSecondsBn.bitLength() >
+      expirationEpochHoursBn.bitLength() >
       CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.expirationEpochHours
     ) {
       throw new Error('SignableOraclePrice: expirationEpochHours exceeds max value');
@@ -115,7 +115,7 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
       .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.quantumsAmount).iadd(quantumsAmountBn)
       .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.quantumsAmount).iadd(MAX_AMOUNT_FEE_BN)
       .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.expirationEpochHours).iadd(
-        expirationEpochSecondsBn,
+        expirationEpochHoursBn,
       )
       .iushln(CONDITIONAL_TRANSFER_PADDING_BITS);
 
