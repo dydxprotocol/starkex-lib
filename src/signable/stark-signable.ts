@@ -17,11 +17,11 @@ import { KeyPair } from '../types';
  * Base class for a STARK key signable message.
  */
 export abstract class StarkSignable<T> {
-  protected readonly message: T;
+  public readonly message: T;
 
   private _hashBN: BN | null = null;
 
-  protected constructor(
+  public constructor(
     message: T,
   ) {
     this.message = message;
