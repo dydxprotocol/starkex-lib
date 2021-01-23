@@ -191,22 +191,43 @@ describe('SignableOrder', () => {
     });
   });
 
-  it('end-to-end', () => {
-    // Repeat some number of times.
-    for (let i = 0; i < 3; i++) {
-      const keyPair: KeyPair = generateKeyPairUnsafe();
-      const signableOrder = SignableOrder.fromOrder(mockOrder);
-      const signature = signableOrder.sign(keyPair.privateKey);
+  it.only('end-to-end', () => {
+    const redundantOrders: any[] = [];
 
+    const signatures: any[] = [];
+    const keyPairs: any[] = [];
+
+    let start = Date.now();
+    for (let i = 0; i < 100; i++) {
+      const signableOrder = SignableOrder.fromOrder(mockOrder);
+      redundantOrders.push(signableOrder);
+    }
+    console.log('making signable objects:', Date.now() - start);
+    start = Date.now();
+    for (let i = 0; i < 100; i++) {
+      const keyPair: KeyPair = generateKeyPairUnsafe();
+      keyPairs.push(keyPair);
+    }
+    console.log('generating key pairs:', Date.now() - start);
+    start = Date.now();
+    for (let i = 0; i < 100; i++) {
+      const signature = redundantOrders[i].sign(keyPairs[i].privateKey);
+      signatures.push(signature);
+    }
+    console.log('signing orders:', Date.now() - start);
+    start = Date.now();
+
+    for (let i = 0; i < 100; i++) {
       // Expect to be valid when verifying with the right public key.
       expect(
-        signableOrder.verifySignature(signature, keyPair.publicKey),
+        redundantOrders[i].verifySignature(signatures[i], keyPairs[i].publicKey),
       ).toBe(true);
 
       // Expect to be invalid when verifying with a different public key.
-      expect(
-        signableOrder.verifySignature(signature, mockKeyPair.publicKey),
-      ).toBe(false);
+      // expect(
+      //   signableOrder.verifySignature(signature, mockKeyPair.publicKey),
+      // ).toBe(false);
     }
+    console.log('verifying signatures:', Date.now() - start);
   });
 });
