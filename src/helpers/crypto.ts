@@ -32,14 +32,30 @@ export function asEcKeyPair(
 /**
  * Helper for if you want to access additional cryptographic functionality with a public key.
  *
- * The provided parameter should be the x-coordinate of the public key as a hex string. There are
- * two possible values for the y-coordinate, so `isOdd` is required to choose between the two.
+ * The provided parameter should be the x-coordinate of the public key, or an (x, y) pair.
+ * If given as an x-coordinate, then `yCoordinateIsOdd` is required.
  */
 export function asEcKeyPairPublic(
-  publicKey: string,
-  isOdd: boolean,
+  publicKey: string | { x: string; y: string },
+  yCoordinateIsOdd: boolean | null = null,
 ): elliptic.ec.KeyPair {
-  const prefix = isOdd ? '03' : '02';
+  if (typeof publicKey !== 'string') {
+    if (typeof publicKey.x !== 'string' || typeof publicKey.y !== 'string') {
+      throw new Error('asEcKeyPairPublic: Public key must be a string or (x, y) pair');
+    }
+    return starkEc.keyFromPublic({
+      x: normalizeHex32(publicKey.x),
+      y: normalizeHex32(publicKey.y),
+    });
+  }
+
+  if (yCoordinateIsOdd === null) {
+    throw new Error(
+      'asEcKeyPairPublic: Key was not given as an (x, y) pair, so yCoordinateIsOdd is required',
+    );
+  }
+
+  const prefix = yCoordinateIsOdd ? '03' : '02';
   const prefixedPublicKey = `${prefix}${normalizeHex32(publicKey)}`;
 
   // This will get the point from only the x-coordinate via:
@@ -79,6 +95,37 @@ export function asSimplePublicKey(
   ecPublicKey: elliptic.curve.base.BasePoint,
 ): string {
   return bnToHex32(ecPublicKey.getX());
+}
+
+/**
+ * Check whether the string or (x, y) pair is a valid public key.
+ *
+ * Will not throw, always returns a boolean.
+ */
+export function isValidPublicKey(
+  publicKey: string | { x: string; y: string },
+): boolean {
+  try {
+    const ecPublicKey = asEcKeyPairPublic(
+      publicKey,
+      false, // Should not affect the result.
+    );
+    if (!ecPublicKey.validate().result) {
+      return false;
+    }
+
+    // Return false for out-of-range values and non-hex strings.
+    const expectedX = (publicKey as { x: string }).x || (publicKey as string);
+    const resultX = ecPublicKey.getPublic().getX().toString(16);
+    if (normalizeHex32(resultX) !== normalizeHex32(expectedX)) {
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    // Just catch everything. Public keys which throw include 0 and (2^251 + 1).
+    return false;
+  }
 }
 
 /**
