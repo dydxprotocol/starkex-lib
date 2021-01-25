@@ -8,6 +8,7 @@ import {
 } from '../helpers';
 import {
   sign,
+  starkEc,
   verify,
 } from '../lib/starkex-resources/crypto';
 import { bnToHex32 } from '../lib/util';
@@ -60,8 +61,15 @@ export abstract class StarkSignable<T> {
   verifySignature(
     signature: string,
     publicKey: string,
+    publicKeyYCoordinate: string | null = null,
   ): boolean {
     const signatureStruct = deserializeSignature(signature);
+
+    // If y-coordinate is available, save time by using it, instead of having to infer it.
+    if (publicKeyYCoordinate) {
+      const ecPublicKey = starkEc.keyFromPublic({ x: publicKey, y: publicKeyYCoordinate });
+      return verify(ecPublicKey, this.hashBN, signatureStruct);
+    }
 
     // Return true if the signature is valid for either of the two possible y-coordinates.
     //

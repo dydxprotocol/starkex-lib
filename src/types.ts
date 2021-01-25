@@ -23,8 +23,13 @@ export enum DydxAsset {
 
 // Key pair, represented as hex strings, no 0x prefix.
 export interface KeyPair {
-  publicKey: string; // x-coordinate
+  publicKey: string; // Required x-coordinate.
+  publicKeyYCoordinate?: string; // Optional y-coordinate.
   privateKey: string;
+}
+
+export interface KeyPairWithYCoordinate extends KeyPair {
+  publicKeyYCoordinate: string;
 }
 
 // Signature, represented as hex strings, no 0x prefix.

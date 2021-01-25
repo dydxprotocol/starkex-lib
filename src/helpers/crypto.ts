@@ -11,6 +11,7 @@ import {
 } from '../lib/util';
 import {
   KeyPair,
+  KeyPairWithYCoordinate,
   SignatureStruct,
 } from '../types';
 
@@ -56,14 +57,15 @@ export function asEcKeyPairPublic(
  */
 export function asSimpleKeyPair(
   ecKeyPair: elliptic.ec.KeyPair,
-): KeyPair {
+): KeyPairWithYCoordinate {
   const ecPrivateKey = ecKeyPair.getPrivate();
   if (!ecPrivateKey) {
     throw new Error('asSimpleKeyPair: Key pair has no private key');
   }
   const ecPublicKey = ecKeyPair.getPublic();
   return {
-    publicKey: asSimplePublicKey(ecPublicKey),
+    publicKey: bnToHex32(ecPublicKey.getX()),
+    publicKeyYCoordinate: bnToHex32(ecPublicKey.getY()),
     privateKey: bnToHex32(ecPrivateKey),
   };
 }
