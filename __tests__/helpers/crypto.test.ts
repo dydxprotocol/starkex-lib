@@ -4,7 +4,7 @@
 
 import expect from 'expect';
 
-import { KeyPair } from '../../src/types';
+import { KeyPair, KeyPairWithYCoordinate } from '../../src/types';
 
 // Module under test.
 import {
@@ -17,12 +17,14 @@ import {
 } from '../../src/helpers/crypto';
 
 // Mock params.
-const mockKeyPair: KeyPair = {
+const mockKeyPair: KeyPairWithYCoordinate = {
   publicKey: '3b865a18323b8d147a12c556bfb1d502516c325b1477a23ba6c77af31f020fd',
+  publicKeyYCoordinate: '211496e5e8ccf71930aebbfb7e815807acbfd0021f17f8b3944a3ed5f06c27',
   privateKey: '58c7d5a90b1776bde86ebac077e053ed85b0f7164f53b080304a531947f46e3',
 };
-const mockPaddedKeyPair: KeyPair = {
+const mockPaddedKeyPair: KeyPairWithYCoordinate = {
   publicKey: `0${mockKeyPair.publicKey}`,
+  publicKeyYCoordinate: `00${mockKeyPair.publicKeyYCoordinate}`,
   privateKey: `0${mockKeyPair.privateKey}`,
 };
 const mockKeyPairEvenY: KeyPair = {
