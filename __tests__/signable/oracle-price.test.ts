@@ -10,7 +10,7 @@ import {
   OraclePriceWithAssetName,
 } from '../../src/types';
 import { generateKeyPairUnsafe } from '../../src/keys';
-import { mutateHexStringAt } from './util';
+import { mutateHexStringAt } from '../util';
 
 // Module under test.
 import { SignableOraclePrice } from '../../src/signable/oracle-price';

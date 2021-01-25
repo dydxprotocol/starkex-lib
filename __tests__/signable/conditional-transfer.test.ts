@@ -10,7 +10,7 @@ import {
   ConditionalTransferParams,
 } from '../../src/types';
 import { generateKeyPairUnsafe } from '../../src/keys';
-import { mutateHexStringAt } from './util';
+import { mutateHexStringAt } from '../util';
 
 // Module under test.
 import { SignableConditionalTransfer } from '../../src/signable/conditional-transfer';

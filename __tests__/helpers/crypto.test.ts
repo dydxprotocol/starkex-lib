@@ -4,7 +4,7 @@
 
 import expect from 'expect';
 
-import { KeyPair } from '../../src/types';
+import { KeyPair, KeyPairWithYCoordinate } from '../../src/types';
 
 // Module under test.
 import {
@@ -13,16 +13,21 @@ import {
   asSimplePublicKey,
   asSimpleKeyPair,
   deserializeSignature,
+  isValidPublicKey,
   serializeSignature,
 } from '../../src/helpers/crypto';
+import { generateKeyPairUnsafe, keyPairFromData } from '../../src/keys';
+import { mutateHexStringAt } from '../util';
 
 // Mock params.
-const mockKeyPair: KeyPair = {
+const mockKeyPair: KeyPairWithYCoordinate = {
   publicKey: '3b865a18323b8d147a12c556bfb1d502516c325b1477a23ba6c77af31f020fd',
+  publicKeyYCoordinate: '211496e5e8ccf71930aebbfb7e815807acbfd0021f17f8b3944a3ed5f06c27',
   privateKey: '58c7d5a90b1776bde86ebac077e053ed85b0f7164f53b080304a531947f46e3',
 };
-const mockPaddedKeyPair: KeyPair = {
+const mockPaddedKeyPair: KeyPairWithYCoordinate = {
   publicKey: `0${mockKeyPair.publicKey}`,
+  publicKeyYCoordinate: `00${mockKeyPair.publicKeyYCoordinate}`,
   privateKey: `0${mockKeyPair.privateKey}`,
 };
 const mockKeyPairEvenY: KeyPair = {
@@ -76,6 +81,118 @@ describe('crypto helpers', () => {
     it('throws if the elliptic curve key pair has no private key', () => {
       const ecKeyPair = asEcKeyPairPublic(mockKeyPair.publicKey, false);
       expect(() => asSimpleKeyPair(ecKeyPair)).toThrow('Key pair has no private key');
+    });
+  });
+
+  describe('isValidPublicKey()', () => {
+
+    it('returns true for valid x-coordinates', () => {
+      expect(isValidPublicKey('1')).toBe(true);
+      expect(isValidPublicKey('A')).toBe(true);
+      expect(isValidPublicKey(
+        '0800000000000000000000000000000000000000000000000000000000000000',
+      )).toBe(true);
+      expect(isValidPublicKey(mockKeyPair.publicKey)).toBe(true);
+
+      // Okay with 0x prefix.
+      expect(isValidPublicKey(`0x${mockKeyPair.publicKey}`)).toBe(true);
+
+      // Repeat some number of times.
+      for (let i = 0; i < 25; i++) {
+        // Random key pair.
+        expect(isValidPublicKey(generateKeyPairUnsafe().publicKey)).toBe(true);
+
+        // Key pair from fixed seed.
+        expect(isValidPublicKey(keyPairFromData(Buffer.from([i])).publicKey)).toBe(true);
+      }
+    });
+
+    it('returns false for invalid x-coordinates', () => {
+      expect(isValidPublicKey('0')).toBe(false);
+      expect(isValidPublicKey('C')).toBe(false);
+      expect(isValidPublicKey(
+        '8000000000000000000000000000000000000000000000000000000000000001',
+      )).toBe(false);
+
+      // Not a hex string.
+      expect(isValidPublicKey('asdf')).toBe(false);
+
+      // Out of range.
+      expect(isValidPublicKey(
+        '8000000000000000000000000000000000000000000000000000000000000000',
+      )).toBe(false);
+      expect(isValidPublicKey(
+        '800000000000000000000000000000000000000000000000000000000000abcd',
+      )).toBe(false);
+    });
+
+    it('returns true for valid (x, y) pairs', () => {
+      expect(isValidPublicKey({
+        x: mockKeyPair.publicKey,
+        y: mockKeyPair.publicKeyYCoordinate,
+      })).toBe(true);
+
+      // Okay with 0x prefix.
+      expect(isValidPublicKey({
+        x: `0x${mockKeyPair.publicKey}`,
+        y: `0x${mockKeyPair.publicKeyYCoordinate}`,
+      })).toBe(true);
+
+      // The other valid y-coordinate. Note that this pair does not match mockKeyPair.privateKey.
+      expect(isValidPublicKey({
+        x: mockKeyPair.publicKey,
+        y: '7deeb691a173319e6cf514404817ea7f853402ffde0e8074c6bb5c12a0f93da',
+      })).toBe(true);
+
+      // Repeat some number of times.
+      for (let i = 0; i < 25; i++) {
+        // Random key pair.
+        const randomKeyPair = generateKeyPairUnsafe();
+        expect(isValidPublicKey({
+          x: randomKeyPair.publicKey,
+          y: randomKeyPair.publicKeyYCoordinate,
+        })).toBe(true);
+
+        // Key pair from fixed seed.
+        const deterministicKeyPair = keyPairFromData(Buffer.from([i]));
+        expect(isValidPublicKey({
+          x: deterministicKeyPair.publicKey,
+          y: deterministicKeyPair.publicKeyYCoordinate,
+        })).toBe(true);
+      }
+    });
+
+    it('returns false for invalid (x, y) pairs', () => {
+      expect(isValidPublicKey({
+        x: mutateHexStringAt(mockKeyPair.publicKey, 0),
+        y: mockKeyPair.publicKeyYCoordinate,
+      })).toBe(false);
+      expect(isValidPublicKey({
+        x: mutateHexStringAt(mockKeyPair.publicKey, 62),
+        y: mockKeyPair.publicKeyYCoordinate,
+      })).toBe(false);
+      expect(isValidPublicKey({
+        x: mockKeyPair.publicKey,
+        y: mutateHexStringAt(mockKeyPair.publicKeyYCoordinate, 0),
+      })).toBe(false);
+      expect(isValidPublicKey({
+        x: mockKeyPair.publicKey,
+        y: mutateHexStringAt(mockKeyPair.publicKeyYCoordinate, 62),
+      })).toBe(false);
+
+      // Repeat some number of times.
+      for (let i = 0; i < 25; i++) {
+        // Random key pair.
+        const randomKeyPair = generateKeyPairUnsafe();
+        expect(isValidPublicKey({
+          x: mutateHexStringAt(randomKeyPair.publicKey, Math.floor(Math.random() * 62)),
+          y: randomKeyPair.publicKeyYCoordinate,
+        })).toBe(false);
+        expect(isValidPublicKey({
+          x: randomKeyPair.publicKey,
+          y: mutateHexStringAt(randomKeyPair.publicKeyYCoordinate, Math.floor(Math.random() * 62)),
+        })).toBe(false);
+      }
     });
   });
 

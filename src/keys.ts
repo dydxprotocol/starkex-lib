@@ -8,21 +8,19 @@ import {
   hexToBn,
   randomBuffer,
 } from './lib/util';
-import { KeyPair } from './types';
+import { KeyPairWithYCoordinate } from './types';
 
 /**
  * Generate a pseudorandom StarkEx key pair. NOT FOR USE IN PRODUCTION.
  */
-export function generateKeyPairUnsafe(): KeyPair {
+export function generateKeyPairUnsafe(): KeyPairWithYCoordinate {
   return keyPairFromData(randomBuffer(32));
 }
 
 /**
  * Generate a STARK key pair deterministically from a Buffer.
  */
-export function keyPairFromData(
-  data: Buffer,
-): KeyPair {
+export function keyPairFromData(data: Buffer): KeyPairWithYCoordinate {
   if (data.length === 0) {
     throw new Error('keyPairFromData: Empty buffer');
   }

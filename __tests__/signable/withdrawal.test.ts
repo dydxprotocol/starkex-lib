@@ -12,7 +12,7 @@ import {
 } from '../../src/types';
 import { generateKeyPairUnsafe } from '../../src/keys';
 import { nonceFromClientId } from '../../src/helpers';
-import { mutateHexStringAt } from './util';
+import { mutateHexStringAt } from '../util';
 
 // Module under test.
 import { SignableWithdrawal } from '../../src/signable/withdrawal';
