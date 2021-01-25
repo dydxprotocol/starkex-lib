@@ -26,6 +26,9 @@ const mockKeyPair: KeyPair = {
   publicKey: '3b865a18323b8d147a12c556bfb1d502516c325b1477a23ba6c77af31f020fd',
   privateKey: '58c7d5a90b1776bde86ebac077e053ed85b0f7164f53b080304a531947f46e3',
 };
+const mockKeyPairPublicYCoordinate = (
+  '211496e5e8ccf71930aebbfb7e815807acbfd0021f17f8b3944a3ed5f06c27'
+);
 const mockKeyPairEvenY: KeyPair = {
   publicKey: '5c749cd4c44bdc730bc90af9bfbdede9deb2c1c96c05806ce1bc1cb4fed64f7',
   privateKey: '65b7bb244e019b45a521ef990fb8a002f76695d1fc6c1e31911680f2ed78b84',
@@ -60,6 +63,13 @@ describe('SignableOrder', () => {
       expect(result).toBe(true);
     });
 
+    it('returns true for a valid signature (odd y), with y-coordinate provided', () => {
+      const result = SignableOrder
+        .fromOrder(mockOrder)
+        .verifySignature(mockSignature, mockKeyPair.publicKey, mockKeyPairPublicYCoordinate);
+      expect(result).toBe(true);
+    });
+
     it('returns true for a valid signature (even y)', () => {
       const result = SignableOrder
         .fromOrder(mockOrder)
@@ -85,6 +95,14 @@ describe('SignableOrder', () => {
           .verifySignature(badSignature, mockKeyPair.publicKey);
         expect(result).toBe(false);
       }
+    });
+
+    it('returns false for a invalid signature (odd y), with y-coordinate provided', () => {
+      const badSignature = mutateHexStringAt(mockSignature, 0);
+      const result = SignableOrder
+        .fromOrder(mockOrder)
+        .verifySignature(badSignature, mockKeyPair.publicKey, mockKeyPairPublicYCoordinate);
+      expect(result).toBe(false);
     });
   });
 
