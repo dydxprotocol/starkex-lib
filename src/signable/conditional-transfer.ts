@@ -21,6 +21,7 @@ import {
   StarkwareConditionalTransfer,
 } from '../types';
 import { CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS } from './constants';
+import { getCacheableHash } from './hashes';
 import { StarkSignable } from './stark-signable';
 
 // Note: Fees are not supported for conditional transfers.
@@ -98,7 +99,7 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
 
     // The transfer asset and fee asset are always the collateral asset.
     // Fees are not supported for conditional transfers.
-    const assetIds = pedersen(COLLATERAL_ASSET_ID_BN, COLLATERAL_ASSET_ID_BN);
+    const assetIds = getCacheableHash(COLLATERAL_ASSET_ID_BN, COLLATERAL_ASSET_ID_BN);
 
     const transferPart1 = pedersen(
       pedersen(
