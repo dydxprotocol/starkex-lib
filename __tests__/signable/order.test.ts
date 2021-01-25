@@ -16,7 +16,7 @@ import {
 } from '../../src/types';
 import { generateKeyPairUnsafe } from '../../src/keys';
 import { nonceFromClientId } from '../../src/helpers';
-import { mutateHexStringAt } from './util';
+import { mutateHexStringAt } from '../util';
 
 // Module under test.
 import { SignableOrder } from '../../src/signable/order';
@@ -102,6 +102,22 @@ describe('SignableOrder', () => {
       const result = SignableOrder
         .fromOrder(mockOrder)
         .verifySignature(badSignature, mockKeyPair.publicKey, mockKeyPairPublicYCoordinate);
+      expect(result).toBe(false);
+    });
+
+    it('returns false if the x-coordinate is invalid, when y-coordinate is provided', () => {
+      const badX = mutateHexStringAt(mockKeyPair.publicKey, 20); // Arbitrary offset.
+      const result = SignableOrder
+        .fromOrder(mockOrder)
+        .verifySignature(mockSignature, badX, mockKeyPairPublicYCoordinate);
+      expect(result).toBe(false);
+    });
+
+    it('returns false if the y-coordinate is invalid', () => {
+      const badY = mutateHexStringAt(mockKeyPairPublicYCoordinate, 20); // Arbitrary offset.
+      const result = SignableOrder
+        .fromOrder(mockOrder)
+        .verifySignature(mockSignature, mockKeyPair.publicKey, badY);
       expect(result).toBe(false);
     });
   });
