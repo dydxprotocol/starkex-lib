@@ -66,7 +66,7 @@ export function pedersen(
   for (let i = 0; i < input.length; i++) {
     let x: BN = input[i];
     if (!(x.gte(zeroBn) && x.lt(prime))) {
-      throw new Error(`Invalid input to pedersen hash: ${x}`);
+      throw new Error(`Input to pedersen hash out of range: ${x.toString(16)}`);
     }
     for (let j = 0; j < 252; j++) {
       const pt = constantPoints[2 + i * 252 + j];
