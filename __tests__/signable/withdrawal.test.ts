@@ -3,6 +3,7 @@
  */
 
 import expect from 'expect';
+import _ from 'lodash';
 
 import {
   KeyPair,
@@ -37,72 +38,72 @@ describe('SignableWithdrawal', () => {
 
   describe('verifySignature()', () => {
 
-    it('returns true for a valid signature', () => {
-      const result = SignableWithdrawal
+    it('returns true for a valid signature', async () => {
+      const result = await SignableWithdrawal
         .fromWithdrawal(mockWithdrawal)
         .verifySignature(mockSignature, mockKeyPair.publicKey);
       expect(result).toBe(true);
     });
 
-    it('returns false for an invalid signature', () => {
+    it('returns false for an invalid signature', async () => {
       // Mutate a single character in r.
-      for (let i = 0; i < 3; i++) {
+      await Promise.all(_.range(3).map(async (i) => {
         const badSignature: string = mutateHexStringAt(mockSignature, i);
-        const result = SignableWithdrawal
+        const result = await SignableWithdrawal
           .fromWithdrawal(mockWithdrawal)
           .verifySignature(badSignature, mockKeyPair.publicKey);
         expect(result).toBe(false);
-      }
+      }));
 
       // Mutate a single character in s.
-      for (let i = 0; i < 3; i++) {
+      await Promise.all(_.range(3).map(async (i) => {
         const badSignature: string = mutateHexStringAt(mockSignature, i + 64);
-        const result = SignableWithdrawal
+        const result = await SignableWithdrawal
           .fromWithdrawal(mockWithdrawal)
           .verifySignature(badSignature, mockKeyPair.publicKey);
         expect(result).toBe(false);
-      }
+      }));
     });
   });
 
   describe('sign()', () => {
 
-    it('signs a withdrawal', () => {
-      const signature = SignableWithdrawal
+    it('signs a withdrawal', async () => {
+      const signature = await SignableWithdrawal
         .fromWithdrawal(mockWithdrawal)
         .sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
 
-    it('signs a withdrawal with nonce instead of clientId', () => {
+    it('signs a withdrawal with nonce instead of clientId', async () => {
       const withdrawalWithNonce: WithdrawalWithNonce = {
         ...mockWithdrawal,
         clientId: undefined,
         nonce: nonceFromClientId(mockWithdrawal.clientId),
       };
-      const signature = SignableWithdrawal
+      const signature = await SignableWithdrawal
         .fromWithdrawalWithNonce(withdrawalWithNonce)
         .sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
 
-    it('generates a different signature when the client ID is different', () => {
+    it('generates a different signature when the client ID is different', async () => {
       const withdrawal = {
         ...mockWithdrawal,
         clientId: `${mockWithdrawal.clientId}!`,
       };
-      const signature = SignableWithdrawal
+      const signature = await SignableWithdrawal
         .fromWithdrawal(withdrawal)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
 
-    it('generates a different signature when the position ID is different', () => {
+    it('generates a different signature when the position ID is different', async () => {
       const withdrawal = {
         ...mockWithdrawal,
         positionId: (Number.parseInt(mockWithdrawal.positionId, 10) + 1).toString(),
       };
-      const signature = SignableWithdrawal
+      const signature = await SignableWithdrawal
         .fromWithdrawal(withdrawal)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
@@ -120,22 +121,22 @@ describe('SignableWithdrawal', () => {
     });
   });
 
-  it('end-to-end', () => {
+  it('end-to-end', async () => {
     // Repeat some number of times.
-    for (let i = 0; i < 3; i++) {
+    await Promise.all(_.range(3).map(async () => {
       const keyPair: KeyPair = generateKeyPairUnsafe();
       const signableWithdrawal = SignableWithdrawal.fromWithdrawal(mockWithdrawal);
-      const signature = signableWithdrawal.sign(keyPair.privateKey);
+      const signature = await signableWithdrawal.sign(keyPair.privateKey);
 
       // Expect to be valid when verifying with the right public key.
       expect(
-        signableWithdrawal.verifySignature(signature, keyPair.publicKey),
+        await signableWithdrawal.verifySignature(signature, keyPair.publicKey),
       ).toBe(true);
 
       // Expect to be invalid when verifying with a different public key.
       expect(
-        signableWithdrawal.verifySignature(signature, mockKeyPair.publicKey),
+        await signableWithdrawal.verifySignature(signature, mockKeyPair.publicKey),
       ).toBe(false);
-    }
+    }));
   });
 });

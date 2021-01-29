@@ -9,7 +9,6 @@ import {
   nonceFromClientId,
   toQuantumsExact,
 } from '../helpers';
-import { pedersen } from '../lib/starkex-resources';
 import {
   decToBn,
   hexToBn,
@@ -21,6 +20,7 @@ import {
   WithdrawalWithClientId,
 } from '../types';
 import { WITHDRAWAL_FIELD_BIT_LENGTHS } from './constants';
+import { getPedersenHash } from './hashes';
 import { StarkSignable } from './stark-signable';
 
 const COLLATERAL_ASSET_ID_BN = hexToBn(COLLATERAL_ASSET_ID);
@@ -66,7 +66,7 @@ export class SignableWithdrawal extends StarkSignable<StarkwareWithdrawal> {
     });
   }
 
-  protected calculateHash(): BN {
+  protected async calculateHash(): Promise<BN> {
     const positionIdBn = decToBn(this.message.positionId);
     const nonceBn = decToBn(this.message.nonce);
     const quantumsAmountBn = decToBn(this.message.quantumsAmount);
@@ -94,7 +94,7 @@ export class SignableWithdrawal extends StarkSignable<StarkwareWithdrawal> {
       .iushln(WITHDRAWAL_FIELD_BIT_LENGTHS.expirationEpochHours).iadd(expirationEpochHoursBn)
       .iushln(WITHDRAWAL_PADDING_BITS);
 
-    return pedersen(COLLATERAL_ASSET_ID_BN, packedWithdrawalBn);
+    return getPedersenHash(COLLATERAL_ASSET_ID_BN, packedWithdrawalBn);
   }
 
   toStarkware(): StarkwareWithdrawal {

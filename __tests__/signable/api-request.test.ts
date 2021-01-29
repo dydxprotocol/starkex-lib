@@ -32,23 +32,23 @@ const mockSignature = (
 
 describe('SignableApiRequest', () => {
 
-  it('produces the expected signature', () => {
+  it('produces the expected signature', async () => {
     const signable = new SignableApiRequest(mockApiRequest);
-    const signature = signable.sign(mockKeyPair.privateKey);
+    const signature = await signable.sign(mockKeyPair.privateKey);
     expect(signature).toBe(mockSignature);
   });
 
-  it('verifies a signature', () => {
+  it('verifies a signature', async () => {
     const signable = new SignableApiRequest(mockApiRequest);
-    const isValid = signable.verifySignature(mockSignature, mockKeyPair.publicKey);
+    const isValid = await signable.verifySignature(mockSignature, mockKeyPair.publicKey);
     expect(isValid).toBe(true);
   });
 
-  it('signs and fails verification with the wrong public key', () => {
+  it('signs and fails verification with the wrong public key', async () => {
     const keyPair = generateKeyPairUnsafe();
     const signable = new SignableApiRequest(mockApiRequest);
-    const signature = signable.sign(keyPair.privateKey);
-    const isValid = signable.verifySignature(signature, generateKeyPairUnsafe().publicKey);
+    const signature = await signable.sign(keyPair.privateKey);
+    const isValid = await signable.verifySignature(signature, generateKeyPairUnsafe().publicKey);
     expect(isValid).toBe(false);
   });
 });

@@ -1,3 +1,5 @@
+import BN from 'bn.js';
+
 export enum StarkwareOrderType {
   LIMIT_ORDER_WITH_FEES = 'LIMIT_ORDER_WITH_FEES',
 }
@@ -37,6 +39,8 @@ export interface SignatureStruct {
   r: string;
   s: string;
 }
+
+export type HashFunction = (a: BN, b: BN) => BN | Promise<BN>;
 
 // ============ Withdrawal Parameters ============
 

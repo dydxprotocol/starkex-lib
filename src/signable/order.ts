@@ -11,7 +11,6 @@ import {
   nonceFromClientId,
   getStarkwareLimitFeeAmount,
 } from '../helpers';
-import { pedersen } from '../lib/starkex-resources';
 import {
   decToBn,
   hexToBn,
@@ -28,7 +27,10 @@ import {
 import {
   ORDER_FIELD_BIT_LENGTHS,
 } from './constants';
-import { getCacheableHash } from './hashes';
+import {
+  getCacheablePedersenHash,
+  getPedersenHash,
+} from './hashes';
 import { StarkSignable } from './stark-signable';
 
 const LIMIT_ORDER_WITH_FEES = 3;
@@ -96,7 +98,7 @@ export class SignableOrder extends StarkSignable<StarkwareOrder> {
     });
   }
 
-  protected calculateHash(): BN {
+  protected async calculateHash(): Promise<BN> {
     const assetIdSyntheticBn = hexToBn(this.message.assetIdSynthetic);
     const assetIdCollateralBn = hexToBn(this.message.assetIdCollateral);
     const assetIdFeeBn = hexToBn(this.message.assetIdFee);
@@ -154,8 +156,14 @@ export class SignableOrder extends StarkSignable<StarkwareOrder> {
       .iushln(ORDER_FIELD_BIT_LENGTHS.expirationEpochHours).iadd(expirationEpochHours)
       .iushln(ORDER_PADDING_BITS);
 
-    const assetsBn = getCacheableHash(getCacheableHash(assetIdSellBn, assetIdBuyBn), assetIdFeeBn);
-    return pedersen(pedersen(assetsBn, orderPart1), orderPart2);
+    const assetsBn = await getCacheablePedersenHash(
+      await getCacheablePedersenHash(assetIdSellBn, assetIdBuyBn),
+      assetIdFeeBn,
+    );
+    return getPedersenHash(
+      await getPedersenHash(assetsBn, orderPart1),
+      orderPart2,
+    );
   }
 
   toStarkware(): StarkwareOrder {
