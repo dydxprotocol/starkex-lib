@@ -4,6 +4,7 @@
 
 import Big, { RoundingMode } from 'big.js';
 import expect from 'expect';
+import _ from 'lodash';
 
 import {
   OrderWithClientId,
@@ -56,66 +57,66 @@ describe('SignableOrder', () => {
 
   describe('verifySignature()', () => {
 
-    it('returns true for a valid signature (odd y)', () => {
-      const result = SignableOrder
+    it('returns true for a valid signature (odd y)', async () => {
+      const result = await SignableOrder
         .fromOrder(mockOrder)
         .verifySignature(mockSignature, mockKeyPair.publicKey);
       expect(result).toBe(true);
     });
 
-    it('returns true for a valid signature (odd y), with y-coordinate provided', () => {
-      const result = SignableOrder
+    it('returns true for a valid signature (odd y), with y-coordinate provided', async () => {
+      const result = await SignableOrder
         .fromOrder(mockOrder)
         .verifySignature(mockSignature, mockKeyPair.publicKey, mockKeyPairPublicYCoordinate);
       expect(result).toBe(true);
     });
 
-    it('returns true for a valid signature (even y)', () => {
-      const result = SignableOrder
+    it('returns true for a valid signature (even y)', async () => {
+      const result = await SignableOrder
         .fromOrder(mockOrder)
         .verifySignature(mockSignatureEvenY, mockKeyPairEvenY.publicKey);
       expect(result).toBe(true);
     });
 
-    it('returns false for an invalid signature', () => {
+    it('returns false for an invalid signature', async () => {
       // Mutate a single character in r.
-      for (let i = 0; i < 3; i++) {
+      await Promise.all(_.range(3).map(async (i) => {
         const badSignature: string = mutateHexStringAt(mockSignature, i);
-        const result = SignableOrder
+        const result = await SignableOrder
           .fromOrder(mockOrder)
           .verifySignature(badSignature, mockKeyPair.publicKey);
         expect(result).toBe(false);
-      }
+      }));
 
       // Mutate a single character in s.
-      for (let i = 0; i < 3; i++) {
+      await Promise.all(_.range(3).map(async (i) => {
         const badSignature: string = mutateHexStringAt(mockSignature, i + 64);
-        const result = SignableOrder
+        const result = await SignableOrder
           .fromOrder(mockOrder)
           .verifySignature(badSignature, mockKeyPair.publicKey);
         expect(result).toBe(false);
-      }
+      }));
     });
 
-    it('returns false for a invalid signature (odd y), with y-coordinate provided', () => {
+    it('returns false for a invalid signature (odd y), with y-coordinate provided', async () => {
       const badSignature = mutateHexStringAt(mockSignature, 0);
-      const result = SignableOrder
+      const result = await SignableOrder
         .fromOrder(mockOrder)
         .verifySignature(badSignature, mockKeyPair.publicKey, mockKeyPairPublicYCoordinate);
       expect(result).toBe(false);
     });
 
-    it('returns false if the x-coordinate is invalid, when y-coordinate is provided', () => {
+    it('returns false if the x-coordinate is invalid, when y-coordinate is provided', async () => {
       const badX = mutateHexStringAt(mockKeyPair.publicKey, 20); // Arbitrary offset.
-      const result = SignableOrder
+      const result = await SignableOrder
         .fromOrder(mockOrder)
         .verifySignature(mockSignature, badX, mockKeyPairPublicYCoordinate);
       expect(result).toBe(false);
     });
 
-    it('returns false if the y-coordinate is invalid', () => {
+    it('returns false if the y-coordinate is invalid', async () => {
       const badY = mutateHexStringAt(mockKeyPairPublicYCoordinate, 20); // Arbitrary offset.
-      const result = SignableOrder
+      const result = await SignableOrder
         .fromOrder(mockOrder)
         .verifySignature(mockSignature, mockKeyPair.publicKey, badY);
       expect(result).toBe(false);
@@ -124,21 +125,21 @@ describe('SignableOrder', () => {
 
   describe('sign()', () => {
 
-    it('signs an order (odd y)', () => {
-      const signature = SignableOrder
+    it('signs an order (odd y)', async () => {
+      const signature = await SignableOrder
         .fromOrder(mockOrder)
         .sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
 
-    it('signs an order (even y)', () => {
-      const signature = SignableOrder
+    it('signs an order (even y)', async () => {
+      const signature = await SignableOrder
         .fromOrder(mockOrder)
         .sign(mockKeyPairEvenY.privateKey);
       expect(signature).toEqual(mockSignatureEvenY);
     });
 
-    it('signs an order with quoteAmount instead of price', () => {
+    it('signs an order with quoteAmount instead of price', async () => {
       const roundedQuoteAmount = new Big(mockOrder.humanSize)
         .times(mockOrder.humanPrice)
         .round(6, RoundingMode.RoundUp)
@@ -148,52 +149,52 @@ describe('SignableOrder', () => {
         humanPrice: undefined,
         humanQuoteAmount: roundedQuoteAmount,
       };
-      const signature = SignableOrder
+      const signature = await SignableOrder
         .fromOrder(orderWithQuoteAmount)
         .sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
 
-    it('signs an order with nonce instead of clientId', () => {
+    it('signs an order with nonce instead of clientId', async () => {
       const orderWithNonce: OrderWithNonce = {
         ...mockOrder,
         clientId: undefined,
         nonce: nonceFromClientId(mockOrder.clientId),
       };
-      const signature = SignableOrder
+      const signature = await SignableOrder
         .fromOrderWithNonce(orderWithNonce)
         .sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
 
-    it('generates a different signature when the client ID is different', () => {
+    it('generates a different signature when the client ID is different', async () => {
       const order = {
         ...mockOrder,
         clientId: `${mockOrder.clientId}!`,
       };
-      const signature = SignableOrder
+      const signature = await SignableOrder
         .fromOrder(order)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
 
-    it('generates a different signature for a SELL order', () => {
+    it('generates a different signature for a SELL order', async () => {
       const order = {
         ...mockOrder,
         side: StarkwareOrderSide.SELL,
       };
-      const signature = SignableOrder
+      const signature = await SignableOrder
         .fromOrder(order)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
 
-    it('generates a different signature when the position ID is different', () => {
+    it('generates a different signature when the position ID is different', async () => {
       const order = {
         ...mockOrder,
         positionId: (Number.parseInt(mockOrder.positionId, 10) + 1).toString(),
       };
-      const signature = SignableOrder
+      const signature = await SignableOrder
         .fromOrder(order)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
@@ -225,22 +226,22 @@ describe('SignableOrder', () => {
     });
   });
 
-  it('end-to-end', () => {
+  it('end-to-end', async () => {
     // Repeat some number of times.
-    for (let i = 0; i < 3; i++) {
+    await Promise.all(_.range(3).map(async () => {
       const keyPair: KeyPair = generateKeyPairUnsafe();
       const signableOrder = SignableOrder.fromOrder(mockOrder);
-      const signature = signableOrder.sign(keyPair.privateKey);
+      const signature = await signableOrder.sign(keyPair.privateKey);
 
       // Expect to be valid when verifying with the right public key.
       expect(
-        signableOrder.verifySignature(signature, keyPair.publicKey),
+        await signableOrder.verifySignature(signature, keyPair.publicKey),
       ).toBe(true);
 
       // Expect to be invalid when verifying with a different public key.
       expect(
-        signableOrder.verifySignature(signature, mockKeyPair.publicKey),
+        await signableOrder.verifySignature(signature, mockKeyPair.publicKey),
       ).toBe(false);
-    }
+    }));
   });
 });

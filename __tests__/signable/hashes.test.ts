@@ -78,66 +78,70 @@ describe('Pedersen hashes', () => {
     };
   });
 
-  it('conditional transfer: 5 hashes the first time, and 4 thereafter', () => {
+  it('conditional transfer: 5 hashes the first time, and 4 thereafter', async () => {
     const { SignableConditionalTransfer } = (
       proxyquire('../../src/signable/conditional-transfer', mocks)
     );
-    new (SignableConditionalTransfer as typeof SignableConditionalTransferOrig)(
+    await new (SignableConditionalTransfer as typeof SignableConditionalTransferOrig)(
       mockConditionalTransfer,
-    ).hash;
+    ).getHash();
     expect(mockPedersen.callCount).toBe(5);
 
     // Expect fewer hashes the second time.
     mockPedersen.resetHistory();
-    new (SignableConditionalTransfer as typeof SignableConditionalTransferOrig)(
+    await new (SignableConditionalTransfer as typeof SignableConditionalTransferOrig)(
       mockConditionalTransfer,
-    ).hash;
+    ).getHash();
     expect(mockPedersen.callCount).toBe(4);
   });
 
-  it('order: 4 hashes the first time, and 2 thereafter', () => {
+  it('order: 4 hashes the first time, and 2 thereafter', async () => {
     const { SignableOrder } = proxyquire('../../src/signable/order', mocks);
-    (SignableOrder as typeof SignableOrderOrig).fromOrder(mockOrder).hash;
+    await (SignableOrder as typeof SignableOrderOrig).fromOrder(mockOrder).getHash();
     expect(mockPedersen.callCount).toBe(4);
 
     // Expect fewer hashes the second time.
     mockPedersen.resetHistory();
-    (SignableOrder as typeof SignableOrderOrig).fromOrder(mockOrder).hash;
+    await (SignableOrder as typeof SignableOrderOrig).fromOrder(mockOrder).getHash();
     expect(mockPedersen.callCount).toBe(2);
   });
 
-  it('withdrawal: 1 hash the first time, and 1 thereafter', () => {
+  it('withdrawal: 1 hash the first time, and 1 thereafter', async () => {
     const { SignableWithdrawal } = proxyquire('../../src/signable/withdrawal', mocks);
-    (SignableWithdrawal as typeof SignableWithdrawalOrig).fromWithdrawal(mockWithdrawal).hash;
+    await (SignableWithdrawal as typeof SignableWithdrawalOrig).fromWithdrawal(
+      mockWithdrawal,
+    ).getHash();
     expect(mockPedersen.callCount).toBe(1);
   });
 
   describe('after pre-computing hashes', () => {
 
-    beforeEach(() => {
-      proxyquiredHashes.preComputeHashes();
+    beforeEach(async () => {
+      await proxyquiredHashes.preComputeHashes();
       mockPedersen.resetHistory();
     });
 
-    it('conditional transfer: 4 hashes', () => {
+    it('conditional transfer: 4 hashes', async () => {
       const { SignableConditionalTransfer } = (
         proxyquire('../../src/signable/conditional-transfer', mocks)
       );
-      new (SignableConditionalTransfer as typeof SignableConditionalTransferOrig)(
+      await new (SignableConditionalTransfer as typeof SignableConditionalTransferOrig)(
         mockConditionalTransfer,
-      ).hash;
+      ).getHash();
       expect(mockPedersen.callCount).toBe(4);
     });
 
-    it('order: 2 hashes', () => {
+    it('order: 2 hashes', async () => {
       const { SignableOrder } = proxyquire('../../src/signable/order', mocks);
-      (SignableOrder as typeof SignableOrderOrig).fromOrder(mockOrder).hash;
+      await (SignableOrder as typeof SignableOrderOrig).fromOrder(mockOrder).getHash();
       expect(mockPedersen!.callCount).toBe(2);
     });
 
-    it('withdrawal: 1 hash', () => {
+    it('withdrawal: 1 hash', async () => {
       const { SignableWithdrawal } = proxyquire('../../src/signable/withdrawal', mocks);
-      (SignableWithdrawal as typeof SignableWithdrawalOrig).fromWithdrawal(mockWithdrawal).hash;
+      await (SignableWithdrawal as typeof SignableWithdrawalOrig).fromWithdrawal(
+        mockWithdrawal,
+      ).getHash();
       expect(mockPedersen.callCount).toBe(1);
     });
   });

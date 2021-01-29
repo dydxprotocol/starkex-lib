@@ -3,6 +3,7 @@
  */
 
 import expect from 'expect';
+import _ from 'lodash';
 
 import {
   KeyPair,
@@ -38,22 +39,22 @@ describe('SignableConditionalTransfer', () => {
 
   describe('verifySignature()', () => {
 
-    it('returns true for a valid signature', () => {
-      const result = new SignableConditionalTransfer(mockParams)
+    it('returns true for a valid signature', async () => {
+      const result = await new SignableConditionalTransfer(mockParams)
         .verifySignature(mockSignature, mockKeyPair.publicKey);
       expect(result).toBe(true);
     });
 
-    it('returns false for an invalid signature', () => {
+    it('returns false for an invalid signature', async () => {
       // Mutate a single character in r.
       const badSignatureR: string = mutateHexStringAt(mockSignature, 0);
-      const result1 = new SignableConditionalTransfer(mockParams)
+      const result1 = await new SignableConditionalTransfer(mockParams)
         .verifySignature(badSignatureR, mockKeyPair.publicKey);
       expect(result1).toBe(false);
 
       // Mutate a single character in s.
       const badSignatureS: string = mutateHexStringAt(mockSignature, 64);
-      const result2 = new SignableConditionalTransfer(mockParams)
+      const result2 = await new SignableConditionalTransfer(mockParams)
         .verifySignature(badSignatureS, mockKeyPair.publicKey);
       expect(result2).toBe(false);
     });
@@ -61,28 +62,28 @@ describe('SignableConditionalTransfer', () => {
 
   describe('sign()', () => {
 
-    it('signs a transfer', () => {
-      const signature = new SignableConditionalTransfer(mockParams)
+    it('signs a transfer', async () => {
+      const signature = await new SignableConditionalTransfer(mockParams)
         .sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
 
-    it('generates a different signature when the client ID is different', () => {
+    it('generates a different signature when the client ID is different', async () => {
       const transfer = {
         ...mockParams,
         clientId: `${mockParams.clientId}!`,
       };
-      const signature = new SignableConditionalTransfer(transfer)
+      const signature = await new SignableConditionalTransfer(transfer)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
 
-    it('generates a different signature when the receiver position ID is different', () => {
+    it('generates a different signature when the receiver position ID is different', async () => {
       const transfer = {
         ...mockParams,
         receiverPositionId: (Number.parseInt(mockParams.receiverPositionId, 10) + 1).toString(),
       };
-      const signature = new SignableConditionalTransfer(transfer)
+      const signature = await new SignableConditionalTransfer(transfer)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -90,7 +91,7 @@ describe('SignableConditionalTransfer', () => {
 
   describe('toStarkware()', () => {
 
-    it('converts human amounts to quantum amounts and converts expiration to hours', () => {
+    it('converts human amounts to quantum amounts and converts expiration to hours', async () => {
       const starkwareConditionalTransfer: StarkwareConditionalTransfer = (
         new SignableConditionalTransfer(mockParams).toStarkware()
       );
@@ -99,19 +100,22 @@ describe('SignableConditionalTransfer', () => {
     });
   });
 
-  it('end-to-end', () => {
-    const keyPair: KeyPair = generateKeyPairUnsafe();
-    const signable = new SignableConditionalTransfer(mockParams);
-    const signature = signable.sign(keyPair.privateKey);
+  it('end-to-end', async () => {
+    // Repeat some number of times.
+    await Promise.all(_.range(3).map(async () => {
+      const keyPair: KeyPair = generateKeyPairUnsafe();
+      const signable = new SignableConditionalTransfer(mockParams);
+      const signature = await signable.sign(keyPair.privateKey);
 
-    // Expect to be valid when verifying with the right public key.
-    expect(
-      signable.verifySignature(signature, keyPair.publicKey),
-    ).toBe(true);
+      // Expect to be valid when verifying with the right public key.
+      expect(
+        await signable.verifySignature(signature, keyPair.publicKey),
+      ).toBe(true);
 
-    // Expect to be invalid when verifying with a different public key.
-    expect(
-      signable.verifySignature(signature, mockKeyPair.publicKey),
-    ).toBe(false);
+      // Expect to be invalid when verifying with a different public key.
+      expect(
+        await signable.verifySignature(signature, mockKeyPair.publicKey),
+      ).toBe(false);
+    }));
   });
 });

@@ -3,6 +3,7 @@
  */
 
 import expect from 'expect';
+import _ from 'lodash';
 
 import {
   KeyPair,
@@ -36,93 +37,93 @@ describe('SignableOraclePrice', () => {
 
   describe('verifySignature()', () => {
 
-    it('returns true for a valid signature', () => {
-      const result = SignableOraclePrice
+    it('returns true for a valid signature', async () => {
+      const result = await SignableOraclePrice
         .fromPrice(mockOraclePrice)
         .verifySignature(mockSignature, mockKeyPair.publicKey);
       expect(result).toBe(true);
     });
 
-    it('returns false for an invalid signature', () => {
+    it('returns false for an invalid signature', async () => {
       // Mutate a single character in r.
-      for (let i = 0; i < 3; i++) {
+      await Promise.all(_.range(3).map(async (i) => {
         const badSignature: string = mutateHexStringAt(mockSignature, i);
-        const result = SignableOraclePrice
+        const result = await SignableOraclePrice
           .fromPrice(mockOraclePrice)
           .verifySignature(badSignature, mockKeyPair.publicKey);
         expect(result).toBe(false);
-      }
+      }));
 
       // Mutate a single character in s.
-      for (let i = 0; i < 3; i++) {
+      await Promise.all(_.range(3).map(async (i) => {
         const badSignature: string = mutateHexStringAt(mockSignature, i + 64);
-        const result = SignableOraclePrice
+        const result = await SignableOraclePrice
           .fromPrice(mockOraclePrice)
           .verifySignature(badSignature, mockKeyPair.publicKey);
         expect(result).toBe(false);
-      }
+      }));
     });
   });
 
   describe('sign()', () => {
 
-    it('signs an oracle price', () => {
-      const signature = SignableOraclePrice
+    it('signs an oracle price', async () => {
+      const signature = await SignableOraclePrice
         .fromPrice(mockOraclePrice)
         .sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
 
-    it('signs an oracle price with asset ID instead of asset name and oracle name', () => {
+    it('signs an oracle price with asset ID instead of asset name and oracle name', async () => {
       const oraclePriceWithAssetId: OraclePriceWithAssetId = {
         ...mockOraclePrice,
         signedAssetId: mockSignedAssetId,
       };
-      const signature = SignableOraclePrice
+      const signature = await SignableOraclePrice
         .fromPriceWithAssetId(oraclePriceWithAssetId)
         .sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
 
-    it('generates a different signature when the asset ID is different', () => {
+    it('generates a different signature when the asset ID is different', async () => {
       const oraclePrice: OraclePriceWithAssetId = {
         ...mockOraclePrice,
         signedAssetId: `${mockSignedAssetId}0`,
       };
-      const signature = SignableOraclePrice
+      const signature = await SignableOraclePrice
         .fromPriceWithAssetId(oraclePrice)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
 
-    it('generates a different signature when the timestamp is different', () => {
+    it('generates a different signature when the timestamp is different', async () => {
       const oraclePrice: OraclePriceWithAssetName = {
         ...mockOraclePrice,
         isoTimestamp: new Date().toISOString(),
       };
-      const signature = SignableOraclePrice
+      const signature = await SignableOraclePrice
         .fromPrice(oraclePrice)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
   });
 
-  it('end-to-end', () => {
+  it('end-to-end', async () => {
     // Repeat some number of times.
-    for (let i = 0; i < 1; i++) {
+    await Promise.all(_.range(3).map(async () => {
       const keyPair: KeyPair = generateKeyPairUnsafe();
       const signableOraclePrice = SignableOraclePrice.fromPrice(mockOraclePrice);
-      const signature = signableOraclePrice.sign(keyPair.privateKey);
+      const signature = await signableOraclePrice.sign(keyPair.privateKey);
 
       // Expect to be valid when verifying with the right public key.
       expect(
-        signableOraclePrice.verifySignature(signature, keyPair.publicKey),
+        await signableOraclePrice.verifySignature(signature, keyPair.publicKey),
       ).toBe(true);
 
       // Expect to be invalid when verifying with a different public key.
       expect(
-        signableOraclePrice.verifySignature(signature, mockKeyPair.publicKey),
+        await signableOraclePrice.verifySignature(signature, mockKeyPair.publicKey),
       ).toBe(false);
-    }
+    }));
   });
 });

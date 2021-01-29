@@ -18,6 +18,7 @@ import { KeyPair } from '../types';
  * Base class for a STARK key signable message.
  */
 export abstract class StarkSignable<T> {
+
   public readonly message: T;
 
   private _hashBN: BN | null = null;
@@ -31,13 +32,13 @@ export abstract class StarkSignable<T> {
   /**
    * Return the message hash as a hex string, no 0x prefix.
    */
-  get hash(): string {
-    return this.hashBN.toString(16);
+  async getHash(): Promise<string> {
+    return (await this.getHashBN()).toString(16);
   }
 
-  get hashBN(): BN {
+  async getHashBN(): Promise<BN> {
     if (this._hashBN === null) {
-      this._hashBN = this.calculateHash();
+      this._hashBN = await this.calculateHash();
     }
     return this._hashBN;
   }
@@ -45,10 +46,11 @@ export abstract class StarkSignable<T> {
   /**
    * Sign the message with the given private key, represented as a hex string or hex string pair.
    */
-  sign(
+  async sign(
     privateKey: string | KeyPair,
-  ): string {
-    const ecSignature = sign(asEcKeyPair(privateKey), this.hashBN);
+  ): Promise<string> {
+    const hashBN = await this.getHashBN();
+    const ecSignature = sign(asEcKeyPair(privateKey), hashBN);
     return serializeSignature({
       r: bnToHex32(ecSignature.r),
       s: bnToHex32(ecSignature.s),
@@ -58,17 +60,17 @@ export abstract class StarkSignable<T> {
   /**
    * Verify the signature is valid for a given public key.
    */
-  verifySignature(
+  async verifySignature(
     signature: string,
     publicKey: string,
     publicKeyYCoordinate: string | null = null,
-  ): boolean {
+  ): Promise<boolean> {
     const signatureStruct = deserializeSignature(signature);
 
     // If y-coordinate is available, save time by using it, instead of having to infer it.
     if (publicKeyYCoordinate) {
       const ecPublicKey = starkEc.keyFromPublic({ x: publicKey, y: publicKeyYCoordinate });
-      return verify(ecPublicKey, this.hashBN, signatureStruct);
+      return verify(ecPublicKey, await this.getHashBN(), signatureStruct);
     }
 
     // Return true if the signature is valid for either of the two possible y-coordinates.
@@ -76,13 +78,13 @@ export abstract class StarkSignable<T> {
     // Compare with:
     // https://github.com/starkware-libs/starkex-resources/blob/1eb84c6a9069950026768013f748016d3bd51d54/crypto/starkware/crypto/signature/signature.py#L151
     return (
-      verify(asEcKeyPairPublic(publicKey, false), this.hashBN, signatureStruct) ||
-      verify(asEcKeyPairPublic(publicKey, true), this.hashBN, signatureStruct)
+      verify(asEcKeyPairPublic(publicKey, false), await this.getHashBN(), signatureStruct) ||
+      verify(asEcKeyPairPublic(publicKey, true), await this.getHashBN(), signatureStruct)
     );
   }
 
   /**
    * Calculate the message hash.
    */
-  protected abstract calculateHash(): BN;
+  protected abstract calculateHash(): Promise<BN>;
 }

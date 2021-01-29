@@ -17,7 +17,7 @@ export class SignableApiRequest extends StarkSignable<ApiRequestParams> {
     super(apiRequest);
   }
 
-  protected calculateHash(): BN {
+  protected async calculateHash(): Promise<BN> {
     const messageString = (
       this.message.isoTimestamp +
       this.message.method +
