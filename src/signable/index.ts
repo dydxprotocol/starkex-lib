@@ -1,4 +1,5 @@
 export { SignableApiRequest } from './api-request';
+export { hashInWorkerThread } from './hash-in-worker-thread';
 export {
   preComputeHashes,
   setGlobalStarkHashImplementation,
