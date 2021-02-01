@@ -1,18 +1,18 @@
 {
   "name": "@dydxprotocol/starkex-lib",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "description": "Cryptographic functions for use with StarkEx",
   "main": "build/src/index.js",
   "scripts": {
     "build": "rm -rf build/ && npm run compile",
     "compile:watch": "npm run compile -- --watch",
     "compile": "tsc",
-    "coverage": "NODE_ENV=test nyc --reporter=lcovonly mocha build/__tests__/**/*.test.js",
+    "coverage": "NODE_ENV=test nyc --reporter=lcovonly mocha 'build/__tests__/**/*.test.js'",
     "fix": "npm run lint -- --fix",
     "lint": "eslint --ext .ts,.js .",
     "prepublishOnly": "npm run compile",
     "test:watch": "npm test -- --watch",
-    "test": "NODE_ENV=test mocha build/__tests__/**/*.test.js"
+    "test": "NODE_ENV=test mocha 'build/__tests__/**/*.test.js'"
   },
   "repository": {
     "type": "git",

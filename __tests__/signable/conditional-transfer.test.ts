@@ -28,11 +28,12 @@ const mockParams: ConditionalTransferParams = {
   humanAmount: '49.478023',
   expirationIsoTimestamp: '2020-09-17T04:15:55.028Z',
   clientId: 'This is an ID that the client came up with to describe this transfer',
-  condition: Buffer.from('mock-condition'),
+  factRegistryAddress: '0x12aa12aa12aa12aa12aa12aa12aa12aa12aa12aa',
+  fact: '0x12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff',
 };
 const mockSignature = (
-  '067e90143a21d8a6aca85207de5e124e9644f7adc18deb42c5cf1240766e57bb' +
-  '04a39c4fdadf214d7282a59d37b21e0d3ea7fe1fc0d0ee25c22a3dd9d5cb8307'
+  '062b0cfbb1540d1eca1c465a29d7a12b080366055ea56ccdebfb06b450c1d38a' +
+  '0712a5d857cc9c5a7c7ba2d3a798a670e616b9a48b68f20908c47948e676576d'
 );
 
 describe('SignableConditionalTransfer', () => {

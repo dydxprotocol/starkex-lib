@@ -73,7 +73,8 @@ export interface ConditionalTransferParams {
   senderPositionId: string;
   receiverPositionId: string;
   receiverPublicKey: string;
-  condition: Buffer;
+  factRegistryAddress: string;
+  fact: string;
   humanAmount: string;
   clientId: string;
   expirationIsoTimestamp: string;
@@ -83,7 +84,7 @@ export interface StarkwareConditionalTransfer {
   senderPositionId: string;
   receiverPositionId: string;
   receiverPublicKey: string;
-  condition: Buffer;
+  condition: string;
   quantumsAmount: string;
   nonce: string; // For signature. A base-10 integer.
   expirationEpochHours: number;

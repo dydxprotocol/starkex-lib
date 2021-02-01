@@ -10,8 +10,8 @@ import {
   toQuantumsExact,
 } from '../helpers';
 import {
-  bufferToBn,
   decToBn,
+  factToCondition,
   hexToBn,
   intToBn,
 } from '../lib/util';
@@ -54,7 +54,7 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
       senderPositionId: transfer.senderPositionId,
       receiverPositionId: transfer.receiverPositionId,
       receiverPublicKey: transfer.receiverPublicKey,
-      condition: transfer.condition,
+      condition: factToCondition(transfer.factRegistryAddress, transfer.fact),
       quantumsAmount,
       nonce,
       expirationEpochHours,
@@ -65,7 +65,7 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
     const senderPositionIdBn = decToBn(this.message.senderPositionId);
     const receiverPositionIdBn = decToBn(this.message.receiverPositionId);
     const receiverPublicKeyBn = hexToBn(this.message.receiverPublicKey);
-    const conditionBn = bufferToBn(this.message.condition);
+    const conditionBn = hexToBn(this.message.condition);
     const quantumsAmountBn = decToBn(this.message.quantumsAmount);
     const nonceBn = decToBn(this.message.nonce);
     const expirationEpochHoursBn = intToBn(this.message.expirationEpochHours);

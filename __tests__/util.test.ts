@@ -6,12 +6,25 @@ import expect from 'expect';
 
 // Module under test.
 import {
+  factToCondition,
   normalizeHex32,
 } from '../src/lib/util';
 
 const HEX_32_BYTES_LOWER_NO_PREFIX_RE = /^[0-9a-f]{64}$/;
 
 describe('util', () => {
+
+  describe('factToCondition()', () => {
+
+    it('succeeds', () => {
+      expect(factToCondition(
+        '0xe4a295420b58a4a7aa5c98920d6e8a0ef875b17a',
+        '0xcf9492ae0554c642b57f5d9cabee36fb512dd6b6629bdc51e60efb3118b8c2d8',
+      )).toEqual(
+        '4d794792504b063843afdf759534f5ed510a3ca52e7baba2e999e02349dd24',
+      );
+    });
+  });
 
   describe('normalizeHex32()', () => {
 
