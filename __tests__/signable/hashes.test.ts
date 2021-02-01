@@ -41,7 +41,8 @@ const mockConditionalTransfer: ConditionalTransferParams = {
   humanAmount: '49.478023',
   expirationIsoTimestamp: '2020-09-17T04:15:55.028Z',
   clientId: 'This is an ID that the client came up with to describe this transfer',
-  condition: Buffer.from('mock-condition'),
+  factRegistryAddress: '0xe4a295420b58a4a7aa5c98920d6e8a0ef875b17a',
+  fact: '0xcf9492ae0554c642b57f5d9cabee36fb512dd6b6629bdc51e60efb3118b8c2d8',
 };
 const mockOrder: OrderWithClientId = {
   positionId: '12345',

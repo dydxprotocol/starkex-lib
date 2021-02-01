@@ -25,7 +25,7 @@ export const CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS = {
   nonce: 32,
   quantumsAmount: 64,
   expirationEpochHours: 32,
-  condition: 251,
+  condition: 250,
 };
 
 export const ORACLE_PRICE_FIELD_BIT_LENGTHS = {

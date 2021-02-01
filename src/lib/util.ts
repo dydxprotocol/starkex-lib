@@ -1,4 +1,5 @@
 import BN from 'bn.js';
+import { keccak256 } from 'ethereum-cryptography/keccak';
 
 /**
  * Match a hex string with no hex prefix (and at least one character).
@@ -9,6 +10,8 @@ const HEX_RE = /^[0-9a-fA-F]+$/;
  * Match a base-10 integer.
  */
 const DEC_RE = /^[0-9]+$/;
+
+const BIT_MASK_250 = new BN('3FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', 16);
 
 /**
  * Convert a BN to a 32-byte hex string without 0x prefix.
@@ -21,7 +24,7 @@ export function bnToHex32(bn: BN): string {
  * Normalize to a lowercase 32-byte hex string without 0x prefix.
  */
 export function normalizeHex32(hex: string): string {
-  const paddedHex = hex.replace(/^0x/, '').toLowerCase().padStart(64, '0');
+  const paddedHex = stripHexPrefix(hex).toLowerCase().padStart(64, '0');
   if (paddedHex.length !== 64) {
     throw new Error('normalizeHex32: Input does not fit in 32 bytes');
   }
@@ -39,24 +42,31 @@ export function randomBuffer(numBytes: number): Buffer {
   return Buffer.from(bytes);
 }
 
-// ============ Creating BNs ============
-
 /**
- * Convert a node Buffer to a BN.
+ * Create a "condition" Buffer (for a conditional transfer) from a factRegistry address and a fact.
  */
-export function bufferToBn(buffer: Buffer): BN {
-  return new BN(buffer.toString('hex'), 16);
+export function factToCondition(
+  factRegistryAddress: string,
+  fact: string,
+): string {
+  // Get Buffer equivalent of encode.packed(factRegistryAddress, fact).
+  const combinedHex: string = `${factRegistryAddress}${normalizeHex32(fact)}`;
+  const combinedBuffer: Buffer = Buffer.from(stripHexPrefix(combinedHex), 'hex');
+  // Hash the data, mask by 250 bits, and return the hex string equivalent.
+  const hashedData: Buffer = keccak256(combinedBuffer);
+
+  const hashBN = hexToBn(hashedData.toString('hex'));
+  const maskedHashBN = hashBN.and(BIT_MASK_250);
+  return maskedHashBN.toString(16);
 }
+
+// ============ Creating BNs ============
 
 /**
  * Convert a hex string with optional 0x prefix to a BN.
  */
 export function hexToBn(hex: string): BN {
-  const hexNoPrefix = hex.replace(/^0x/, '');
-  if (!hexNoPrefix.match(HEX_RE)) {
-    throw new Error('hexToBn: Input is not a hex string');
-  }
-  return new BN(hexNoPrefix, 16);
+  return new BN(stripHexPrefix(hex), 16);
 }
 
 /**
@@ -98,4 +108,14 @@ export function utf8ToBn(
     throw new Error(`utf8ToBN: Input does not fit in numBits=${numBits} bits`);
   }
   return new BN(paddedHex, 16);
+}
+
+// ============ Helper Functions ============
+
+function stripHexPrefix(hex: string): string {
+  const hexNoPrefix = hex.replace(/^0x/, '');
+  if (!hexNoPrefix.match(HEX_RE)) {
+    throw new Error('stripHexPrefix: Input is not a hex string');
+  }
+  return hexNoPrefix;
 }
