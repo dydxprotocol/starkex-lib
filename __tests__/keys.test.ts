@@ -6,14 +6,14 @@ import expect from 'expect';
 
 import {
   KeyPair,
-} from '../../src/types';
-import { randomBuffer } from '../../src/lib/util';
+} from '../src/types';
+import { randomBuffer } from '../src/lib/util';
 
 // Module under test.
 import {
   generateKeyPairUnsafe,
   keyPairFromData,
-} from '../../src/keys';
+} from '../src/keys';
 
 const HEX_32_BYTES_LOWER_NO_PREFIX_RE = /^[0-9a-f]{64}$/;
 

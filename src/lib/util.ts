@@ -52,9 +52,9 @@ export function factToCondition(
   // Get Buffer equivalent of encode.packed(factRegistryAddress, fact).
   const combinedHex: string = `${factRegistryAddress}${normalizeHex32(fact)}`;
   const combinedBuffer: Buffer = Buffer.from(stripHexPrefix(combinedHex), 'hex');
+
   // Hash the data, mask by 250 bits, and return the hex string equivalent.
   const hashedData: Buffer = keccak256(combinedBuffer);
-
   const hashBN = hexToBn(hashedData.toString('hex'));
   const maskedHashBN = hashBN.and(BIT_MASK_250);
   return maskedHashBN.toString(16);

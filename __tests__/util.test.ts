@@ -8,7 +8,7 @@ import expect from 'expect';
 import {
   factToCondition,
   normalizeHex32,
-} from '../../src/lib/util';
+} from '../src/lib/util';
 
 const HEX_32_BYTES_LOWER_NO_PREFIX_RE = /^[0-9a-f]{64}$/;
 
