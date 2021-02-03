@@ -1,14 +1,24 @@
-import {
-  Worker,
-  isMainThread,
-  parentPort,
-  workerData,
-} from 'worker_threads';
-
 import BN from 'bn.js';
 
 import { pedersen } from '../lib/starkex-resources';
 import { HashFunction } from '../types';
+
+/* eslint-disable */
+let Worker: any;
+let isMainThread: any;
+let parentPort: any;
+let workerData: any;
+try {
+  ({
+    Worker,
+    isMainThread,
+    parentPort,
+    workerData,
+  } = require('worker_threads'));
+} catch {
+  throw new Error('Cannot use hashInWorkerThread() since worker_threads is not available');
+}
+/* eslint-enable */
 
 let hashFunction: HashFunction = function hashInWorkerThread(_a: BN, _b: BN) {
   throw new Error('Expected hashInWorkerThread() to be called from the main thread');
@@ -28,11 +38,11 @@ if (isMainThread) {
           },
         },
       );
-      worker.on('message', (hashResult) => {
+      worker.on('message', (hashResult: string) => {
         resolve(new BN(hashResult));
       });
       worker.on('error', reject);
-      worker.on('exit', (code) => {
+      worker.on('exit', (code: number) => {
         if (code !== 0) {
           reject(new Error(`Worker stopped with exit code ${code}`));
         }
@@ -44,4 +54,5 @@ if (isMainThread) {
   const hashResult = pedersen(new BN(a), new BN(b)).toString();
   parentPort!.postMessage(hashResult);
 }
+
 export const hashInWorkerThread = hashFunction;
