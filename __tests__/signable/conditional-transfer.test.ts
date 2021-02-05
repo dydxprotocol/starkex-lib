@@ -32,8 +32,8 @@ const mockParams: ConditionalTransferParams = {
   fact: '0x12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff',
 };
 const mockSignature = (
-  '062b0cfbb1540d1eca1c465a29d7a12b080366055ea56ccdebfb06b450c1d38a' +
-  '0712a5d857cc9c5a7c7ba2d3a798a670e616b9a48b68f20908c47948e676576d'
+  '04814c5d3501863134108802cab5d12df4b959654332103b837252549d24e9a6' +
+  '06bc01225e9f1690b08b63de2a3b179fb2927d4564b3440bbb0da4c37caf597e'
 );
 
 describe('SignableConditionalTransfer', () => {

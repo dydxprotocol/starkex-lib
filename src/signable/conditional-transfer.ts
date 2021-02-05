@@ -27,10 +27,10 @@ import {
 import { StarkSignable } from './stark-signable';
 
 // Note: Fees are not supported for conditional transfers.
-const FEE_POSITION_ID_BN = new BN(0);
 const MAX_AMOUNT_FEE_BN = new BN(0);
 
 const COLLATERAL_ASSET_ID_BN = hexToBn(COLLATERAL_ASSET_ID);
+const FEE_ASSET_ID_BN = new BN(0);
 const CONDITIONAL_TRANSFER_PREFIX = 5;
 const CONDITIONAL_TRANSFER_PADDING_BITS = 81;
 
@@ -99,9 +99,9 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
       throw new Error('SignableOraclePrice: expirationEpochHours exceeds max value');
     }
 
-    // The transfer asset and fee asset are always the collateral asset.
+    // The transfer asset is always the collateral asset.
     // Fees are not supported for conditional transfers.
-    const assetIds = await getCacheablePedersenHash(COLLATERAL_ASSET_ID_BN, COLLATERAL_ASSET_ID_BN);
+    const assetIds = await getCacheablePedersenHash(COLLATERAL_ASSET_ID_BN, FEE_ASSET_ID_BN);
 
     const transferPart1 = await getPedersenHash(
       await getPedersenHash(
@@ -110,9 +110,10 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
       ),
       conditionBn,
     );
-    const transferPart2 = new BN(senderPositionIdBn)
+    // Note: Use toString() to avoid mutating senderPositionIdBn.
+    const transferPart2 = new BN(senderPositionIdBn.toString())
       .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.positionId).iadd(receiverPositionIdBn)
-      .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.positionId).iadd(FEE_POSITION_ID_BN)
+      .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.positionId).iadd(senderPositionIdBn)
       .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.nonce).iadd(nonceBn);
     const transferPart3 = new BN(CONDITIONAL_TRANSFER_PREFIX)
       .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.quantumsAmount).iadd(quantumsAmountBn)
