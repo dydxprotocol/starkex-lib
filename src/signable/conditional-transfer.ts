@@ -27,7 +27,6 @@ import {
 import { StarkSignable } from './stark-signable';
 
 // Note: Fees are not supported for conditional transfers.
-const FEE_POSITION_ID_BN = new BN(0);
 const MAX_AMOUNT_FEE_BN = new BN(0);
 
 const COLLATERAL_ASSET_ID_BN = hexToBn(COLLATERAL_ASSET_ID);
@@ -112,7 +111,7 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
     );
     const transferPart2 = new BN(senderPositionIdBn)
       .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.positionId).iadd(receiverPositionIdBn)
-      .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.positionId).iadd(FEE_POSITION_ID_BN)
+      .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.positionId).iadd(senderPositionIdBn)
       .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.nonce).iadd(nonceBn);
     const transferPart3 = new BN(CONDITIONAL_TRANSFER_PREFIX)
       .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.quantumsAmount).iadd(quantumsAmountBn)
