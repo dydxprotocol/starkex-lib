@@ -1,6 +1,6 @@
 {
   "name": "@dydxprotocol/starkex-lib",
-  "version": "0.10.3",
+  "version": "0.11.0",
   "description": "Cryptographic functions for use with StarkEx",
   "main": "build/src/index.js",
   "scripts": {
@@ -29,7 +29,6 @@
     "@types/elliptic": "^6.4.12",
     "big.js": "6.0.3",
     "bip39": "^3.0.3",
-    "bn.js": "5.1.3",
     "ethereum-cryptography": "^0.1.3",
     "hash.js": "^1.1.7"
   },
