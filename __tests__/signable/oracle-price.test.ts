@@ -27,7 +27,6 @@ const mockOraclePrice: OraclePriceParams = {
   humanPrice: '11512.34',
   isoTimestamp: '2020-01-01T00:00:00.000Z',
 };
-const mockSignedAssetId = '425443555344000000000000000000004d616b6572';
 const mockSignature = (
   '020b64c5ead744a9a39bb20cee8193e15958d2f5bc065a3a31a8245d800907ae' +
   '0043e5681d7fd1e0720cc578e3d076ea29dbfe902f30445da8aa74bd112aa710'
