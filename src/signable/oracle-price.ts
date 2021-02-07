@@ -1,4 +1,4 @@
-import Big from 'big.js';
+import Big, { RoundingMode } from 'big.js';
 import BN from 'bn.js';
 
 import {
@@ -47,17 +47,11 @@ export class SignableOraclePrice extends StarkSignable<StarkwareOraclePrice> {
     const signedPrice = new Big(params.humanPrice);
     signedPrice.e += ORACLE_PRICE_DECIMALS;
 
-    if (!signedPrice.mod(1).eq(0)) {
-      throw new Error(
-        'SignableOraclePrice.fromPrice: humanPrice can have at most 18 decimals of precision',
-      );
-    }
-
     const expirationEpochSeconds = isoTimestampToEpochSeconds(params.isoTimestamp);
 
     return new SignableOraclePrice({
       signedAssetId,
-      signedPrice: signedPrice.toFixed(0),
+      signedPrice: signedPrice.round(RoundingMode.RoundHalfEven).toFixed(0),
       expirationEpochSeconds,
     });
   }
