@@ -6,11 +6,13 @@ import nodeCrypto from 'crypto';
 
 import BN from 'bn.js';
 
-import { hexToBn } from '../lib/util';
+import { hexToBn, utf8ToBn } from '../lib/util';
 import {
+  ORACLE_PRICE_FIELD_BIT_LENGTHS,
   ORDER_FIELD_BIT_LENGTHS,
   STARK_SIGNATURE_EXPIRATION_BUFFER_HOURS,
 } from '../signable/constants';
+import { DydxMarket } from '../types';
 
 const MAX_NONCE = new BN(2).pow(new BN(ORDER_FIELD_BIT_LENGTHS.nonce));
 const ONE_SECOND_MS = 1000;
@@ -43,4 +45,23 @@ export function isoTimestampToEpochHours(isoTimestamp: string): number {
  */
 export function addOrderExpirationBufferHours(expirationEpochHours: number): number {
   return expirationEpochHours + STARK_SIGNATURE_EXPIRATION_BUFFER_HOURS;
+}
+
+/**
+ * Get the asset ID to be signed by a price oracle. It consists of an asset name and oracle name.
+ *
+ * The asset name to be signed is equal to the market name, with the hyphen removed.
+ */
+export function getSignedAssetId(
+  market: DydxMarket,
+  oracleName: string,
+): string {
+  const assetName = market.replace('-', '');
+  const assetNameBn = utf8ToBn(assetName, ORACLE_PRICE_FIELD_BIT_LENGTHS.assetName);
+  const oracleNameBn = utf8ToBn(oracleName, ORACLE_PRICE_FIELD_BIT_LENGTHS.oracleName);
+
+  const signedAssetIdBn = assetNameBn
+    .iushln(ORACLE_PRICE_FIELD_BIT_LENGTHS.oracleName)
+    .iadd(oracleNameBn);
+  return signedAssetIdBn.toString(16);
 }

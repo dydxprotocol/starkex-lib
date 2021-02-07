@@ -12,6 +12,7 @@ export { SignableOraclePrice } from './oracle-price';
 export { SignableOrder } from './order';
 export { SignableWithdrawal } from './withdrawal';
 export { SignableConditionalTransfer } from './conditional-transfer';
+export { StarkSignable } from './stark-signable';
 
 let maybeHashInWorkerThread: HashFunction = (_a: BN, _b: BN) => {
   throw new Error('Cannot use hashInWorkerThread() since worker_threads is not available');

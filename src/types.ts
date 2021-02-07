@@ -151,16 +151,16 @@ export interface ApiRequestParams {
 
 // ============ Oracle Price Parameters ============
 
-export interface OraclePriceWithAssetName {
-  assetName: string;
+export interface OraclePriceParams {
+  market: DydxMarket;
   oracleName: string;
-  price: string;
+  humanPrice: string;
   isoTimestamp: string;
 }
 
-export interface OraclePriceWithAssetId {
+export interface StarkwareOraclePrice {
   // Note: This ID is specific to oracle signing and differs from the normal Starkware asset ID.
   signedAssetId: string;
-  price: string;
-  isoTimestamp: string;
+  signedPrice: string; // Fixed point with 18 decimals.
+  expirationEpochSeconds: number;
 }
