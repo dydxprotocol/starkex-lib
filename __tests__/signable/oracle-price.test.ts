@@ -6,9 +6,9 @@ import expect from 'expect';
 import _ from 'lodash';
 
 import {
+  DydxMarket,
   KeyPair,
-  OraclePriceWithAssetId,
-  OraclePriceWithAssetName,
+  OraclePriceParams,
 } from '../../src/types';
 import { generateKeyPairUnsafe } from '../../src/keys';
 import { mutateHexStringAt } from '../util';
@@ -21,16 +21,16 @@ const mockKeyPair: KeyPair = {
   publicKey: '1895a6a77ae14e7987b9cb51329a5adfb17bd8e7c638f92d6892d76e51cebcf',
   privateKey: '178047D3869489C055D7EA54C014FFB834A069C9595186ABE04EA4D1223A03F',
 };
-const mockOraclePrice: OraclePriceWithAssetName = {
-  assetName: 'BTCUSD',
-  oracleName: 'Maker',
+const mockOraclePrice: OraclePriceParams = {
+  market: DydxMarket.BTC_USD,
+  oracleName: 'dYdX',
+  humanPrice: '11512.34',
   isoTimestamp: '2020-01-01T00:00:00.000Z',
-  price: '11512340000000000000000',
 };
 const mockSignedAssetId = '425443555344000000000000000000004d616b6572';
 const mockSignature = (
-  '06a7a118a6fa508c4f0eb77ea0efbc8d48a64d4a570d93f5c61cd886877cb920' +
-  '06de9006a7bbf610d583d514951c98d15b1a0f6c78846986491d2c8ca049fd55'
+  '020b64c5ead744a9a39bb20cee8193e15958d2f5bc065a3a31a8245d800907ae' +
+  '0043e5681d7fd1e0720cc578e3d076ea29dbfe902f30445da8aa74bd112aa710'
 );
 
 describe('SignableOraclePrice', () => {
@@ -74,30 +74,30 @@ describe('SignableOraclePrice', () => {
       expect(signature).toEqual(mockSignature);
     });
 
-    it('signs an oracle price with asset ID instead of asset name and oracle name', async () => {
-      const oraclePriceWithAssetId: OraclePriceWithAssetId = {
+    it('generates a different signature when the market is different', async () => {
+      const oraclePrice: OraclePriceParams = {
         ...mockOraclePrice,
-        signedAssetId: mockSignedAssetId,
+        market: DydxMarket.ETH_USD,
       };
       const signature = await SignableOraclePrice
-        .fromPriceWithAssetId(oraclePriceWithAssetId)
+        .fromPrice(oraclePrice)
         .sign(mockKeyPair.privateKey);
-      expect(signature).toEqual(mockSignature);
+      expect(signature).not.toEqual(mockSignature);
     });
 
-    it('generates a different signature when the asset ID is different', async () => {
-      const oraclePrice: OraclePriceWithAssetId = {
+    it('generates a different signature when the oracle name is different', async () => {
+      const oraclePrice: OraclePriceParams = {
         ...mockOraclePrice,
-        signedAssetId: `${mockSignedAssetId}0`,
+        oracleName: 'Other',
       };
       const signature = await SignableOraclePrice
-        .fromPriceWithAssetId(oraclePrice)
+        .fromPrice(oraclePrice)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
 
     it('generates a different signature when the timestamp is different', async () => {
-      const oraclePrice: OraclePriceWithAssetName = {
+      const oraclePrice: OraclePriceParams = {
         ...mockOraclePrice,
         isoTimestamp: new Date().toISOString(),
       };
@@ -105,6 +105,16 @@ describe('SignableOraclePrice', () => {
         .fromPrice(oraclePrice)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
+    });
+
+    it('throws an error if the oracle name is too long', async () => {
+      const oraclePrice: OraclePriceParams = {
+        ...mockOraclePrice,
+        oracleName: 'Other2',
+      };
+      expect(
+        () => SignableOraclePrice.fromPrice(oraclePrice),
+      ).toThrow('Input does not fit in numBits=40 bits');
     });
   });
 
