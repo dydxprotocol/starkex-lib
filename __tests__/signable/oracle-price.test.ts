@@ -46,7 +46,7 @@ describe('SignableOraclePrice', () => {
 
     it('returns false for an invalid signature', async () => {
       // Mutate a single character in r.
-      await Promise.all(_.range(3).map(async (i) => {
+      await Promise.all(_.range(1, 4).map(async (i) => {
         const badSignature: string = mutateHexStringAt(mockSignature, i);
         const result = await SignableOraclePrice
           .fromPrice(mockOraclePrice)
@@ -55,7 +55,7 @@ describe('SignableOraclePrice', () => {
       }));
 
       // Mutate a single character in s.
-      await Promise.all(_.range(3).map(async (i) => {
+      await Promise.all(_.range(1, 4).map(async (i) => {
         const badSignature: string = mutateHexStringAt(mockSignature, i + 64);
         const result = await SignableOraclePrice
           .fromPrice(mockOraclePrice)

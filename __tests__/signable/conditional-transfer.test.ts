@@ -48,13 +48,13 @@ describe('SignableConditionalTransfer', () => {
 
     it('returns false for an invalid signature', async () => {
       // Mutate a single character in r.
-      const badSignatureR: string = mutateHexStringAt(mockSignature, 0);
+      const badSignatureR: string = mutateHexStringAt(mockSignature, 1);
       const result1 = await new SignableConditionalTransfer(mockParams)
         .verifySignature(badSignatureR, mockKeyPair.publicKey);
       expect(result1).toBe(false);
 
       // Mutate a single character in s.
-      const badSignatureS: string = mutateHexStringAt(mockSignature, 64);
+      const badSignatureS: string = mutateHexStringAt(mockSignature, 65);
       const result2 = await new SignableConditionalTransfer(mockParams)
         .verifySignature(badSignatureS, mockKeyPair.publicKey);
       expect(result2).toBe(false);
