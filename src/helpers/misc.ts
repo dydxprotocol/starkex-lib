@@ -10,7 +10,7 @@ import { hexToBn, utf8ToBn } from '../lib/util';
 import {
   ORACLE_PRICE_FIELD_BIT_LENGTHS,
   ORDER_FIELD_BIT_LENGTHS,
-  STARK_SIGNATURE_EXPIRATION_BUFFER_HOURS,
+  STARK_ORDER_SIGNATURE_EXPIRATION_BUFFER_HOURS,
 } from '../signable/constants';
 import { DydxMarket } from '../types';
 
@@ -44,7 +44,7 @@ export function isoTimestampToEpochHours(isoTimestamp: string): number {
  * Add expiration buffer to ensure an order signature is valid when it arrives on-chain.
  */
 export function addOrderExpirationBufferHours(expirationEpochHours: number): number {
-  return expirationEpochHours + STARK_SIGNATURE_EXPIRATION_BUFFER_HOURS;
+  return expirationEpochHours + STARK_ORDER_SIGNATURE_EXPIRATION_BUFFER_HOURS;
 }
 
 /**

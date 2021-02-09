@@ -45,12 +45,12 @@ const mockOrder: OrderWithClientId = {
   clientId: 'This is an ID that the client came up with to describe this order',
 };
 const mockSignature = (
-  '0398287472161cba0e6386ff0b2f25f39ba37c646b7bbadace80eee6b8e7157d' +
-  '01ba924272e1e42b3211b96bbbe012e7e8101e1b3e5b83ea90d161ad11fcced4'
+  '015d2f1c7f68f2dc7c8f2557e0cd9cf6f9cf62c53f2747acc4cce3b6ef241765' +
+  '0472fa737331754017aad07e08d6bb094cba54780ea86bbccfc4d130ec04fcba'
 );
 const mockSignatureEvenY = (
-  '05cf391a69386f53693344bada2e0d245879f3c6a98971498b2862ff2f359c49' +
-  '0737deea7e201eaa86c8d6eeb2c1ca3ce89ac248b3fe1a6182301aa72d6e8e4f'
+  '01a1e043c20da0563538445ae790918b8f478279cb4c2c3e9b201172c0b7967e' +
+  '007ce48d9ef25643f0f78c8a60e201b2c6bf67732e4c68a4e5add78f647c6941'
 );
 
 describe('SignableOrder', () => {
@@ -212,7 +212,7 @@ describe('SignableOrder', () => {
       expect(starkwareOrder.quantumsAmountFee).toBe('6343784019');
 
       // Order expiration should be rounded up, and should have a buffer added.
-      expect(starkwareOrder.expirationEpochHours).toBe(444581);
+      expect(starkwareOrder.expirationEpochHours).toBe(444701);
     });
 
     it('throws if the market is unknown', () => {
