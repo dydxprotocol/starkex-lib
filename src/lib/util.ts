@@ -76,7 +76,7 @@ export function decToBn(dec: string): BN {
   if (!dec.match(DEC_RE)) {
     throw new Error('decToBn: Input is not a base-10 integer');
   }
-  return new BN(dec);
+  return new BN(dec, 10);
 }
 
 /**
@@ -86,7 +86,7 @@ export function intToBn(int: number): BN {
   if (!Number.isInteger(int)) {
     throw new Error('intToBn: Input is not an integer');
   }
-  return new BN(int);
+  return new BN(int, 10);
 }
 
 /**
