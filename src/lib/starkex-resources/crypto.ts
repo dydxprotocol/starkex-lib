@@ -111,11 +111,11 @@ export function verify(
     throw new Error('Message cannot be signed since it exceeds the max length');
   }
   const { r, s } = signature;
-  const w = new BN(s).invm(starkEc.n!);
-  if (!bnInRange(new BN(r), oneBn, maxEcdsaVal)) {
+  const w = new BN(s, 16).invm(starkEc.n!);
+  if (!bnInRange(new BN(r, 16), oneBn, maxEcdsaVal)) {
     throw new Error('Signature has invalid r');
   }
-  if (!bnInRange(new BN(s), oneBn, starkEc.n!)) {
+  if (!bnInRange(new BN(s, 16), oneBn, starkEc.n!)) {
     throw new Error('Signature has invalid s');
   }
   if (!bnInRange(w, oneBn, maxEcdsaVal)) {

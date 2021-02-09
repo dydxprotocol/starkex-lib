@@ -39,7 +39,7 @@ if (isMainThread) {
         },
       );
       worker.on('message', (hashResult: string) => {
-        resolve(new BN(hashResult));
+        resolve(new BN(hashResult, 10));
       });
       worker.on('error', reject);
       worker.on('exit', (code: number) => {
@@ -51,7 +51,7 @@ if (isMainThread) {
   };
 } else {
   const { a, b }: { a: string, b: string } = workerData;
-  const hashResult = pedersen(new BN(a), new BN(b)).toString();
+  const hashResult = pedersen(new BN(a, 10), new BN(b, 10)).toString();
   parentPort!.postMessage(hashResult);
 }
 

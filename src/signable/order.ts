@@ -144,7 +144,7 @@ export class SignableOrder extends StarkSignable<StarkwareOrder> {
       throw new Error('SignableOrder: expirationEpochHours exceeds max value');
     }
 
-    const orderPart1 = new BN(quantumsAmountSellBn)
+    const orderPart1 = new BN(quantumsAmountSellBn.toString(), 10)
       .iushln(ORDER_FIELD_BIT_LENGTHS.quantumsAmount).iadd(quantumsAmountBuyBn)
       .iushln(ORDER_FIELD_BIT_LENGTHS.quantumsAmount).iadd(quantumsAmountFeeBn)
       .iushln(ORDER_FIELD_BIT_LENGTHS.nonce).iadd(nonceBn);
