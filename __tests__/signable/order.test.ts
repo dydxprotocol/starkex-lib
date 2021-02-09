@@ -80,7 +80,7 @@ describe('SignableOrder', () => {
 
     it('returns false for an invalid signature', async () => {
       // Mutate a single character in r.
-      await Promise.all(_.range(3).map(async (i) => {
+      await Promise.all(_.range(1, 4).map(async (i) => {
         const badSignature: string = mutateHexStringAt(mockSignature, i);
         const result = await SignableOrder
           .fromOrder(mockOrder)
@@ -89,7 +89,7 @@ describe('SignableOrder', () => {
       }));
 
       // Mutate a single character in s.
-      await Promise.all(_.range(3).map(async (i) => {
+      await Promise.all(_.range(1, 4).map(async (i) => {
         const badSignature: string = mutateHexStringAt(mockSignature, i + 64);
         const result = await SignableOrder
           .fromOrder(mockOrder)
@@ -99,7 +99,7 @@ describe('SignableOrder', () => {
     });
 
     it('returns false for a invalid signature (odd y), with y-coordinate provided', async () => {
-      const badSignature = mutateHexStringAt(mockSignature, 0);
+      const badSignature = mutateHexStringAt(mockSignature, 1);
       const result = await SignableOrder
         .fromOrder(mockOrder)
         .verifySignature(badSignature, mockKeyPair.publicKey, mockKeyPairPublicYCoordinate);

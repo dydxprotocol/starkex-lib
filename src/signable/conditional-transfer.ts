@@ -111,7 +111,7 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
       conditionBn,
     );
     // Note: Use toString() to avoid mutating senderPositionIdBn.
-    const transferPart2 = new BN(senderPositionIdBn.toString())
+    const transferPart2 = new BN(senderPositionIdBn.toString(), 10)
       .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.positionId).iadd(receiverPositionIdBn)
       .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.positionId).iadd(senderPositionIdBn)
       .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.nonce).iadd(nonceBn);
