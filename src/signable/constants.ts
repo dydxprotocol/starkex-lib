@@ -1,4 +1,4 @@
-export const STARK_SIGNATURE_EXPIRATION_BUFFER_HOURS = 24 * 2; // Two days.
+export const STARK_ORDER_SIGNATURE_EXPIRATION_BUFFER_HOURS = 24 * 7; // Seven days.
 
 export const ORDER_FIELD_BIT_LENGTHS = {
   assetIdSynthetic: 128,
