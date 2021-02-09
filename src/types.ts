@@ -151,7 +151,14 @@ export interface ApiRequestParams {
 
 // ============ Oracle Price Parameters ============
 
-export interface OraclePriceParams {
+export interface OraclePriceWithAssetName {
+  assetName: string;
+  oracleName: string;
+  humanPrice: string;
+  isoTimestamp: string;
+}
+
+export interface OraclePriceWithMarket {
   market: DydxMarket;
   oracleName: string;
   humanPrice: string;

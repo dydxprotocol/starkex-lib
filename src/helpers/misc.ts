@@ -48,15 +48,21 @@ export function addOrderExpirationBufferHours(expirationEpochHours: number): num
 }
 
 /**
+ * Get the asset name to be signed, which is the market name with the hyphen removed.
+ */
+export function getSignedAssetName(
+  market: DydxMarket,
+): string {
+  return market.replace('-', '');
+}
+
+/**
  * Get the asset ID to be signed by a price oracle. It consists of an asset name and oracle name.
- *
- * The asset name to be signed is equal to the market name, with the hyphen removed.
  */
 export function getSignedAssetId(
-  market: DydxMarket,
+  assetName: string,
   oracleName: string,
 ): string {
-  const assetName = market.replace('-', '');
   const assetNameBn = utf8ToBn(assetName, ORACLE_PRICE_FIELD_BIT_LENGTHS.assetName);
   const oracleNameBn = utf8ToBn(oracleName, ORACLE_PRICE_FIELD_BIT_LENGTHS.oracleName);
 

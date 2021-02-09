@@ -3,6 +3,7 @@ import BN from 'bn.js';
 
 import {
   getSignedAssetId,
+  getSignedAssetName,
   isoTimestampToEpochSeconds,
 } from '../helpers';
 import {
@@ -11,7 +12,8 @@ import {
   intToBn,
 } from '../lib/util';
 import {
-  OraclePriceParams,
+  OraclePriceWithAssetName,
+  OraclePriceWithMarket,
   StarkwareOraclePrice,
 } from '../types';
 import {
@@ -26,11 +28,24 @@ import { StarkSignable } from './stark-signable';
  */
 export class SignableOraclePrice extends StarkSignable<StarkwareOraclePrice> {
 
-  static fromPrice(
-    params: OraclePriceParams,
+  static fromPriceWithMarket(
+    params: OraclePriceWithMarket,
   ): SignableOraclePrice {
     if (typeof params.market !== 'string') {
       throw new Error('SignableOraclePrice.fromPrice: market must be a string');
+    }
+    const assetName = getSignedAssetName(params.market);
+    return SignableOraclePrice.fromPriceWithAssetName({
+      ...params,
+      assetName,
+    });
+  }
+
+  static fromPriceWithAssetName(
+    params: OraclePriceWithAssetName,
+  ): SignableOraclePrice {
+    if (typeof params.assetName !== 'string') {
+      throw new Error('SignableOraclePrice.fromPrice: assetName must be a string');
     }
     if (typeof params.oracleName !== 'string') {
       throw new Error('SignableOraclePrice.fromPrice: oracleName must be a string');
@@ -42,7 +57,7 @@ export class SignableOraclePrice extends StarkSignable<StarkwareOraclePrice> {
       throw new Error('SignableOraclePrice.fromPrice: isoTimestamp must be a string');
     }
 
-    const signedAssetId = getSignedAssetId(params.market, params.oracleName);
+    const signedAssetId = getSignedAssetId(params.assetName, params.oracleName);
 
     const signedPrice = new Big(params.humanPrice);
     signedPrice.e += ORACLE_PRICE_DECIMALS;
