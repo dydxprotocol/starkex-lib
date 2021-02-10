@@ -20,7 +20,7 @@ import {
   ORACLE_PRICE_DECIMALS,
   ORACLE_PRICE_FIELD_BIT_LENGTHS,
 } from './constants';
-import { getPedersenHash } from './hashes';
+import { getPedersenHash } from './crypto';
 import { StarkSignable } from './stark-signable';
 
 /**

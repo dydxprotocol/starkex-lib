@@ -14,6 +14,7 @@ import {
   StarkwareOrderSide,
   WithdrawalWithClientId,
 } from '../../src/types';
+import * as cryptoModule from '../../src/signable/crypto';
 import * as hashesModule from '../../src/signable/hashes';
 import {
   SignableConditionalTransfer as SignableConditionalTransferOrig,
@@ -30,6 +31,7 @@ proxyquire.noPreserveCache();
 
 // Mocks.
 let mockPedersen: sinon.SinonSpy;
+let proxyquiredCrypto: typeof cryptoModule;
 let proxyquiredHashes: typeof hashesModule;
 let mocks: any;
 
@@ -66,15 +68,16 @@ describe('Pedersen hashes', () => {
   beforeEach(() => {
     // Reload the hashes module fresh each time, resetting the cache.
     mockPedersen = sinon.spy(pedersen);
-    proxyquiredHashes = proxyquire('../../src/signable/hashes', {
+    proxyquiredCrypto = proxyquire('../../src/signable/crypto', {
       '../lib/starkex-resources': {
         pedersen: mockPedersen,
       },
     });
+    proxyquiredHashes = proxyquire('../../src/signable/hashes', {
+      './crypto': proxyquiredCrypto,
+    });
     mocks = {
-      '../lib/starkex-resources': {
-        pedersen: mockPedersen,
-      },
+      './crypto': proxyquiredCrypto,
       './hashes': proxyquiredHashes,
     };
   });

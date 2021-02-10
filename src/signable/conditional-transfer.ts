@@ -20,10 +20,8 @@ import {
   StarkwareConditionalTransfer,
 } from '../types';
 import { CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS } from './constants';
-import {
-  getCacheablePedersenHash,
-  getPedersenHash,
-} from './hashes';
+import { getPedersenHash } from './crypto';
+import { getCacheablePedersenHash } from './hashes';
 import { StarkSignable } from './stark-signable';
 
 // Note: Fees are not supported for conditional transfers.

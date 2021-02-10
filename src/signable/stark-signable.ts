@@ -6,13 +6,13 @@ import {
   deserializeSignature,
   serializeSignature,
 } from '../helpers';
-import {
-  sign,
-  starkEc,
-  verify,
-} from '../lib/starkex-resources/crypto';
+import { starkEc } from '../lib/starkex-resources/crypto';
 import { bnToHex32 } from '../lib/util';
 import { KeyPair } from '../types';
+import {
+  sign,
+  verify,
+} from './crypto';
 
 /**
  * Base class for a STARK key signable message.
@@ -50,7 +50,7 @@ export abstract class StarkSignable<T> {
     privateKey: string | KeyPair,
   ): Promise<string> {
     const hashBN = await this.getHashBN();
-    const ecSignature = sign(asEcKeyPair(privateKey), hashBN);
+    const ecSignature = await sign(asEcKeyPair(privateKey), hashBN);
     return serializeSignature({
       r: bnToHex32(ecSignature.r),
       s: bnToHex32(ecSignature.s),
@@ -77,9 +77,10 @@ export abstract class StarkSignable<T> {
     //
     // Compare with:
     // https://github.com/starkware-libs/starkex-resources/blob/1eb84c6a9069950026768013f748016d3bd51d54/crypto/starkware/crypto/signature/signature.py#L151
+    const hashBN = await this.getHashBN();
     return (
-      verify(asEcKeyPairPublic(publicKey, false), await this.getHashBN(), signatureStruct) ||
-      verify(asEcKeyPairPublic(publicKey, true), await this.getHashBN(), signatureStruct)
+      (await verify(asEcKeyPairPublic(publicKey, false), hashBN, signatureStruct)) ||
+      verify(asEcKeyPairPublic(publicKey, true), hashBN, signatureStruct)
     );
   }
 

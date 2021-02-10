@@ -27,10 +27,8 @@ import {
 import {
   ORDER_FIELD_BIT_LENGTHS,
 } from './constants';
-import {
-  getCacheablePedersenHash,
-  getPedersenHash,
-} from './hashes';
+import { getPedersenHash } from './crypto';
+import { getCacheablePedersenHash } from './hashes';
 import { StarkSignable } from './stark-signable';
 
 const LIMIT_ORDER_WITH_FEES = 3;
