@@ -19,13 +19,6 @@ export const SYNTHETIC_ASSET_MAP: Record<DydxMarket, DydxAsset> = {
   [DydxMarket.LINK_USD]: DydxAsset.LINK,
 };
 
-// Asset signed by oracle price signers.
-export const SIGNED_ASSET_ID_MAP: Record<DydxMarket, string> = {
-  [DydxMarket.BTC_USD]: '0x425443555344000000000000000000004d616b6572',
-  [DydxMarket.ETH_USD]: '0x455448555344000000000000000000004d616b6572',
-  [DydxMarket.LINK_USD]: '0xf2',
-};
-
 /**
  * The smallest unit of the asset in the Starkware system, represented in canonical (human) units.
  */

@@ -1,53 +1,85 @@
+import Big from 'big.js';
 import BN from 'bn.js';
 
-import { isoTimestampToEpochSeconds } from '../helpers';
+import {
+  getSignedAssetId,
+  getSignedAssetName,
+  isoTimestampToEpochSeconds,
+} from '../helpers';
 import {
   decToBn,
   hexToBn,
   intToBn,
-  utf8ToBn,
 } from '../lib/util';
 import {
   OraclePriceWithAssetName,
-  OraclePriceWithAssetId,
+  OraclePriceWithMarket,
+  StarkwareOraclePrice,
 } from '../types';
-import { ORACLE_PRICE_FIELD_BIT_LENGTHS } from './constants';
+import {
+  ORACLE_PRICE_DECIMALS,
+  ORACLE_PRICE_FIELD_BIT_LENGTHS,
+} from './constants';
 import { getPedersenHash } from './hashes';
 import { StarkSignable } from './stark-signable';
 
 /**
  * Wrapper object to hash, sign, and verify an oracle price.
  */
-export class SignableOraclePrice extends StarkSignable<OraclePriceWithAssetId> {
+export class SignableOraclePrice extends StarkSignable<StarkwareOraclePrice> {
 
-  static fromPrice = SignableOraclePrice.fromPriceWithAssetName; // Alias.
+  static fromPriceWithMarket(
+    params: OraclePriceWithMarket,
+  ): SignableOraclePrice {
+    if (typeof params.market !== 'string') {
+      throw new Error('SignableOraclePrice.fromPrice: market must be a string');
+    }
+    const assetName = getSignedAssetName(params.market);
+    return SignableOraclePrice.fromPriceWithAssetName({
+      ...params,
+      assetName,
+    });
+  }
 
   static fromPriceWithAssetName(
     params: OraclePriceWithAssetName,
   ): SignableOraclePrice {
-    const assetNameBn = utf8ToBn(params.assetName, ORACLE_PRICE_FIELD_BIT_LENGTHS.assetName);
-    const oracleNameBn = utf8ToBn(params.oracleName, ORACLE_PRICE_FIELD_BIT_LENGTHS.oracleName);
+    if (typeof params.assetName !== 'string') {
+      throw new Error('SignableOraclePrice.fromPrice: assetName must be a string');
+    }
+    if (typeof params.oracleName !== 'string') {
+      throw new Error('SignableOraclePrice.fromPrice: oracleName must be a string');
+    }
+    if (typeof params.humanPrice !== 'string') {
+      throw new Error('SignableOraclePrice.fromPrice: humanPrice must be a string');
+    }
+    if (typeof params.isoTimestamp !== 'string') {
+      throw new Error('SignableOraclePrice.fromPrice: isoTimestamp must be a string');
+    }
 
-    const signedAssetId = assetNameBn
-      .iushln(ORACLE_PRICE_FIELD_BIT_LENGTHS.oracleName)
-      .iadd(oracleNameBn);
+    const signedAssetId = getSignedAssetId(params.assetName, params.oracleName);
+
+    const signedPrice = new Big(params.humanPrice);
+    signedPrice.e += ORACLE_PRICE_DECIMALS;
+
+    if (!signedPrice.mod(1).eq(0)) {
+      throw new Error(
+        'SignableOraclePrice.fromPrice: humanPrice can have at most 18 decimals of precision',
+      );
+    }
+
+    const expirationEpochSeconds = isoTimestampToEpochSeconds(params.isoTimestamp);
 
     return new SignableOraclePrice({
-      signedAssetId: signedAssetId.toString(16),
-      price: params.price,
-      isoTimestamp: params.isoTimestamp,
+      signedAssetId,
+      signedPrice: signedPrice.toFixed(0),
+      expirationEpochSeconds,
     });
   }
 
-  static fromPriceWithAssetId(
-    params: OraclePriceWithAssetId,
-  ): SignableOraclePrice {
-    return new SignableOraclePrice(params);
-  }
-
   protected async calculateHash(): Promise<BN> {
-    const priceBn = decToBn(this.message.price);
-    const timestampEpochSecondsBn = intToBn(isoTimestampToEpochSeconds(this.message.isoTimestamp));
+    const priceBn = decToBn(this.message.signedPrice);
+    const timestampEpochSecondsBn = intToBn(this.message.expirationEpochSeconds);
     const signedAssetId = hexToBn(this.message.signedAssetId);
 
     if (priceBn.bitLength() > ORACLE_PRICE_FIELD_BIT_LENGTHS.price) {

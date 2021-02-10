@@ -1,4 +1,5 @@
 export const STARK_ORDER_SIGNATURE_EXPIRATION_BUFFER_HOURS = 24 * 7; // Seven days.
+export const ORACLE_PRICE_DECIMALS = 18;
 
 export const ORDER_FIELD_BIT_LENGTHS = {
   assetIdSynthetic: 128,
