@@ -20,7 +20,7 @@ import {
   WithdrawalWithClientId,
 } from '../types';
 import { WITHDRAWAL_FIELD_BIT_LENGTHS } from './constants';
-import { getPedersenHash } from './hashes';
+import { getPedersenHash } from './crypto';
 import { StarkSignable } from './stark-signable';
 
 const COLLATERAL_ASSET_ID_BN = hexToBn(COLLATERAL_ASSET_ID);

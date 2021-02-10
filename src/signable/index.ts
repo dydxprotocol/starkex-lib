@@ -3,11 +3,8 @@ import BN from 'bn.js';
 import { HashFunction } from '../types';
 
 export { SignableApiRequest } from './api-request';
-export {
-  preComputeHashes,
-  setGlobalStarkHashImplementation,
-  setGlobalStarkHashImplementationNoSanityCheck,
-} from './hashes';
+export * from './crypto';
+export { preComputeHashes } from './hashes';
 export { SignableOraclePrice } from './oracle-price';
 export { SignableOrder } from './order';
 export { SignableWithdrawal } from './withdrawal';

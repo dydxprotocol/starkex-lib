@@ -1,4 +1,5 @@
 import BN from 'bn.js';
+import elliptic from 'elliptic';
 
 export enum StarkwareOrderType {
   LIMIT_ORDER_WITH_FEES = 'LIMIT_ORDER_WITH_FEES',
@@ -41,6 +42,10 @@ export interface SignatureStruct {
 }
 
 export type HashFunction = (a: BN, b: BN) => BN | Promise<BN>;
+export type SigningFunction =
+  (key: elliptic.ec.KeyPair, message: BN) => elliptic.ec.Signature | Promise<elliptic.ec.Signature>;
+export type VerificationFunction =
+  (key: elliptic.ec.KeyPair, message: BN, signature: SignatureStruct) => boolean | Promise<boolean>;
 
 // ============ Withdrawal Parameters ============
 
