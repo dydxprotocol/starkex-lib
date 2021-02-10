@@ -77,14 +77,10 @@ export abstract class StarkSignable<T> {
     //
     // Compare with:
     // https://github.com/starkware-libs/starkex-resources/blob/1eb84c6a9069950026768013f748016d3bd51d54/crypto/starkware/crypto/signature/signature.py#L151
-    const isValidWithEvenY = await verify(
-      asEcKeyPairPublic(publicKey, false),
-      await this.getHashBN(),
-      signatureStruct,
-    );
+    const hashBN = await this.getHashBN();
     return (
-      isValidWithEvenY ||
-      verify(asEcKeyPairPublic(publicKey, true), await this.getHashBN(), signatureStruct)
+      (await verify(asEcKeyPairPublic(publicKey, false), hashBN, signatureStruct)) ||
+      verify(asEcKeyPairPublic(publicKey, true), hashBN, signatureStruct)
     );
   }
 
