@@ -31,7 +31,7 @@ describe('assets helpers', () => {
     it('converts a number of quantums to a human-readable amount', () => {
       expect(
         fromQuantums('1000', DydxAsset.ETH),
-      ).toBe('0.00001');
+      ).toBe('0.000001');
     });
 
     it('throws if the asset is unknown', () => {

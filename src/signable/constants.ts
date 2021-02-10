@@ -1,3 +1,6 @@
+import BN from 'bn.js';
+
+export const CONDITIONAL_TRANSFER_FEE_ASSET_ID_BN = new BN(0);
 export const STARK_ORDER_SIGNATURE_EXPIRATION_BUFFER_HOURS = 24 * 7; // Seven days.
 export const ORACLE_PRICE_DECIMALS = 18;
 
