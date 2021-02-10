@@ -12,7 +12,7 @@ import {
   ORDER_FIELD_BIT_LENGTHS,
   STARK_ORDER_SIGNATURE_EXPIRATION_BUFFER_HOURS,
 } from '../signable/constants';
-import { DydxAsset, DydxMarket } from '../types';
+import { DydxMarket } from '../types';
 
 const MAX_NONCE = new BN(2).pow(new BN(ORDER_FIELD_BIT_LENGTHS.nonce));
 const ONE_SECOND_MS = 1000;
