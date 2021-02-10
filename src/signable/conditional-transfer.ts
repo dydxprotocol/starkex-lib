@@ -19,7 +19,10 @@ import {
   ConditionalTransferParams,
   StarkwareConditionalTransfer,
 } from '../types';
-import { CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS } from './constants';
+import {
+  CONDITIONAL_TRANSFER_FEE_ASSET_ID_BN,
+  CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS,
+} from './constants';
 import { getPedersenHash } from './crypto';
 import { getCacheablePedersenHash } from './hashes';
 import { StarkSignable } from './stark-signable';
@@ -28,7 +31,6 @@ import { StarkSignable } from './stark-signable';
 const MAX_AMOUNT_FEE_BN = new BN(0);
 
 const COLLATERAL_ASSET_ID_BN = hexToBn(COLLATERAL_ASSET_ID);
-const FEE_ASSET_ID_BN = new BN(0);
 const CONDITIONAL_TRANSFER_PREFIX = 5;
 const CONDITIONAL_TRANSFER_PADDING_BITS = 81;
 
@@ -99,7 +101,10 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
 
     // The transfer asset is always the collateral asset.
     // Fees are not supported for conditional transfers.
-    const assetIds = await getCacheablePedersenHash(COLLATERAL_ASSET_ID_BN, FEE_ASSET_ID_BN);
+    const assetIds = await getCacheablePedersenHash(
+      COLLATERAL_ASSET_ID_BN,
+      CONDITIONAL_TRANSFER_FEE_ASSET_ID_BN,
+    );
 
     const transferPart1 = await getPedersenHash(
       await getPedersenHash(

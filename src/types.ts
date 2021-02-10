@@ -24,6 +24,8 @@ export enum DydxAsset {
   LINK = 'LINK',
 }
 
+export type SyntheticAsset = Exclude<DydxAsset, DydxAsset.USDC>;
+
 // Key pair, represented as hex strings, no 0x prefix.
 export interface KeyPair {
   publicKey: string; // Required x-coordinate.

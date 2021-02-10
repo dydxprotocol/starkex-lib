@@ -48,7 +48,7 @@ export function addOrderExpirationBufferHours(expirationEpochHours: number): num
 }
 
 /**
- * Get the asset name to be signed, which is the market name with the hyphen removed.
+ * Get the asset name to be signed by a price oracle. It is the market name with the hyphen removed.
  */
 export function getSignedAssetName(
   market: DydxMarket,

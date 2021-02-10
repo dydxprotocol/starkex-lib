@@ -6,11 +6,11 @@ import BN from 'bn.js';
 
 import {
   ASSET_ID_MAP,
-  COLLATERAL_ASSET,
   COLLATERAL_ASSET_ID,
+  SYNTHETIC_ASSETS,
 } from '../constants';
 import { hexToBn } from '../lib/util';
-import { DydxAsset } from '../types';
+import { CONDITIONAL_TRANSFER_FEE_ASSET_ID_BN } from './constants';
 import { getPedersenHash } from './crypto';
 
 // Global state for all STARK signables.
@@ -41,10 +41,7 @@ export async function preComputeHashes(): Promise<void> {
 
   await Promise.all([
     // Orders: hash(hash(sell asset, buy asset), fee asset)
-    Promise.all(Object.values(DydxAsset).map(async (baseAsset) => {
-      if (baseAsset === COLLATERAL_ASSET) {
-        return;
-      }
+    Promise.all(SYNTHETIC_ASSETS.map(async (baseAsset) => {
       const baseAssetBn = hexToBn(ASSET_ID_MAP[baseAsset]);
       const [buyHash, sellHash] = await Promise.all([
         getCacheablePedersenHash(collateralAssetBn, baseAssetBn),
@@ -57,6 +54,6 @@ export async function preComputeHashes(): Promise<void> {
     })),
 
     // Conditional transfers: hash(transfer asset, fee asset)
-    getCacheablePedersenHash(collateralAssetBn, collateralAssetBn),
+    getCacheablePedersenHash(collateralAssetBn, CONDITIONAL_TRANSFER_FEE_ASSET_ID_BN),
   ]);
 }
