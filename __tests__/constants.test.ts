@@ -14,6 +14,9 @@ import {
 describe('Constants', () => {
 
   it('generates the expected collateral asset IDs', () => {
+    expect(COLLATERAL_ASSET_ID_BY_NETWORK_ID[NetworkId.MAINNET]).toBe(
+      '0x02893294412a4c8f915f75892b395ebbf6859ec246ec365c3b1f56f47c3a0a5d',
+    );
     expect(COLLATERAL_ASSET_ID_BY_NETWORK_ID[NetworkId.ROPSTEN]).toBe(
       '0x02c04d8b650f44092278a7cb1e1028c82025dff622db96c934b611b84cc8de5a',
     );
