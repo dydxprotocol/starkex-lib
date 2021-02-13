@@ -2,7 +2,7 @@ import BN from 'bn.js';
 
 import {
   COLLATERAL_ASSET,
-  COLLATERAL_ASSET_ID,
+  COLLATERAL_ASSET_ID_BY_NETWORK_ID,
 } from '../constants';
 import {
   isoTimestampToEpochHours,
@@ -18,12 +18,12 @@ import {
   StarkwareWithdrawal,
   WithdrawalWithNonce,
   WithdrawalWithClientId,
+  NetworkId,
 } from '../types';
 import { WITHDRAWAL_FIELD_BIT_LENGTHS } from './constants';
 import { getPedersenHash } from './crypto';
 import { StarkSignable } from './stark-signable';
 
-const COLLATERAL_ASSET_ID_BN = hexToBn(COLLATERAL_ASSET_ID);
 const WITHDRAWAL_PREFIX = 6;
 const WITHDRAWAL_PADDING_BITS = 49;
 
@@ -36,18 +36,23 @@ export class SignableWithdrawal extends StarkSignable<StarkwareWithdrawal> {
 
   static fromWithdrawalWithClientId(
     withdrawal: WithdrawalWithClientId,
+    networkId: NetworkId,
   ): SignableWithdrawal {
     // Make the nonce by hashing the client-provided ID.
     const nonce = nonceFromClientId(withdrawal.clientId);
-    return SignableWithdrawal.fromWithdrawalWithNonce({
-      ...withdrawal,
-      clientId: undefined,
-      nonce,
-    });
+    return SignableWithdrawal.fromWithdrawalWithNonce(
+      {
+        ...withdrawal,
+        clientId: undefined,
+        nonce,
+      },
+      networkId,
+    );
   }
 
   static fromWithdrawalWithNonce(
     withdrawal: WithdrawalWithNonce,
+    networkId: NetworkId,
   ): SignableWithdrawal {
     const positionId = withdrawal.positionId;
     const nonce = withdrawal.nonce;
@@ -58,12 +63,15 @@ export class SignableWithdrawal extends StarkSignable<StarkwareWithdrawal> {
     // Convert to a Unix timestamp (in hours).
     const expirationEpochHours = isoTimestampToEpochHours(withdrawal.expirationIsoTimestamp);
 
-    return new SignableWithdrawal({
-      positionId,
-      nonce,
-      quantumsAmount,
-      expirationEpochHours,
-    });
+    return new SignableWithdrawal(
+      {
+        positionId,
+        nonce,
+        quantumsAmount,
+        expirationEpochHours,
+      },
+      networkId,
+    );
   }
 
   protected async calculateHash(): Promise<BN> {
@@ -94,7 +102,10 @@ export class SignableWithdrawal extends StarkSignable<StarkwareWithdrawal> {
       .iushln(WITHDRAWAL_FIELD_BIT_LENGTHS.expirationEpochHours).iadd(expirationEpochHoursBn)
       .iushln(WITHDRAWAL_PADDING_BITS);
 
-    return getPedersenHash(COLLATERAL_ASSET_ID_BN, packedWithdrawalBn);
+    return getPedersenHash(
+      hexToBn(COLLATERAL_ASSET_ID_BY_NETWORK_ID[this.networkId]),
+      packedWithdrawalBn,
+    );
   }
 
   toStarkware(): StarkwareWithdrawal {

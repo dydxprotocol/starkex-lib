@@ -5,10 +5,10 @@
 import Big, { RoundingMode } from 'big.js';
 
 import {
-  ASSET_ID_MAP,
   ASSET_QUANTUM_SIZE,
   COLLATERAL_ASSET,
-  COLLATERAL_ASSET_ID,
+  COLLATERAL_ASSET_ID_BY_NETWORK_ID,
+  SYNTHETIC_ASSET_ID_MAP,
   SYNTHETIC_ASSET_MAP,
 } from '../constants';
 import {
@@ -18,6 +18,7 @@ import {
   StarkwareOrderSide,
   StarkwareAmounts,
   DydxMarket,
+  NetworkId,
 } from '../types';
 
 /**
@@ -102,6 +103,7 @@ export function getStarkwareAmounts(
     side: StarkwareOrderSide,
     humanSize: string,
   } & (WithPrice | WithQuoteAmount),
+  networkId: NetworkId,
 ): StarkwareAmounts {
   const {
     market, side, humanSize, humanQuoteAmount, humanPrice,
@@ -110,7 +112,7 @@ export function getStarkwareAmounts(
   // Determine side and assets.
   const isBuyingSynthetic = side === StarkwareOrderSide.BUY;
   const syntheticAsset = SYNTHETIC_ASSET_MAP[market];
-  const assetIdSynthetic = ASSET_ID_MAP[syntheticAsset];
+  const assetIdSynthetic = SYNTHETIC_ASSET_ID_MAP[syntheticAsset];
   if (!assetIdSynthetic) {
     throw new Error(`Unknown market ${market}`);
   }
@@ -137,7 +139,7 @@ export function getStarkwareAmounts(
     quantumsAmountSynthetic,
     quantumsAmountCollateral,
     assetIdSynthetic,
-    assetIdCollateral: COLLATERAL_ASSET_ID,
+    assetIdCollateral: COLLATERAL_ASSET_ID_BY_NETWORK_ID[networkId],
     isBuyingSynthetic,
   };
 }

@@ -1,8 +1,12 @@
+import BN from 'bn.js';
+import { keccak256 } from 'ethereum-cryptography/keccak';
 import _ from 'lodash';
 
+import { normalizeHex32 } from './lib/util';
 import {
   DydxAsset,
   DydxMarket,
+  NetworkId,
   SyntheticAsset,
 } from './types';
 
@@ -13,7 +17,7 @@ export const SYNTHETIC_ASSETS = _.without(ALL_ASSETS, COLLATERAL_ASSET) as Synth
 /**
  * Mapping from a dYdX market to the synthetic asset for that market.
  */
-export const SYNTHETIC_ASSET_MAP: Record<DydxMarket, DydxAsset> = {
+export const SYNTHETIC_ASSET_MAP: Record<DydxMarket, SyntheticAsset> = {
   [DydxMarket.BTC_USD]: DydxAsset.BTC,
   [DydxMarket.ETH_USD]: DydxAsset.ETH,
   [DydxMarket.LINK_USD]: DydxAsset.LINK,
@@ -31,9 +35,14 @@ export const ASSET_RESOLUTION: Record<DydxAsset, number> = {
   [DydxAsset.LINK]: 7,
 };
 
-// TODO: The collateral asset ID depends on the network.
-export const COLLATERAL_ASSET_ID = (
-  '0x02c04d8b650f44092278a7cb1e1028c82025dff622db96c934b611b84cc8de5a'
+export const COLLATERAL_ASSET_ADDRESS_BY_NETWORK: Record<NetworkId, string> = {
+  [NetworkId.MAINNET]: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+  [NetworkId.ROPSTEN]: '0x8707a5bf4c2842d46b31a405ba41b858c0f876c4',
+};
+
+export const COLLATERAL_ASSET_ID_BY_NETWORK_ID: Record<NetworkId, string> = _.mapValues(
+  COLLATERAL_ASSET_ADDRESS_BY_NETWORK,
+  makeCollateralAssetId,
 );
 
 /**
@@ -45,14 +54,6 @@ export const SYNTHETIC_ASSET_ID_MAP: Record<SyntheticAsset, string> = _.chain(SY
   .value() as Record<SyntheticAsset, string>;
 
 /**
-* Mapping from an asset to its asset ID.
-*/
-export const ASSET_ID_MAP: Record<DydxAsset, string> = {
-  [COLLATERAL_ASSET]: COLLATERAL_ASSET_ID,
-  ...SYNTHETIC_ASSET_ID_MAP,
-};
-
-/**
  * The smallest unit of the asset in the Starkware system, represented in canonical (human) units.
  */
 export const ASSET_QUANTUM_SIZE: Record<DydxAsset, string> = _.mapValues(
@@ -61,7 +62,25 @@ export const ASSET_QUANTUM_SIZE: Record<DydxAsset, string> = _.mapValues(
 );
 
 /**
- * Construct the asset ID (as a 0x-prefixed hex string) for a given asset.
+ * Construct the asset ID (as a 0x-prefixed hex string) for the collateral asset, given the address.
+ */
+function makeCollateralAssetId(
+  tokenAddress: string,
+  quantization: string | number = '1',
+): string {
+  const data = Buffer.concat([
+    keccak256(Buffer.from('ERC20Token(address)')).slice(0, 4),
+    Buffer.from(normalizeHex32(tokenAddress), 'hex'),
+    Buffer.from(normalizeHex32(new BN(quantization).toString(16)), 'hex'),
+  ]);
+  const result = keccak256(data);
+  const resultBN = new BN(result.toString('hex'), 16);
+  resultBN.imaskn(250);
+  return `0x${normalizeHex32(resultBN.toString(16))}`;
+}
+
+/**
+ * Construct the asset ID (as a 0x-prefixed hex string) for a given synthetic asset.
  */
 function makeSyntheticAssetId(
   asset: SyntheticAsset,

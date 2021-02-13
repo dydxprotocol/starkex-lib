@@ -2,7 +2,7 @@ import BN from 'bn.js';
 
 import {
   COLLATERAL_ASSET,
-  COLLATERAL_ASSET_ID,
+  COLLATERAL_ASSET_ID_BY_NETWORK_ID,
 } from '../constants';
 import {
   isoTimestampToEpochHours,
@@ -17,6 +17,7 @@ import {
 } from '../lib/util';
 import {
   ConditionalTransferParams,
+  NetworkId,
   StarkwareConditionalTransfer,
 } from '../types';
 import {
@@ -30,7 +31,6 @@ import { StarkSignable } from './stark-signable';
 // Note: Fees are not supported for conditional transfers.
 const MAX_AMOUNT_FEE_BN = new BN(0);
 
-const COLLATERAL_ASSET_ID_BN = hexToBn(COLLATERAL_ASSET_ID);
 const CONDITIONAL_TRANSFER_PREFIX = 5;
 const CONDITIONAL_TRANSFER_PADDING_BITS = 81;
 
@@ -41,6 +41,7 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
 
   constructor(
     transfer: ConditionalTransferParams,
+    networkId: NetworkId,
   ) {
     const nonce = nonceFromClientId(transfer.clientId);
 
@@ -50,15 +51,18 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
     // Convert to a Unix timestamp (in hours).
     const expirationEpochHours = isoTimestampToEpochHours(transfer.expirationIsoTimestamp);
 
-    super({
-      senderPositionId: transfer.senderPositionId,
-      receiverPositionId: transfer.receiverPositionId,
-      receiverPublicKey: transfer.receiverPublicKey,
-      condition: factToCondition(transfer.factRegistryAddress, transfer.fact),
-      quantumsAmount,
-      nonce,
-      expirationEpochHours,
-    });
+    super(
+      {
+        senderPositionId: transfer.senderPositionId,
+        receiverPositionId: transfer.receiverPositionId,
+        receiverPublicKey: transfer.receiverPublicKey,
+        condition: factToCondition(transfer.factRegistryAddress, transfer.fact),
+        quantumsAmount,
+        nonce,
+        expirationEpochHours,
+      },
+      networkId,
+    );
   }
 
   protected async calculateHash(): Promise<BN> {
@@ -102,7 +106,7 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
     // The transfer asset is always the collateral asset.
     // Fees are not supported for conditional transfers.
     const assetIds = await getCacheablePedersenHash(
-      COLLATERAL_ASSET_ID_BN,
+      hexToBn(COLLATERAL_ASSET_ID_BY_NETWORK_ID[this.networkId]),
       CONDITIONAL_TRANSFER_FEE_ASSET_ID_BN,
     );
 

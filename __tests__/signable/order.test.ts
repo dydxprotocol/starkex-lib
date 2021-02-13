@@ -14,6 +14,7 @@ import {
   StarkwareOrderSide,
   OrderWithClientIdAndQuoteAmount,
   OrderWithNonce,
+  NetworkId,
 } from '../../src/types';
 import { generateKeyPairUnsafe } from '../../src/keys';
 import { nonceFromClientId } from '../../src/helpers';
@@ -59,21 +60,21 @@ describe('SignableOrder', () => {
 
     it('returns true for a valid signature (odd y)', async () => {
       const result = await SignableOrder
-        .fromOrder(mockOrder)
+        .fromOrder(mockOrder, NetworkId.ROPSTEN)
         .verifySignature(mockSignature, mockKeyPair.publicKey);
       expect(result).toBe(true);
     });
 
     it('returns true for a valid signature (odd y), with y-coordinate provided', async () => {
       const result = await SignableOrder
-        .fromOrder(mockOrder)
+        .fromOrder(mockOrder, NetworkId.ROPSTEN)
         .verifySignature(mockSignature, mockKeyPair.publicKey, mockKeyPairPublicYCoordinate);
       expect(result).toBe(true);
     });
 
     it('returns true for a valid signature (even y)', async () => {
       const result = await SignableOrder
-        .fromOrder(mockOrder)
+        .fromOrder(mockOrder, NetworkId.ROPSTEN)
         .verifySignature(mockSignatureEvenY, mockKeyPairEvenY.publicKey);
       expect(result).toBe(true);
     });
@@ -83,7 +84,7 @@ describe('SignableOrder', () => {
       await Promise.all(_.range(1, 4).map(async (i) => {
         const badSignature: string = mutateHexStringAt(mockSignature, i);
         const result = await SignableOrder
-          .fromOrder(mockOrder)
+          .fromOrder(mockOrder, NetworkId.ROPSTEN)
           .verifySignature(badSignature, mockKeyPair.publicKey);
         expect(result).toBe(false);
       }));
@@ -92,7 +93,7 @@ describe('SignableOrder', () => {
       await Promise.all(_.range(1, 4).map(async (i) => {
         const badSignature: string = mutateHexStringAt(mockSignature, i + 64);
         const result = await SignableOrder
-          .fromOrder(mockOrder)
+          .fromOrder(mockOrder, NetworkId.ROPSTEN)
           .verifySignature(badSignature, mockKeyPair.publicKey);
         expect(result).toBe(false);
       }));
@@ -101,7 +102,7 @@ describe('SignableOrder', () => {
     it('returns false for a invalid signature (odd y), with y-coordinate provided', async () => {
       const badSignature = mutateHexStringAt(mockSignature, 1);
       const result = await SignableOrder
-        .fromOrder(mockOrder)
+        .fromOrder(mockOrder, NetworkId.ROPSTEN)
         .verifySignature(badSignature, mockKeyPair.publicKey, mockKeyPairPublicYCoordinate);
       expect(result).toBe(false);
     });
@@ -109,7 +110,7 @@ describe('SignableOrder', () => {
     it('returns false if the x-coordinate is invalid, when y-coordinate is provided', async () => {
       const badX = mutateHexStringAt(mockKeyPair.publicKey, 20); // Arbitrary offset.
       const result = await SignableOrder
-        .fromOrder(mockOrder)
+        .fromOrder(mockOrder, NetworkId.ROPSTEN)
         .verifySignature(mockSignature, badX, mockKeyPairPublicYCoordinate);
       expect(result).toBe(false);
     });
@@ -117,7 +118,7 @@ describe('SignableOrder', () => {
     it('returns false if the y-coordinate is invalid', async () => {
       const badY = mutateHexStringAt(mockKeyPairPublicYCoordinate, 20); // Arbitrary offset.
       const result = await SignableOrder
-        .fromOrder(mockOrder)
+        .fromOrder(mockOrder, NetworkId.ROPSTEN)
         .verifySignature(mockSignature, mockKeyPair.publicKey, badY);
       expect(result).toBe(false);
     });
@@ -127,14 +128,14 @@ describe('SignableOrder', () => {
 
     it('signs an order (odd y)', async () => {
       const signature = await SignableOrder
-        .fromOrder(mockOrder)
+        .fromOrder(mockOrder, NetworkId.ROPSTEN)
         .sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
 
     it('signs an order (even y)', async () => {
       const signature = await SignableOrder
-        .fromOrder(mockOrder)
+        .fromOrder(mockOrder, NetworkId.ROPSTEN)
         .sign(mockKeyPairEvenY.privateKey);
       expect(signature).toEqual(mockSignatureEvenY);
     });
@@ -150,7 +151,7 @@ describe('SignableOrder', () => {
         humanQuoteAmount: roundedQuoteAmount,
       };
       const signature = await SignableOrder
-        .fromOrder(orderWithQuoteAmount)
+        .fromOrder(orderWithQuoteAmount, NetworkId.ROPSTEN)
         .sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
@@ -162,7 +163,7 @@ describe('SignableOrder', () => {
         nonce: nonceFromClientId(mockOrder.clientId),
       };
       const signature = await SignableOrder
-        .fromOrderWithNonce(orderWithNonce)
+        .fromOrderWithNonce(orderWithNonce, NetworkId.ROPSTEN)
         .sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
@@ -173,7 +174,7 @@ describe('SignableOrder', () => {
         clientId: `${mockOrder.clientId}!`,
       };
       const signature = await SignableOrder
-        .fromOrder(order)
+        .fromOrder(order, NetworkId.ROPSTEN)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -184,7 +185,7 @@ describe('SignableOrder', () => {
         side: StarkwareOrderSide.SELL,
       };
       const signature = await SignableOrder
-        .fromOrder(order)
+        .fromOrder(order, NetworkId.ROPSTEN)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -195,7 +196,7 @@ describe('SignableOrder', () => {
         positionId: (Number.parseInt(mockOrder.positionId, 10) + 1).toString(),
       };
       const signature = await SignableOrder
-        .fromOrder(order)
+        .fromOrder(order, NetworkId.ROPSTEN)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -205,7 +206,7 @@ describe('SignableOrder', () => {
 
     it('converts human amounts to quantum amounts and converts expiration to hours', () => {
       const starkwareOrder: StarkwareOrder = SignableOrder
-        .fromOrder(mockOrder)
+        .fromOrder(mockOrder, NetworkId.ROPSTEN)
         .toStarkware();
       expect(starkwareOrder.quantumsAmountSynthetic).toBe('145000500000');
       expect(starkwareOrder.quantumsAmountCollateral).toBe('50750272151');
@@ -221,7 +222,7 @@ describe('SignableOrder', () => {
         market: 'FAKE-MARKET' as DydxMarket,
       };
       expect(
-        () => SignableOrder.fromOrder(order).toStarkware(),
+        () => SignableOrder.fromOrder(order, NetworkId.ROPSTEN).toStarkware(),
       ).toThrow('Unknown market');
     });
   });
@@ -230,7 +231,7 @@ describe('SignableOrder', () => {
     // Repeat some number of times.
     await Promise.all(_.range(3).map(async () => {
       const keyPair: KeyPair = generateKeyPairUnsafe();
-      const signableOrder = SignableOrder.fromOrder(mockOrder);
+      const signableOrder = SignableOrder.fromOrder(mockOrder, NetworkId.ROPSTEN);
       const signature = await signableOrder.sign(keyPair.privateKey);
 
       // Expect to be valid when verifying with the right public key.

@@ -1,5 +1,6 @@
 import BN from 'bn.js';
 
+import { COLLATERAL_ASSET_ID_BY_NETWORK_ID } from '../constants';
 import {
   asEcKeyPair,
   asEcKeyPairPublic,
@@ -8,7 +9,10 @@ import {
 } from '../helpers';
 import { starkEc } from '../lib/starkex-resources/crypto';
 import { bnToHex32 } from '../lib/util';
-import { KeyPair } from '../types';
+import {
+  KeyPair,
+  NetworkId,
+} from '../types';
 import {
   sign,
   verify,
@@ -20,13 +24,21 @@ import {
 export abstract class StarkSignable<T> {
 
   public readonly message: T;
+  public readonly networkId: NetworkId;
 
   private _hashBN: BN | null = null;
 
   public constructor(
     message: T,
+    networkId: NetworkId,
   ) {
     this.message = message;
+    this.networkId = networkId;
+
+    // Sanity check.
+    if (!COLLATERAL_ASSET_ID_BY_NETWORK_ID[networkId]) {
+      throw new Error(`Unknown network ID or unknown collateral asset for network: ${networkId}`);
+    }
   }
 
   /**

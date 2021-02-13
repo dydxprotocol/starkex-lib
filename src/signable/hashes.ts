@@ -5,11 +5,12 @@
 import BN from 'bn.js';
 
 import {
-  ASSET_ID_MAP,
-  COLLATERAL_ASSET_ID,
+  COLLATERAL_ASSET_ID_BY_NETWORK_ID,
+  SYNTHETIC_ASSET_ID_MAP,
   SYNTHETIC_ASSETS,
 } from '../constants';
 import { hexToBn } from '../lib/util';
+import { NetworkId } from '../types';
 import { CONDITIONAL_TRANSFER_FEE_ASSET_ID_BN } from './constants';
 import { getPedersenHash } from './crypto';
 
@@ -36,13 +37,15 @@ export async function getCacheablePedersenHash(left: BN, right: BN): Promise<BN>
  *
  * This function may take a while to run.
  */
-export async function preComputeHashes(): Promise<void> {
-  const collateralAssetBn = hexToBn(COLLATERAL_ASSET_ID);
+export async function preComputeHashes(
+  networkId: NetworkId,
+): Promise<void> {
+  const collateralAssetBn = hexToBn(COLLATERAL_ASSET_ID_BY_NETWORK_ID[networkId]);
 
   await Promise.all([
     // Orders: hash(hash(sell asset, buy asset), fee asset)
     Promise.all(SYNTHETIC_ASSETS.map(async (baseAsset) => {
-      const baseAssetBn = hexToBn(ASSET_ID_MAP[baseAsset]);
+      const baseAssetBn = hexToBn(SYNTHETIC_ASSET_ID_MAP[baseAsset]);
       const [buyHash, sellHash] = await Promise.all([
         getCacheablePedersenHash(collateralAssetBn, baseAssetBn),
         getCacheablePedersenHash(baseAssetBn, collateralAssetBn),

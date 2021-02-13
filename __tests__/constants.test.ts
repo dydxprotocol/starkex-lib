@@ -5,18 +5,23 @@
 import expect from 'expect';
 
 import {
-  ASSET_ID_MAP,
+  SYNTHETIC_ASSET_ID_MAP,
   DydxAsset,
+  COLLATERAL_ASSET_ID_BY_NETWORK_ID,
+  NetworkId,
 } from '../src';
 
 describe('Constants', () => {
 
-  it('generates the expected asset IDs', () => {
-    expect(ASSET_ID_MAP[DydxAsset.USDC]).toBe(
+  it('generates the expected collateral asset IDs', () => {
+    expect(COLLATERAL_ASSET_ID_BY_NETWORK_ID[NetworkId.ROPSTEN]).toBe(
       '0x02c04d8b650f44092278a7cb1e1028c82025dff622db96c934b611b84cc8de5a',
     );
-    expect(ASSET_ID_MAP[DydxAsset.BTC]).toBe('0x4254432d3130000000000000000000');
-    expect(ASSET_ID_MAP[DydxAsset.ETH]).toBe('0x4554482d3900000000000000000000');
-    expect(ASSET_ID_MAP[DydxAsset.LINK]).toBe('0x4c494e4b2d37000000000000000000');
+  });
+
+  it('generates the expected synthetic asset IDs', () => {
+    expect(SYNTHETIC_ASSET_ID_MAP[DydxAsset.BTC]).toBe('0x4254432d3130000000000000000000');
+    expect(SYNTHETIC_ASSET_ID_MAP[DydxAsset.ETH]).toBe('0x4554482d3900000000000000000000');
+    expect(SYNTHETIC_ASSET_ID_MAP[DydxAsset.LINK]).toBe('0x4c494e4b2d37000000000000000000');
   });
 });
