@@ -42,7 +42,7 @@ export const COLLATERAL_ASSET_ADDRESS_BY_NETWORK: Record<NetworkId, string> = {
 
 export const COLLATERAL_ASSET_ID_BY_NETWORK_ID: Record<NetworkId, string> = _.mapValues(
   COLLATERAL_ASSET_ADDRESS_BY_NETWORK,
-  makeCollateralAssetId,
+  (address) => makeCollateralAssetId(address),
 );
 
 /**
@@ -66,7 +66,7 @@ export const ASSET_QUANTUM_SIZE: Record<DydxAsset, string> = _.mapValues(
  */
 function makeCollateralAssetId(
   tokenAddress: string,
-  quantization: string | number = '1',
+  quantization: number | string = 1,
 ): string {
   const data = Buffer.concat([
     keccak256(Buffer.from('ERC20Token(address)')).slice(0, 4),
