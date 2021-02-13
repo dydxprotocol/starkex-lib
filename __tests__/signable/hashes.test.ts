@@ -87,7 +87,7 @@ describe('Pedersen hashes', () => {
     const { SignableConditionalTransfer } = (
       proxyquire('../../src/signable/conditional-transfer', mocks)
     );
-    await new (SignableConditionalTransfer as typeof SignableConditionalTransferOrig)(
+    await (SignableConditionalTransfer as typeof SignableConditionalTransferOrig).fromTransfer(
       mockConditionalTransfer,
       NetworkId.ROPSTEN,
     ).getHash();
@@ -95,7 +95,7 @@ describe('Pedersen hashes', () => {
 
     // Expect fewer hashes the second time.
     mockPedersen.resetHistory();
-    await new (SignableConditionalTransfer as typeof SignableConditionalTransferOrig)(
+    await (SignableConditionalTransfer as typeof SignableConditionalTransferOrig).fromTransfer(
       mockConditionalTransfer,
       NetworkId.ROPSTEN,
     ).getHash();
@@ -139,7 +139,7 @@ describe('Pedersen hashes', () => {
       const { SignableConditionalTransfer } = (
         proxyquire('../../src/signable/conditional-transfer', mocks)
       );
-      await new (SignableConditionalTransfer as typeof SignableConditionalTransferOrig)(
+      await (SignableConditionalTransfer as typeof SignableConditionalTransferOrig).fromTransfer(
         mockConditionalTransfer,
         NetworkId.ROPSTEN,
       ).getHash();

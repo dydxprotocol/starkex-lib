@@ -39,10 +39,10 @@ const CONDITIONAL_TRANSFER_PADDING_BITS = 81;
  */
 export class SignableConditionalTransfer extends StarkSignable<StarkwareConditionalTransfer> {
 
-  constructor(
+  static fromTransfer(
     transfer: ConditionalTransferParams,
     networkId: NetworkId,
-  ) {
+  ): SignableConditionalTransfer {
     const nonce = nonceFromClientId(transfer.clientId);
 
     // The transfer asset is always the collateral asset.
@@ -51,7 +51,7 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
     // Convert to a Unix timestamp (in hours).
     const expirationEpochHours = isoTimestampToEpochHours(transfer.expirationIsoTimestamp);
 
-    super(
+    return new SignableConditionalTransfer(
       {
         senderPositionId: transfer.senderPositionId,
         receiverPositionId: transfer.receiverPositionId,
