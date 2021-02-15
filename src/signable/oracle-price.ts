@@ -12,6 +12,7 @@ import {
   intToBn,
 } from '../lib/util';
 import {
+  NetworkId,
   OraclePriceWithAssetName,
   OraclePriceWithMarket,
   StarkwareOraclePrice,
@@ -30,19 +31,24 @@ export class SignableOraclePrice extends StarkSignable<StarkwareOraclePrice> {
 
   static fromPriceWithMarket(
     params: OraclePriceWithMarket,
+    networkId: NetworkId,
   ): SignableOraclePrice {
     if (typeof params.market !== 'string') {
       throw new Error('SignableOraclePrice.fromPrice: market must be a string');
     }
     const assetName = getSignedAssetName(params.market);
-    return SignableOraclePrice.fromPriceWithAssetName({
-      ...params,
-      assetName,
-    });
+    return SignableOraclePrice.fromPriceWithAssetName(
+      {
+        ...params,
+        assetName,
+      },
+      networkId,
+    );
   }
 
   static fromPriceWithAssetName(
     params: OraclePriceWithAssetName,
+    networkId: NetworkId,
   ): SignableOraclePrice {
     if (typeof params.assetName !== 'string') {
       throw new Error('SignableOraclePrice.fromPrice: assetName must be a string');
@@ -70,11 +76,14 @@ export class SignableOraclePrice extends StarkSignable<StarkwareOraclePrice> {
 
     const expirationEpochSeconds = isoTimestampToEpochSeconds(params.isoTimestamp);
 
-    return new SignableOraclePrice({
-      signedAssetId,
-      signedPrice: signedPrice.toFixed(0),
-      expirationEpochSeconds,
-    });
+    return new SignableOraclePrice(
+      {
+        signedAssetId,
+        signedPrice: signedPrice.toFixed(0),
+        expirationEpochSeconds,
+      },
+      networkId,
+    );
   }
 
   protected async calculateHash(): Promise<BN> {

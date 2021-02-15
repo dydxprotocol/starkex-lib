@@ -1,10 +1,6 @@
 import BN from 'bn.js';
 
 import {
-  ASSET_ID_MAP,
-  COLLATERAL_ASSET,
-} from '../constants';
-import {
   addOrderExpirationBufferHours,
   getStarkwareAmounts,
   isoTimestampToEpochHours,
@@ -23,6 +19,7 @@ import {
   OrderWithClientIdAndQuoteAmount,
   StarkwareOrder,
   StarkwareOrderType,
+  NetworkId,
 } from '../types';
 import {
   ORDER_FIELD_BIT_LENGTHS,
@@ -43,18 +40,23 @@ export class SignableOrder extends StarkSignable<StarkwareOrder> {
 
   static fromOrderWithClientId(
     order: OrderWithClientId | OrderWithClientIdAndQuoteAmount,
+    networkId: NetworkId,
   ): SignableOrder {
     // Make the nonce by hashing the client-provided ID.
     const nonce = nonceFromClientId(order.clientId);
-    return SignableOrder.fromOrderWithNonce({
-      ...order,
-      clientId: undefined,
-      nonce,
-    });
+    return SignableOrder.fromOrderWithNonce(
+      {
+        ...order,
+        clientId: undefined,
+        nonce,
+      },
+      networkId,
+    );
   }
 
   static fromOrderWithNonce(
     order: OrderWithNonce | OrderWithNonceAndQuoteAmount,
+    networkId: NetworkId,
   ): SignableOrder {
     const nonce = order.nonce;
     const positionId = order.positionId;
@@ -70,30 +72,32 @@ export class SignableOrder extends StarkSignable<StarkwareOrder> {
       assetIdSynthetic,
       assetIdCollateral,
       isBuyingSynthetic,
-    } = getStarkwareAmounts(order);
+    } = getStarkwareAmounts(order, networkId);
 
     // The limitFee is a fraction, e.g. 0.01 is a 1% fee. It is always paid in the collateral asset.
     const quantumsAmountFee = getStarkwareLimitFeeAmount(order.limitFee, quantumsAmountCollateral);
-    const assetIdFee = ASSET_ID_MAP[COLLATERAL_ASSET];
 
     // Convert to a Unix timestamp (in hours) and add buffer to ensure signature is valid on-chain.
     const expirationEpochHours = addOrderExpirationBufferHours(
       isoTimestampToEpochHours(order.expirationIsoTimestamp),
     );
 
-    return new SignableOrder({
-      orderType,
-      nonce,
-      quantumsAmountSynthetic,
-      quantumsAmountCollateral,
-      quantumsAmountFee,
-      assetIdSynthetic,
-      assetIdCollateral,
-      assetIdFee,
-      positionId,
-      isBuyingSynthetic,
-      expirationEpochHours,
-    });
+    return new SignableOrder(
+      {
+        orderType,
+        nonce,
+        quantumsAmountSynthetic,
+        quantumsAmountCollateral,
+        quantumsAmountFee,
+        assetIdSynthetic,
+        assetIdCollateral,
+        assetIdFee: assetIdCollateral,
+        positionId,
+        isBuyingSynthetic,
+        expirationEpochHours,
+      },
+      networkId,
+    );
   }
 
   protected async calculateHash(): Promise<BN> {

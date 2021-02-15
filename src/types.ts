@@ -1,6 +1,11 @@
 import BN from 'bn.js';
 import elliptic from 'elliptic';
 
+export enum NetworkId {
+  MAINNET = 1,
+  ROPSTEN = 3,
+}
+
 export enum StarkwareOrderType {
   LIMIT_ORDER_WITH_FEES = 'LIMIT_ORDER_WITH_FEES',
 }

@@ -8,6 +8,7 @@ import _ from 'lodash';
 import {
   DydxMarket,
   KeyPair,
+  NetworkId,
   OraclePriceWithMarket,
 } from '../../src/types';
 import { generateKeyPairUnsafe } from '../../src/keys';
@@ -39,7 +40,7 @@ describe('SignableOraclePrice', () => {
 
     it('returns true for a valid signature', async () => {
       const result = await SignableOraclePrice
-        .fromPriceWithMarket(mockOraclePrice)
+        .fromPriceWithMarket(mockOraclePrice, NetworkId.ROPSTEN)
         .verifySignature(mockSignature, mockKeyPair.publicKey);
       expect(result).toBe(true);
     });
@@ -49,7 +50,7 @@ describe('SignableOraclePrice', () => {
       await Promise.all(_.range(1, 4).map(async (i) => {
         const badSignature: string = mutateHexStringAt(mockSignature, i);
         const result = await SignableOraclePrice
-          .fromPriceWithMarket(mockOraclePrice)
+          .fromPriceWithMarket(mockOraclePrice, NetworkId.ROPSTEN)
           .verifySignature(badSignature, mockKeyPair.publicKey);
         expect(result).toBe(false);
       }));
@@ -58,7 +59,7 @@ describe('SignableOraclePrice', () => {
       await Promise.all(_.range(1, 4).map(async (i) => {
         const badSignature: string = mutateHexStringAt(mockSignature, i + 64);
         const result = await SignableOraclePrice
-          .fromPriceWithMarket(mockOraclePrice)
+          .fromPriceWithMarket(mockOraclePrice, NetworkId.ROPSTEN)
           .verifySignature(badSignature, mockKeyPair.publicKey);
         expect(result).toBe(false);
       }));
@@ -69,7 +70,7 @@ describe('SignableOraclePrice', () => {
 
     it('signs an oracle price, with a market', async () => {
       const signature = await SignableOraclePrice
-        .fromPriceWithMarket(mockOraclePrice)
+        .fromPriceWithMarket(mockOraclePrice, NetworkId.ROPSTEN)
         .sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
@@ -79,7 +80,7 @@ describe('SignableOraclePrice', () => {
         .fromPriceWithAssetName({
           ...mockOraclePrice,
           assetName: getSignedAssetName(mockOraclePrice.market),
-        })
+        }, NetworkId.ROPSTEN)
         .sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
@@ -90,7 +91,7 @@ describe('SignableOraclePrice', () => {
         market: DydxMarket.ETH_USD,
       };
       const signature = await SignableOraclePrice
-        .fromPriceWithMarket(oraclePrice)
+        .fromPriceWithMarket(oraclePrice, NetworkId.ROPSTEN)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -101,7 +102,7 @@ describe('SignableOraclePrice', () => {
         oracleName: 'Other',
       };
       const signature = await SignableOraclePrice
-        .fromPriceWithMarket(oraclePrice)
+        .fromPriceWithMarket(oraclePrice, NetworkId.ROPSTEN)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -112,7 +113,7 @@ describe('SignableOraclePrice', () => {
         isoTimestamp: new Date().toISOString(),
       };
       const signature = await SignableOraclePrice
-        .fromPriceWithMarket(oraclePrice)
+        .fromPriceWithMarket(oraclePrice, NetworkId.ROPSTEN)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -123,7 +124,7 @@ describe('SignableOraclePrice', () => {
         oracleName: 'Other2',
       };
       expect(
-        () => SignableOraclePrice.fromPriceWithMarket(oraclePrice),
+        () => SignableOraclePrice.fromPriceWithMarket(oraclePrice, NetworkId.ROPSTEN),
       ).toThrow('Input does not fit in numBits=40 bits');
     });
   });
@@ -132,7 +133,10 @@ describe('SignableOraclePrice', () => {
     // Repeat some number of times.
     await Promise.all(_.range(3).map(async () => {
       const keyPair: KeyPair = generateKeyPairUnsafe();
-      const signableOraclePrice = SignableOraclePrice.fromPriceWithMarket(mockOraclePrice);
+      const signableOraclePrice = SignableOraclePrice.fromPriceWithMarket(
+        mockOraclePrice,
+        NetworkId.ROPSTEN,
+      );
       const signature = await signableOraclePrice.sign(keyPair.privateKey);
 
       // Expect to be valid when verifying with the right public key.

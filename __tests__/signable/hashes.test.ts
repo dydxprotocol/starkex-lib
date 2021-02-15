@@ -10,6 +10,7 @@ import sinon from 'sinon';
 import {
   ConditionalTransferParams,
   DydxMarket,
+  NetworkId,
   OrderWithClientId,
   StarkwareOrderSide,
   WithdrawalWithClientId,
@@ -86,27 +87,35 @@ describe('Pedersen hashes', () => {
     const { SignableConditionalTransfer } = (
       proxyquire('../../src/signable/conditional-transfer', mocks)
     );
-    await new (SignableConditionalTransfer as typeof SignableConditionalTransferOrig)(
+    await (SignableConditionalTransfer as typeof SignableConditionalTransferOrig).fromTransfer(
       mockConditionalTransfer,
+      NetworkId.ROPSTEN,
     ).getHash();
     expect(mockPedersen.callCount).toBe(5);
 
     // Expect fewer hashes the second time.
     mockPedersen.resetHistory();
-    await new (SignableConditionalTransfer as typeof SignableConditionalTransferOrig)(
+    await (SignableConditionalTransfer as typeof SignableConditionalTransferOrig).fromTransfer(
       mockConditionalTransfer,
+      NetworkId.ROPSTEN,
     ).getHash();
     expect(mockPedersen.callCount).toBe(4);
   });
 
   it('order: 4 hashes the first time, and 2 thereafter', async () => {
     const { SignableOrder } = proxyquire('../../src/signable/order', mocks);
-    await (SignableOrder as typeof SignableOrderOrig).fromOrder(mockOrder).getHash();
+    await (SignableOrder as typeof SignableOrderOrig).fromOrder(
+      mockOrder,
+      NetworkId.ROPSTEN,
+    ).getHash();
     expect(mockPedersen.callCount).toBe(4);
 
     // Expect fewer hashes the second time.
     mockPedersen.resetHistory();
-    await (SignableOrder as typeof SignableOrderOrig).fromOrder(mockOrder).getHash();
+    await (SignableOrder as typeof SignableOrderOrig).fromOrder(
+      mockOrder,
+      NetworkId.ROPSTEN,
+    ).getHash();
     expect(mockPedersen.callCount).toBe(2);
   });
 
@@ -114,6 +123,7 @@ describe('Pedersen hashes', () => {
     const { SignableWithdrawal } = proxyquire('../../src/signable/withdrawal', mocks);
     await (SignableWithdrawal as typeof SignableWithdrawalOrig).fromWithdrawal(
       mockWithdrawal,
+      NetworkId.ROPSTEN,
     ).getHash();
     expect(mockPedersen.callCount).toBe(1);
   });
@@ -121,7 +131,7 @@ describe('Pedersen hashes', () => {
   describe('after pre-computing hashes', () => {
 
     beforeEach(async () => {
-      await proxyquiredHashes.preComputeHashes();
+      await proxyquiredHashes.preComputeHashes(NetworkId.ROPSTEN);
       mockPedersen.resetHistory();
     });
 
@@ -129,15 +139,19 @@ describe('Pedersen hashes', () => {
       const { SignableConditionalTransfer } = (
         proxyquire('../../src/signable/conditional-transfer', mocks)
       );
-      await new (SignableConditionalTransfer as typeof SignableConditionalTransferOrig)(
+      await (SignableConditionalTransfer as typeof SignableConditionalTransferOrig).fromTransfer(
         mockConditionalTransfer,
+        NetworkId.ROPSTEN,
       ).getHash();
       expect(mockPedersen.callCount).toBe(4);
     });
 
     it('order: 2 hashes', async () => {
       const { SignableOrder } = proxyquire('../../src/signable/order', mocks);
-      await (SignableOrder as typeof SignableOrderOrig).fromOrder(mockOrder).getHash();
+      await (SignableOrder as typeof SignableOrderOrig).fromOrder(
+        mockOrder,
+        NetworkId.ROPSTEN,
+      ).getHash();
       expect(mockPedersen!.callCount).toBe(2);
     });
 
@@ -145,6 +159,7 @@ describe('Pedersen hashes', () => {
       const { SignableWithdrawal } = proxyquire('../../src/signable/withdrawal', mocks);
       await (SignableWithdrawal as typeof SignableWithdrawalOrig).fromWithdrawal(
         mockWithdrawal,
+        NetworkId.ROPSTEN,
       ).getHash();
       expect(mockPedersen.callCount).toBe(1);
     });

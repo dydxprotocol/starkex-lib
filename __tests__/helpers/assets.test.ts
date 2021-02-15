@@ -5,12 +5,13 @@
 import expect from 'expect';
 
 import {
-  ASSET_ID_MAP,
-  COLLATERAL_ASSET_ID,
+  SYNTHETIC_ASSET_ID_MAP,
+  COLLATERAL_ASSET_ID_BY_NETWORK_ID,
 } from '../../src/constants';
 import {
   DydxAsset,
   DydxMarket,
+  NetworkId,
   StarkwareOrderSide,
 } from '../../src/types';
 
@@ -50,12 +51,12 @@ describe('assets helpers', () => {
           side: StarkwareOrderSide.SELL,
           humanSize: '250.0000000001',
           humanPrice: '1.23456789',
-        }),
+        }, NetworkId.ROPSTEN),
       ).toStrictEqual({
         quantumsAmountSynthetic: '2500000000001',
         quantumsAmountCollateral: '308641972',
-        assetIdSynthetic: ASSET_ID_MAP[DydxAsset.BTC],
-        assetIdCollateral: COLLATERAL_ASSET_ID,
+        assetIdSynthetic: SYNTHETIC_ASSET_ID_MAP[DydxAsset.BTC],
+        assetIdCollateral: COLLATERAL_ASSET_ID_BY_NETWORK_ID[NetworkId.ROPSTEN],
         isBuyingSynthetic: false,
       });
     });
@@ -67,12 +68,12 @@ describe('assets helpers', () => {
           side: StarkwareOrderSide.SELL,
           humanSize: '250.0000000001',
           humanQuoteAmount: '308.641972',
-        }),
+        }, NetworkId.ROPSTEN),
       ).toStrictEqual({
         quantumsAmountSynthetic: '2500000000001',
         quantumsAmountCollateral: '308641972',
-        assetIdSynthetic: ASSET_ID_MAP[DydxAsset.BTC],
-        assetIdCollateral: COLLATERAL_ASSET_ID,
+        assetIdSynthetic: SYNTHETIC_ASSET_ID_MAP[DydxAsset.BTC],
+        assetIdCollateral: COLLATERAL_ASSET_ID_BY_NETWORK_ID[NetworkId.ROPSTEN],
         isBuyingSynthetic: false,
       });
     });
@@ -84,7 +85,7 @@ describe('assets helpers', () => {
           side: StarkwareOrderSide.SELL,
           humanSize: '250.00000000001',
           humanPrice: '1.23456789',
-        });
+        }, NetworkId.ROPSTEN);
       }).toThrow('not a multiple of the quantum size');
     });
 
@@ -95,7 +96,7 @@ describe('assets helpers', () => {
           side: StarkwareOrderSide.SELL,
           humanSize: '250.0000000001',
           humanQuoteAmount: '308.6419721',
-        });
+        }, NetworkId.ROPSTEN);
       }).toThrow('not a multiple of the quantum size');
     });
   });

@@ -9,6 +9,7 @@ import {
   KeyPair,
   StarkwareConditionalTransfer,
   ConditionalTransferParams,
+  NetworkId,
 } from '../../src/types';
 import { generateKeyPairUnsafe } from '../../src/keys';
 import { mutateHexStringAt } from '../util';
@@ -41,7 +42,7 @@ describe('SignableConditionalTransfer', () => {
   describe('verifySignature()', () => {
 
     it('returns true for a valid signature', async () => {
-      const result = await new SignableConditionalTransfer(mockParams)
+      const result = await SignableConditionalTransfer.fromTransfer(mockParams, NetworkId.ROPSTEN)
         .verifySignature(mockSignature, mockKeyPair.publicKey);
       expect(result).toBe(true);
     });
@@ -49,13 +50,13 @@ describe('SignableConditionalTransfer', () => {
     it('returns false for an invalid signature', async () => {
       // Mutate a single character in r.
       const badSignatureR: string = mutateHexStringAt(mockSignature, 1);
-      const result1 = await new SignableConditionalTransfer(mockParams)
+      const result1 = await SignableConditionalTransfer.fromTransfer(mockParams, NetworkId.ROPSTEN)
         .verifySignature(badSignatureR, mockKeyPair.publicKey);
       expect(result1).toBe(false);
 
       // Mutate a single character in s.
       const badSignatureS: string = mutateHexStringAt(mockSignature, 65);
-      const result2 = await new SignableConditionalTransfer(mockParams)
+      const result2 = await SignableConditionalTransfer.fromTransfer(mockParams, NetworkId.ROPSTEN)
         .verifySignature(badSignatureS, mockKeyPair.publicKey);
       expect(result2).toBe(false);
     });
@@ -64,8 +65,10 @@ describe('SignableConditionalTransfer', () => {
   describe('sign()', () => {
 
     it('signs a transfer', async () => {
-      const signature = await new SignableConditionalTransfer(mockParams)
-        .sign(mockKeyPair.privateKey);
+      const signature = await SignableConditionalTransfer.fromTransfer(
+        mockParams,
+        NetworkId.ROPSTEN,
+      ).sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
 
@@ -74,7 +77,7 @@ describe('SignableConditionalTransfer', () => {
         ...mockParams,
         clientId: `${mockParams.clientId}!`,
       };
-      const signature = await new SignableConditionalTransfer(transfer)
+      const signature = await SignableConditionalTransfer.fromTransfer(transfer, NetworkId.ROPSTEN)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -84,7 +87,7 @@ describe('SignableConditionalTransfer', () => {
         ...mockParams,
         receiverPositionId: (Number.parseInt(mockParams.receiverPositionId, 10) + 1).toString(),
       };
-      const signature = await new SignableConditionalTransfer(transfer)
+      const signature = await SignableConditionalTransfer.fromTransfer(transfer, NetworkId.ROPSTEN)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -94,7 +97,7 @@ describe('SignableConditionalTransfer', () => {
 
     it('converts human amounts to quantum amounts and converts expiration to hours', async () => {
       const starkwareConditionalTransfer: StarkwareConditionalTransfer = (
-        new SignableConditionalTransfer(mockParams).toStarkware()
+        SignableConditionalTransfer.fromTransfer(mockParams, NetworkId.ROPSTEN).toStarkware()
       );
       expect(starkwareConditionalTransfer.quantumsAmount).toEqual('49478023');
       expect(starkwareConditionalTransfer.expirationEpochHours).toBe(444533);
@@ -105,7 +108,7 @@ describe('SignableConditionalTransfer', () => {
     // Repeat some number of times.
     await Promise.all(_.range(3).map(async () => {
       const keyPair: KeyPair = generateKeyPairUnsafe();
-      const signable = new SignableConditionalTransfer(mockParams);
+      const signable = SignableConditionalTransfer.fromTransfer(mockParams, NetworkId.ROPSTEN);
       const signature = await signable.sign(keyPair.privateKey);
 
       // Expect to be valid when verifying with the right public key.

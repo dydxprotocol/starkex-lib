@@ -2,7 +2,6 @@ import BN from 'bn.js';
 
 import { HashFunction } from '../types';
 
-export { SignableApiRequest } from './api-request';
 export * from './crypto';
 export { preComputeHashes } from './hashes';
 export { SignableOraclePrice } from './oracle-price';
