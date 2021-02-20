@@ -1,5 +1,4 @@
 import BN from 'bn.js';
-import { keccak256 } from 'ethereum-cryptography/keccak';
 
 /**
  * Match a hex string with no hex prefix (and at least one character).
@@ -11,13 +10,22 @@ const HEX_RE = /^[0-9a-fA-F]+$/;
  */
 const DEC_RE = /^[0-9]+$/;
 
-const BIT_MASK_250 = new BN('3FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', 16);
-
 /**
  * Convert a BN to a 32-byte hex string without 0x prefix.
  */
 export function bnToHex32(bn: BN): string {
   return normalizeHex32(bn.toString(16));
+}
+
+/**
+ * Remove optional 0x prefix from the start of a hex string. Throw if not a hex string.
+ */
+export function stripHexPrefix(hex: string): string {
+  const hexNoPrefix = hex.replace(/^0x/, '');
+  if (!hexNoPrefix.match(HEX_RE)) {
+    throw new Error('stripHexPrefix: Input is not a hex string');
+  }
+  return hexNoPrefix;
 }
 
 /**
@@ -40,24 +48,6 @@ export function randomBuffer(numBytes: number): Buffer {
     bytes[i] = Math.floor(Math.random() * 0xff);
   }
   return Buffer.from(bytes);
-}
-
-/**
- * Create a "condition" Buffer (for a conditional transfer) from a factRegistry address and a fact.
- */
-export function factToCondition(
-  factRegistryAddress: string,
-  fact: string,
-): string {
-  // Get Buffer equivalent of encode.packed(factRegistryAddress, fact).
-  const combinedHex: string = `${factRegistryAddress}${normalizeHex32(fact)}`;
-  const combinedBuffer: Buffer = Buffer.from(stripHexPrefix(combinedHex), 'hex');
-
-  // Hash the data, mask by 250 bits, and return the hex string equivalent.
-  const hashedData: Buffer = keccak256(combinedBuffer);
-  const hashBN = hexToBn(hashedData.toString('hex'));
-  const maskedHashBN = hashBN.and(BIT_MASK_250);
-  return maskedHashBN.toString(16);
 }
 
 // ============ Creating BNs ============
@@ -108,14 +98,4 @@ export function utf8ToBn(
     throw new Error(`utf8ToBN: Input does not fit in numBits=${numBits} bits`);
   }
   return new BN(paddedHex, 16);
-}
-
-// ============ Helper Functions ============
-
-function stripHexPrefix(hex: string): string {
-  const hexNoPrefix = hex.replace(/^0x/, '');
-  if (!hexNoPrefix.match(HEX_RE)) {
-    throw new Error('stripHexPrefix: Input is not a hex string');
-  }
-  return hexNoPrefix;
 }

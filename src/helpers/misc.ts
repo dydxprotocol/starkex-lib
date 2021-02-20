@@ -5,8 +5,14 @@
 import nodeCrypto from 'crypto';
 
 import BN from 'bn.js';
+import { keccak256 } from 'ethereum-cryptography/keccak';
 
-import { hexToBn, utf8ToBn } from '../lib/util';
+import {
+  hexToBn,
+  normalizeHex32,
+  stripHexPrefix,
+  utf8ToBn,
+} from '../lib/util';
 import {
   ORACLE_PRICE_FIELD_BIT_LENGTHS,
   ORDER_FIELD_BIT_LENGTHS,
@@ -14,6 +20,7 @@ import {
 } from '../signable/constants';
 import { DydxMarket } from '../types';
 
+const BIT_MASK_250 = new BN('3FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', 16);
 const MAX_NONCE = new BN(2).pow(new BN(ORDER_FIELD_BIT_LENGTHS.nonce));
 const ONE_SECOND_MS = 1000;
 const ONE_HOUR_MS = 60 * 60 * ONE_SECOND_MS;
@@ -45,6 +52,24 @@ export function isoTimestampToEpochHours(isoTimestamp: string): number {
  */
 export function addOrderExpirationBufferHours(expirationEpochHours: number): number {
   return expirationEpochHours + STARK_ORDER_SIGNATURE_EXPIRATION_BUFFER_HOURS;
+}
+
+/**
+ * Create a "condition" Buffer (for a conditional transfer) from a factRegistry address and a fact.
+ */
+export function factToCondition(
+  factRegistryAddress: string,
+  fact: string,
+): string {
+  // Get Buffer equivalent of encode.packed(factRegistryAddress, fact).
+  const combinedHex: string = `${factRegistryAddress}${normalizeHex32(fact)}`;
+  const combinedBuffer: Buffer = Buffer.from(stripHexPrefix(combinedHex), 'hex');
+
+  // Hash the data, mask by 250 bits, and return the hex string equivalent.
+  const hashedData: Buffer = keccak256(combinedBuffer);
+  const hashBN = hexToBn(hashedData.toString('hex'));
+  const maskedHashBN = hashBN.and(BIT_MASK_250);
+  return maskedHashBN.toString(16);
 }
 
 /**
