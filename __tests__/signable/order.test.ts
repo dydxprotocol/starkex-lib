@@ -225,6 +225,15 @@ describe('SignableOrder', () => {
         () => SignableOrder.fromOrder(order, NetworkId.ROPSTEN).toStarkware(),
       ).toThrow('Unknown market');
     });
+
+    it('correctly handles an expiration close to the start of the hour', () => {
+      const order = {
+        ...mockOrder,
+        expirationIsoTimestamp: '2021-02-24T16:00:00.407Z',
+      };
+      const starkwareOrder = SignableOrder.fromOrder(order, NetworkId.ROPSTEN).toStarkware();
+      expect(starkwareOrder.expirationEpochHours).toBe(448553);
+    });
   });
 
   it('end-to-end', async () => {
