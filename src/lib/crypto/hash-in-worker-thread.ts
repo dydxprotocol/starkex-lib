@@ -1,7 +1,7 @@
 import BN from 'bn.js';
 
-import { pedersen } from '../lib/starkex-resources';
-import { HashFunction } from '../types';
+import { HashFunction } from '../../types';
+import { pedersen } from '../starkware';
 
 /* eslint-disable */
 let Worker: any;

@@ -15,7 +15,7 @@
 /////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Starkware crypto functions.
+ * Starkware crypto functions implemented in JS.
  *
  * Copied from:
  * https://github.com/starkware-libs/starkex-resources/blob/0f08e6c55ad88c93499f71f2af4a2e7ae0185cdf/crypto/starkware/crypto/signature/signature.js

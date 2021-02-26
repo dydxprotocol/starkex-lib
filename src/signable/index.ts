@@ -3,7 +3,6 @@ import BN from 'bn.js';
 import { HashFunction } from '../types';
 
 export { SignableConditionalTransfer } from './conditional-transfer';
-export * from './crypto';
 export { preComputeHashes } from './hashes';
 export { SignableOraclePrice } from './oracle-price';
 export { SignableOrder } from './order';
