@@ -7,26 +7,30 @@ import expect from 'expect';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
+import { pedersen } from '../../src/lib/starkex-resources';
+import {
+  SignableConditionalTransfer as SignableConditionalTransferOrig,
+} from '../../src/signable/conditional-transfer';
+import * as cryptoModule from '../../src/signable/crypto';
+import * as hashesModule from '../../src/signable/hashes';
+import {
+  SignableOrder as SignableOrderOrig,
+} from '../../src/signable/order';
+import {
+  SignableTransfer as SignableTransferOrig,
+} from '../../src/signable/transfer';
+import {
+  SignableWithdrawal as SignableWithdrawalOrig,
+} from '../../src/signable/withdrawal';
 import {
   ConditionalTransferParams,
   DydxMarket,
   NetworkId,
   OrderWithClientId,
   StarkwareOrderSide,
+  TransferParams,
   WithdrawalWithClientId,
 } from '../../src/types';
-import * as cryptoModule from '../../src/signable/crypto';
-import * as hashesModule from '../../src/signable/hashes';
-import {
-  SignableConditionalTransfer as SignableConditionalTransferOrig,
-} from '../../src/signable/conditional-transfer';
-import {
-  SignableOrder as SignableOrderOrig,
-} from '../../src/signable/order';
-import {
-  SignableWithdrawal as SignableWithdrawalOrig,
-} from '../../src/signable/withdrawal';
-import { pedersen } from '../../src/lib/starkex-resources';
 
 proxyquire.noPreserveCache();
 
@@ -37,13 +41,16 @@ let proxyquiredHashes: typeof hashesModule;
 let mocks: any;
 
 // Mock data.
-const mockConditionalTransfer: ConditionalTransferParams = {
+const mockTransfer: TransferParams = {
   senderPositionId: '12345',
   receiverPositionId: '67890',
   receiverPublicKey: '05135ef87716b0faecec3ba672d145a6daad0aa46437c365d490022115aba674',
   humanAmount: '49.478023',
   expirationIsoTimestamp: '2020-09-17T04:15:55.028Z',
   clientId: 'This is an ID that the client came up with to describe this transfer',
+};
+const mockConditionalTransfer: ConditionalTransferParams = {
+  ...mockTransfer,
   factRegistryAddress: '0x12aa12aa12aa12aa12aa12aa12aa12aa12aa12aa',
   fact: '0x12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff12ff',
 };
@@ -119,6 +126,25 @@ describe('Pedersen hashes', () => {
     expect(mockPedersen.callCount).toBe(2);
   });
 
+  it('transfer: 4 hashes the first time, and 3 thereafter', async () => {
+    const { SignableTransfer } = (
+      proxyquire('../../src/signable/transfer', mocks)
+    );
+    await (SignableTransfer as typeof SignableTransferOrig).fromTransfer(
+      mockTransfer,
+      NetworkId.ROPSTEN,
+    ).getHash();
+    expect(mockPedersen.callCount).toBe(4);
+
+    // Expect fewer hashes the second time.
+    mockPedersen.resetHistory();
+    await (SignableTransfer as typeof SignableTransferOrig).fromTransfer(
+      mockTransfer,
+      NetworkId.ROPSTEN,
+    ).getHash();
+    expect(mockPedersen.callCount).toBe(3);
+  });
+
   it('withdrawal: 1 hash the first time, and 1 thereafter', async () => {
     const { SignableWithdrawal } = proxyquire('../../src/signable/withdrawal', mocks);
     await (SignableWithdrawal as typeof SignableWithdrawalOrig).fromWithdrawal(
@@ -153,6 +179,17 @@ describe('Pedersen hashes', () => {
         NetworkId.ROPSTEN,
       ).getHash();
       expect(mockPedersen!.callCount).toBe(2);
+    });
+
+    it('conditional transfer: 3 hashes', async () => {
+      const { SignableTransfer } = (
+        proxyquire('../../src/signable/transfer', mocks)
+      );
+      await (SignableTransfer as typeof SignableTransferOrig).fromTransfer(
+        mockTransfer,
+        NetworkId.ROPSTEN,
+      ).getHash();
+      expect(mockPedersen.callCount).toBe(3);
     });
 
     it('withdrawal: 1 hash', async () => {

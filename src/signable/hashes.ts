@@ -11,7 +11,7 @@ import {
 } from '../constants';
 import { hexToBn } from '../lib/util';
 import { NetworkId } from '../types';
-import { CONDITIONAL_TRANSFER_FEE_ASSET_ID_BN } from './constants';
+import { TRANSFER_FEE_ASSET_ID_BN } from './constants';
 import { getPedersenHash } from './crypto';
 
 // Global state for all STARK signables.
@@ -56,7 +56,7 @@ export async function preComputeHashes(
       ]);
     })),
 
-    // Conditional transfers: hash(transfer asset, fee asset)
-    getCacheablePedersenHash(collateralAssetBn, CONDITIONAL_TRANSFER_FEE_ASSET_ID_BN),
+    // Transfers and conditional transfers: hash(transfer asset, fee asset)
+    getCacheablePedersenHash(collateralAssetBn, TRANSFER_FEE_ASSET_ID_BN),
   ]);
 }
