@@ -79,27 +79,33 @@ export interface StarkwareWithdrawal {
   expirationEpochHours: number;
 }
 
-// ============ Conditional Transfer Parameters ============
+// ============ Transfer and Conditional Transfer Parameters ============
 
-export interface ConditionalTransferParams {
+export interface TransferParams {
   senderPositionId: string;
   receiverPositionId: string;
   receiverPublicKey: string;
-  factRegistryAddress: string;
-  fact: string;
   humanAmount: string;
   clientId: string;
   expirationIsoTimestamp: string;
 }
 
-export interface StarkwareConditionalTransfer {
+export interface ConditionalTransferParams extends TransferParams {
+  factRegistryAddress: string;
+  fact: string;
+}
+
+export interface StarkwareTransfer {
   senderPositionId: string;
   receiverPositionId: string;
   receiverPublicKey: string;
-  condition: string;
   quantumsAmount: string;
   nonce: string; // For signature. A base-10 integer.
   expirationEpochHours: number;
+}
+
+export interface StarkwareConditionalTransfer extends StarkwareTransfer{
+  condition: string;
 }
 
 // ============ Order Parameters ============
