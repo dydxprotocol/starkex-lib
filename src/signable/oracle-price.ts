@@ -6,7 +6,7 @@ import {
   getSignedAssetName,
   isoTimestampToEpochSeconds,
 } from '../helpers';
-import { getPedersenHash } from '../lib/crypto';
+import { pedersen } from '../lib/crypto';
 import {
   decToBn,
   hexToBn,
@@ -104,6 +104,6 @@ export class SignableOraclePrice extends StarkSignable<StarkwareOraclePrice> {
       .iushln(ORACLE_PRICE_FIELD_BIT_LENGTHS.timestampEpochSeconds)
       .iadd(timestampEpochSecondsBn);
 
-    return getPedersenHash(signedAssetId, priceAndTimestamp);
+    return pedersen(signedAssetId, priceAndTimestamp);
   }
 }

@@ -31,7 +31,9 @@ export enum DydxAsset {
 
 export type SyntheticAsset = Exclude<DydxAsset, DydxAsset.USDC>;
 
-// Key pair, represented as hex strings, no 0x prefix.
+/**
+ * Key pair, represented as hex strings.
+ */
 export interface KeyPair {
   publicKey: string; // Required x-coordinate.
   publicKeyYCoordinate?: string; // Optional y-coordinate.
@@ -42,17 +44,38 @@ export interface KeyPairWithYCoordinate extends KeyPair {
   publicKeyYCoordinate: string;
 }
 
-// Signature, represented as hex strings, no 0x prefix.
+/**
+ * Public key (x, y) pair, represented as hex strings.
+ */
+export interface PublicKeyStruct {
+  x: string;
+  y: string;
+}
+
+/**
+ * Signature, represented as hex strings.
+ */
 export interface SignatureStruct {
   r: string;
   s: string;
 }
 
-export type HashFunction = (a: BN, b: BN) => BN | Promise<BN>;
+export type HashFunction =
+  (
+    a: BN,
+    b: BN,
+  ) => BN | Promise<BN>;
 export type SigningFunction =
-  (key: elliptic.ec.KeyPair, message: BN) => elliptic.ec.Signature | Promise<elliptic.ec.Signature>;
+  (
+    privateKey: string,
+    message: BN,
+  ) => SignatureStruct | Promise<SignatureStruct>;
 export type VerificationFunction =
-  (key: elliptic.ec.KeyPair, message: BN, signature: SignatureStruct) => boolean | Promise<boolean>;
+  (
+    publicKey: string | PublicKeyStruct,
+    message: BN,
+    signature: SignatureStruct,
+  ) => boolean | Promise<boolean>;
 
 // ============ Withdrawal Parameters ============
 

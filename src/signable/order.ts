@@ -7,7 +7,7 @@ import {
   nonceFromClientId,
   getStarkwareLimitFeeAmount,
 } from '../helpers';
-import { getPedersenHash } from '../lib/crypto';
+import { pedersen } from '../lib/crypto';
 import {
   decToBn,
   hexToBn,
@@ -162,8 +162,8 @@ export class SignableOrder extends StarkSignable<StarkwareOrder> {
       await getCacheablePedersenHash(assetIdSellBn, assetIdBuyBn),
       assetIdFeeBn,
     );
-    return getPedersenHash(
-      await getPedersenHash(assetsBn, orderPart1),
+    return pedersen(
+      await pedersen(assetsBn, orderPart1),
       orderPart2,
     );
   }

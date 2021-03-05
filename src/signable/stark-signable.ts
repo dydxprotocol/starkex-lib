@@ -2,9 +2,6 @@ import BN from 'bn.js';
 
 import { COLLATERAL_ASSET_ID_BY_NETWORK_ID } from '../constants';
 import {
-  asEcKeyPair,
-  asEcKeyPairPublic,
-  asSimpleSignature,
   deserializeSignature,
   serializeSignature,
 } from '../helpers';
@@ -12,7 +9,6 @@ import {
   sign,
   verify,
 } from '../lib/crypto';
-import { starkEc } from '../lib/starkware/crypto-js';
 import {
   KeyPair,
   NetworkId,
@@ -62,8 +58,8 @@ export abstract class StarkSignable<T> {
     privateKey: string | KeyPair,
   ): Promise<string> {
     const hashBN = await this.getHashBN();
-    const ecSignature = await sign(asEcKeyPair(privateKey), hashBN);
-    return serializeSignature(asSimpleSignature(ecSignature));
+    const key: string = typeof privateKey === 'string' ? privateKey : privateKey.privateKey;
+    return serializeSignature(await sign(key, hashBN));
   }
 
   /**
@@ -74,23 +70,12 @@ export abstract class StarkSignable<T> {
     publicKey: string,
     publicKeyYCoordinate: string | null = null,
   ): Promise<boolean> {
-    const signatureStruct = deserializeSignature(signature);
-
-    // If y-coordinate is available, save time by using it, instead of having to infer it.
-    if (publicKeyYCoordinate) {
-      const ecPublicKey = starkEc.keyFromPublic({ x: publicKey, y: publicKeyYCoordinate });
-      return verify(ecPublicKey, await this.getHashBN(), signatureStruct);
-    }
-
-    // Return true if the signature is valid for either of the two possible y-coordinates.
-    //
-    // Compare with:
-    // https://github.com/starkware-libs/starkex-resources/blob/1eb84c6a9069950026768013f748016d3bd51d54/crypto/starkware/crypto/signature/signature.py#L151
+    const key = publicKeyYCoordinate === null
+      ? publicKey
+      : { x: publicKey, y: publicKeyYCoordinate };
     const hashBN = await this.getHashBN();
-    return (
-      (await verify(asEcKeyPairPublic(publicKey, false), hashBN, signatureStruct)) ||
-      verify(asEcKeyPairPublic(publicKey, true), hashBN, signatureStruct)
-    );
+    const signatureStruct = deserializeSignature(signature);
+    return verify(key, hashBN, signatureStruct);
   }
 
   /**

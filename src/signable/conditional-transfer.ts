@@ -9,7 +9,7 @@ import {
   nonceFromClientId,
   toQuantumsExact,
 } from '../helpers';
-import { getPedersenHash } from '../lib/crypto';
+import { pedersen } from '../lib/crypto';
 import {
   decToBn,
   factToCondition,
@@ -110,8 +110,8 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
       TRANSFER_FEE_ASSET_ID_BN,
     );
 
-    const transferPart1 = await getPedersenHash(
-      await getPedersenHash(
+    const transferPart1 = await pedersen(
+      await pedersen(
         assetIds,
         receiverPublicKeyBn,
       ),
@@ -130,8 +130,8 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
       )
       .iushln(CONDITIONAL_TRANSFER_PADDING_BITS);
 
-    return getPedersenHash(
-      await getPedersenHash(
+    return pedersen(
+      await pedersen(
         transferPart1,
         transferPart2,
       ),

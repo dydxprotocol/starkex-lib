@@ -9,7 +9,7 @@ import {
   nonceFromClientId,
   toQuantumsExact,
 } from '../helpers';
-import { getPedersenHash } from '../lib/crypto';
+import { pedersen } from '../lib/crypto';
 import {
   decToBn,
   hexToBn,
@@ -102,7 +102,7 @@ export class SignableWithdrawal extends StarkSignable<StarkwareWithdrawal> {
       .iushln(WITHDRAWAL_FIELD_BIT_LENGTHS.expirationEpochHours).iadd(expirationEpochHoursBn)
       .iushln(WITHDRAWAL_PADDING_BITS);
 
-    return getPedersenHash(
+    return pedersen(
       hexToBn(COLLATERAL_ASSET_ID_BY_NETWORK_ID[this.networkId]),
       packedWithdrawalBn,
     );

@@ -1,7 +1,7 @@
 import BN from 'bn.js';
 
 import { HashFunction } from '../../types';
-import { pedersen } from '../starkware';
+import { cryptoJs } from '../starkware';
 
 /* eslint-disable */
 let Worker: any;
@@ -51,7 +51,7 @@ if (isMainThread) {
   };
 } else {
   const { a, b }: { a: string, b: string } = workerData;
-  const hashResult = pedersen(new BN(a, 10), new BN(b, 10)).toString();
+  const hashResult = cryptoJs.pedersen(new BN(a, 10), new BN(b, 10)).toString();
   parentPort!.postMessage(hashResult);
 }
 

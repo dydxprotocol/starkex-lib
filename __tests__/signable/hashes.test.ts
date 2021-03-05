@@ -8,7 +8,7 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import * as cryptoModule from '../../src/lib/crypto';
-import { pedersen } from '../../src/lib/starkware';
+import { cryptoJs } from '../../src/lib/starkware';
 import {
   SignableConditionalTransfer as SignableConditionalTransferOrig,
 } from '../../src/signable/conditional-transfer';
@@ -75,10 +75,12 @@ describe('Pedersen hashes', () => {
 
   beforeEach(() => {
     // Reload the hashes module fresh each time, resetting the cache.
-    mockPedersen = sinon.spy(pedersen);
+    mockPedersen = sinon.spy(cryptoJs.pedersen);
     proxyquiredCrypto = proxyquire('../../src/lib/crypto/proxies', {
-      '../starkware': {
-        pedersen: mockPedersen,
+      './crypto-js-wrappers': {
+        cryptoJs: {
+          pedersen: mockPedersen,
+        },
       },
     });
     proxyquiredHashes = proxyquire('../../src/signable/hashes', {

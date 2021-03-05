@@ -3,7 +3,6 @@
  */
 
 import BN from 'bn.js';
-import elliptic from 'elliptic';
 import expect from 'expect';
 
 import {
@@ -12,24 +11,22 @@ import {
   setGlobalStarkVerificationImplementation,
 } from '../../../src/lib/crypto/proxies';
 import {
-  pedersen,
-  sign,
-  verify,
-} from '../../../src/lib/starkware';
-import { SignatureStruct } from '../../../src/types';
+  cryptoJs,
+} from '../../../src/lib/crypto';
+import { PublicKeyStruct, SignatureStruct } from '../../../src/types';
 
 describe('Cryptographic function wrappers for STARK signable objects', () => {
 
   it('allows setting the hash function implementation', async () => {
-    await setGlobalStarkHashImplementation(pedersen);
+    await setGlobalStarkHashImplementation(cryptoJs.pedersen);
   });
 
   it('allows setting the signing function implementation', async () => {
-    await setGlobalStarkSigningImplementation(sign);
+    await setGlobalStarkSigningImplementation(cryptoJs.sign);
   });
 
   it('allows setting the verification function implementation', async () => {
-    await setGlobalStarkVerificationImplementation(verify);
+    await setGlobalStarkVerificationImplementation(cryptoJs.verify);
   });
 
   it('throws if invalid hash function provided', async () => {
@@ -43,10 +40,10 @@ describe('Cryptographic function wrappers for STARK signable objects', () => {
   it('throws if invalid signing function provided', async () => {
     await expect(
       setGlobalStarkSigningImplementation(
-        (_key: elliptic.ec.KeyPair, _message: BN) => ({
-          r: new BN(1),
-          s: new BN(2),
-        }) as elliptic.ec.Signature,
+        (_key: string, _message: BN) => ({
+          r: '0x1',
+          s: '0x2',
+        }),
       ),
     ).rejects.toThrow('Sanity check failed');
   });
@@ -54,7 +51,7 @@ describe('Cryptographic function wrappers for STARK signable objects', () => {
   it('throws if invalid verification function provided (returning false)', async () => {
     await expect(
       setGlobalStarkVerificationImplementation(
-        (_key: elliptic.ec.KeyPair, _message: BN, _signature: SignatureStruct) => false,
+        (_key: string | PublicKeyStruct, _message: BN, _signature: SignatureStruct) => false,
       ),
     ).rejects.toThrow('Sanity check failed');
   });
@@ -62,7 +59,7 @@ describe('Cryptographic function wrappers for STARK signable objects', () => {
   it('throws if invalid verification function provided (returning true)', async () => {
     await expect(
       setGlobalStarkVerificationImplementation(
-        (_key: elliptic.ec.KeyPair, _message: BN, _signature: SignatureStruct) => true,
+        (_key: string | PublicKeyStruct, _message: BN, _signature: SignatureStruct) => true,
       ),
     ).rejects.toThrow('Sanity check failed');
   });
