@@ -9,10 +9,10 @@ import {
   SYNTHETIC_ASSET_ID_MAP,
   SYNTHETIC_ASSETS,
 } from '../constants';
+import { pedersen } from '../lib/crypto';
 import { hexToBn } from '../lib/util';
 import { NetworkId } from '../types';
 import { TRANSFER_FEE_ASSET_ID_BN } from './constants';
-import { getPedersenHash } from './crypto';
 
 // Global state for all STARK signables.
 const CACHE: Record<string, Record<string, BN>> = {};
@@ -27,7 +27,7 @@ export async function getCacheablePedersenHash(left: BN, right: BN): Promise<BN>
     CACHE[leftString] = {};
   }
   if (!CACHE[leftString][rightString]) {
-    CACHE[leftString][rightString] = await getPedersenHash(left, right);
+    CACHE[leftString][rightString] = await pedersen(left, right);
   }
   return CACHE[leftString][rightString];
 }

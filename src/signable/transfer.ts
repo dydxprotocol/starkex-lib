@@ -9,6 +9,7 @@ import {
   nonceFromClientId,
   toQuantumsExact,
 } from '../helpers';
+import { pedersen } from '../lib/crypto';
 import {
   decToBn,
   hexToBn,
@@ -23,7 +24,6 @@ import {
   TRANSFER_FEE_ASSET_ID_BN,
   TRANSFER_FIELD_BIT_LENGTHS,
 } from './constants';
-import { getPedersenHash } from './crypto';
 import { getCacheablePedersenHash } from './hashes';
 import { StarkSignable } from './stark-signable';
 
@@ -104,7 +104,7 @@ export class SignableTransfer extends StarkSignable<StarkwareTransfer> {
       TRANSFER_FEE_ASSET_ID_BN,
     );
 
-    const transferPart1 = await getPedersenHash(
+    const transferPart1 = await pedersen(
       assetIds,
       receiverPublicKeyBn,
     );
@@ -121,8 +121,8 @@ export class SignableTransfer extends StarkSignable<StarkwareTransfer> {
       )
       .iushln(TRANSFER_PADDING_BITS);
 
-    return getPedersenHash(
-      await getPedersenHash(
+    return pedersen(
+      await pedersen(
         transferPart1,
         transferPart2,
       ),

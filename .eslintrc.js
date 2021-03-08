@@ -10,5 +10,6 @@ module.exports = {
     'newline-per-chained-call': 'off',
     'no-useless-constructor': 'off',
     '@typescript-eslint/no-useless-constructor': 'error',
+    'import/named': 'off', // Not working for `export * as x from '...';`
   },
 };
