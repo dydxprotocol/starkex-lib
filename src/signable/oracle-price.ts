@@ -6,6 +6,7 @@ import {
   getSignedAssetName,
   isoTimestampToEpochSeconds,
 } from '../helpers';
+import { getPedersenHash } from '../lib/crypto';
 import {
   decToBn,
   hexToBn,
@@ -21,7 +22,6 @@ import {
   ORACLE_PRICE_DECIMALS,
   ORACLE_PRICE_FIELD_BIT_LENGTHS,
 } from './constants';
-import { getPedersenHash } from './crypto';
 import { StarkSignable } from './stark-signable';
 
 /**

@@ -5,23 +5,27 @@
 import BN from 'bn.js';
 import elliptic from 'elliptic';
 
-import { asEcKeyPair } from '../helpers';
 import {
-  pedersen as defaultHash,
-  sign as defaultSign,
-  verify as defaultVerify,
-} from '../lib/starkex-resources';
+  asEcKeyPair,
+  asSimpleSignature,
+} from '../../helpers';
 import {
   HashFunction,
   SignatureStruct,
   SigningFunction,
   VerificationFunction,
-} from '../types';
+} from '../../types';
+import {
+  pedersen as defaultHash,
+  sign as defaultSign,
+  verify as defaultVerify,
+} from '../starkware';
 
 const TEST_SIGNATURE = {
   r: 'edf3922fdf0c1b98a861a38874120a437e33c08841923317aeb8ec6bad1400',
   s: 'a658327ad247b8e816aadd7758d96450f8d43c691aadf768cadd8784f3b8ef',
 };
+const TEST_KEY_PAIR = asEcKeyPair('1');
 
 // Global state for all STARK signables.
 let globalHashFunction: HashFunction = defaultHash;
@@ -66,12 +70,17 @@ export async function setGlobalStarkHashImplementation(fn: HashFunction) {
  * Set the signing implementation that will be used for all StarkSignable objects.
  */
 export async function setGlobalStarkSigningImplementation(fn: SigningFunction) {
-  const result = await fn(asEcKeyPair('1'), new BN(1));
-  if (!result.r.eq(new BN(TEST_SIGNATURE.r, 16))) {
-    throw new Error('setGlobalStarkSigningImplementation: Sanity check failed');
-  }
-  if (!result.s.eq(new BN(TEST_SIGNATURE.s, 16))) {
-    throw new Error('setGlobalStarkSigningImplementation: Sanity check failed');
+  const result = await fn(TEST_KEY_PAIR, new BN(1));
+  if (!(
+    result.r.eq(new BN(TEST_SIGNATURE.r, 16)) &&
+    result.s.eq(new BN(TEST_SIGNATURE.s, 16))
+  )) {
+    // If the result doesn't match the test signature, it may still be valid, so check with the
+    // signature verification function.
+    const isValid = globalVerificationFunction(TEST_KEY_PAIR, new BN(1), asSimpleSignature(result));
+    if (!isValid) {
+      throw new Error('setGlobalStarkSigningImplementation: Sanity check failed');
+    }
   }
   setGlobalStarkSigningImplementationNoSanityCheck(fn);
 }
@@ -80,11 +89,11 @@ export async function setGlobalStarkSigningImplementation(fn: SigningFunction) {
  * Set the signature verification implementation that will be used for all StarkSignable objects.
  */
 export async function setGlobalStarkVerificationImplementation(fn: VerificationFunction) {
-  const isValid = await fn(asEcKeyPair('1'), new BN(1), TEST_SIGNATURE);
+  const isValid = await fn(TEST_KEY_PAIR, new BN(1), TEST_SIGNATURE);
   if (!isValid) {
     throw new Error('setGlobalStarkVerificationImplementation: Sanity check failed');
   }
-  const isValid2 = await fn(asEcKeyPair('1'), new BN(2), TEST_SIGNATURE);
+  const isValid2 = await fn(TEST_KEY_PAIR, new BN(2), TEST_SIGNATURE);
   if (isValid2) {
     throw new Error('setGlobalStarkVerificationImplementation: Sanity check failed');
   }

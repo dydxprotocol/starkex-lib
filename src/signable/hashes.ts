@@ -9,10 +9,10 @@ import {
   SYNTHETIC_ASSET_ID_MAP,
   SYNTHETIC_ASSETS,
 } from '../constants';
+import { getPedersenHash } from '../lib/crypto';
 import { hexToBn } from '../lib/util';
 import { NetworkId } from '../types';
 import { TRANSFER_FEE_ASSET_ID_BN } from './constants';
-import { getPedersenHash } from './crypto';
 
 // Global state for all STARK signables.
 const CACHE: Record<string, Record<string, BN>> = {};

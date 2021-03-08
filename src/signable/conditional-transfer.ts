@@ -9,6 +9,7 @@ import {
   nonceFromClientId,
   toQuantumsExact,
 } from '../helpers';
+import { getPedersenHash } from '../lib/crypto';
 import {
   decToBn,
   factToCondition,
@@ -24,7 +25,6 @@ import {
   TRANSFER_FEE_ASSET_ID_BN,
   CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS,
 } from './constants';
-import { getPedersenHash } from './crypto';
 import { getCacheablePedersenHash } from './hashes';
 import { StarkSignable } from './stark-signable';
 

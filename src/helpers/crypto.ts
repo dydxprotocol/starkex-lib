@@ -4,7 +4,7 @@
 
 import elliptic from 'elliptic';
 
-import { starkEc } from '../lib/starkex-resources';
+import { starkEc } from '../lib/starkware';
 import {
   bnToHex32,
   normalizeHex32,
@@ -69,7 +69,7 @@ export function asEcKeyPairPublic(
 /**
  * Converts an `elliptic` KeyPair object to a simple object with publicKey & privateKey hex strings.
  *
- * Returns hex strings without 0x prefix.
+ * Returns keys as 32-byte hex strings without 0x prefix.
  */
 export function asSimpleKeyPair(
   ecKeyPair: elliptic.ec.KeyPair,
@@ -87,9 +87,23 @@ export function asSimpleKeyPair(
 }
 
 /**
+ * Converts an `elliptic` Signature object to a simple object with r & s hex strings.
+ *
+ * Returns r and s as 32-byte hex strings without 0x prefix.
+ */
+export function asSimpleSignature(
+  ecSignature: elliptic.ec.Signature,
+): SignatureStruct {
+  return {
+    r: bnToHex32(ecSignature.r),
+    s: bnToHex32(ecSignature.s),
+  };
+}
+
+/**
  * Converts an `elliptic` BasePoint object to a compressed representation: the x-coordinate as hex.
  *
- * Returns a hex string without 0x prefix.
+ * Returns a 32-byte hex string without 0x prefix.
  */
 export function asSimplePublicKey(
   ecPublicKey: elliptic.curve.base.BasePoint,

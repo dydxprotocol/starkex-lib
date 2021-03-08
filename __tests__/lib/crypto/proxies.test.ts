@@ -7,16 +7,16 @@ import elliptic from 'elliptic';
 import expect from 'expect';
 
 import {
-  pedersen,
-  sign,
-  verify,
-} from '../../src/lib/starkex-resources';
-import {
   setGlobalStarkHashImplementation,
   setGlobalStarkSigningImplementation,
   setGlobalStarkVerificationImplementation,
-} from '../../src/signable/crypto';
-import { SignatureStruct } from '../../src/types';
+} from '../../../src/lib/crypto/proxies';
+import {
+  pedersen,
+  sign,
+  verify,
+} from '../../../src/lib/starkware';
+import { SignatureStruct } from '../../../src/types';
 
 describe('Cryptographic function wrappers for STARK signable objects', () => {
 

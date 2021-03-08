@@ -7,6 +7,7 @@ import {
   nonceFromClientId,
   getStarkwareLimitFeeAmount,
 } from '../helpers';
+import { getPedersenHash } from '../lib/crypto';
 import {
   decToBn,
   hexToBn,
@@ -24,7 +25,6 @@ import {
 import {
   ORDER_FIELD_BIT_LENGTHS,
 } from './constants';
-import { getPedersenHash } from './crypto';
 import { getCacheablePedersenHash } from './hashes';
 import { StarkSignable } from './stark-signable';
 

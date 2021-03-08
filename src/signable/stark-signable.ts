@@ -4,19 +4,19 @@ import { COLLATERAL_ASSET_ID_BY_NETWORK_ID } from '../constants';
 import {
   asEcKeyPair,
   asEcKeyPairPublic,
+  asSimpleSignature,
   deserializeSignature,
   serializeSignature,
 } from '../helpers';
-import { starkEc } from '../lib/starkex-resources/crypto';
-import { bnToHex32 } from '../lib/util';
+import {
+  sign,
+  verify,
+} from '../lib/crypto';
+import { starkEc } from '../lib/starkware/crypto-js';
 import {
   KeyPair,
   NetworkId,
 } from '../types';
-import {
-  sign,
-  verify,
-} from './crypto';
 
 /**
  * Base class for a STARK key signable message.
@@ -63,10 +63,7 @@ export abstract class StarkSignable<T> {
   ): Promise<string> {
     const hashBN = await this.getHashBN();
     const ecSignature = await sign(asEcKeyPair(privateKey), hashBN);
-    return serializeSignature({
-      r: bnToHex32(ecSignature.r),
-      s: bnToHex32(ecSignature.s),
-    });
+    return serializeSignature(asSimpleSignature(ecSignature));
   }
 
   /**

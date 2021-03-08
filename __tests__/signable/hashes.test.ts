@@ -7,11 +7,11 @@ import expect from 'expect';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-import { pedersen } from '../../src/lib/starkex-resources';
+import * as cryptoModule from '../../src/lib/crypto';
+import { pedersen } from '../../src/lib/starkware';
 import {
   SignableConditionalTransfer as SignableConditionalTransferOrig,
 } from '../../src/signable/conditional-transfer';
-import * as cryptoModule from '../../src/signable/crypto';
 import * as hashesModule from '../../src/signable/hashes';
 import {
   SignableOrder as SignableOrderOrig,
@@ -76,16 +76,16 @@ describe('Pedersen hashes', () => {
   beforeEach(() => {
     // Reload the hashes module fresh each time, resetting the cache.
     mockPedersen = sinon.spy(pedersen);
-    proxyquiredCrypto = proxyquire('../../src/signable/crypto', {
-      '../lib/starkex-resources': {
+    proxyquiredCrypto = proxyquire('../../src/lib/crypto/proxies', {
+      '../starkware': {
         pedersen: mockPedersen,
       },
     });
     proxyquiredHashes = proxyquire('../../src/signable/hashes', {
-      './crypto': proxyquiredCrypto,
+      '../lib/crypto': proxyquiredCrypto,
     });
     mocks = {
-      './crypto': proxyquiredCrypto,
+      '../lib/crypto': proxyquiredCrypto,
       './hashes': proxyquiredHashes,
     };
   });
