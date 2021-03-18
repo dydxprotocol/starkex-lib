@@ -1,6 +1,6 @@
 {
   "name": "@dydxprotocol/starkex-lib",
-  "version": "0.13.1",
+  "version": "1.0.0",
   "description": "Cryptographic functions for use with StarkEx",
   "main": "build/src/index.js",
   "scripts": {

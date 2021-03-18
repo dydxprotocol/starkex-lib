@@ -20,6 +20,8 @@ export enum DydxMarket {
   BTC_USD = 'BTC-USD',
   ETH_USD = 'ETH-USD',
   LINK_USD = 'LINK-USD',
+  AAVE_USD = 'AAVE-USD',
+  UNI_USD = 'UNI-USD',
 }
 
 export enum DydxAsset {
@@ -27,6 +29,8 @@ export enum DydxAsset {
   BTC = 'BTC',
   ETH = 'ETH',
   LINK = 'LINK',
+  AAVE = 'AAVE',
+  UNI = 'UNI',
 }
 
 export type SyntheticAsset = Exclude<DydxAsset, DydxAsset.USDC>;
