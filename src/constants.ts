@@ -44,7 +44,7 @@ export const ASSET_RESOLUTION: Record<DydxAsset, number> = {
   [DydxAsset.SUSHI]: 7,
   [DydxAsset.SOL]: 7,
   [DydxAsset.YFI]: 10,
-  [DydxAsset.ONEINCH]: 6,
+  [DydxAsset.ONEINCH]: 7,
 };
 
 export const COLLATERAL_ASSET_ADDRESS_BY_NETWORK: Record<NetworkId, string> = {
