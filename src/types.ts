@@ -22,6 +22,10 @@ export enum DydxMarket {
   LINK_USD = 'LINK-USD',
   AAVE_USD = 'AAVE-USD',
   UNI_USD = 'UNI-USD',
+  SUSHI_USD = 'SUSHI-USD',
+  SOL_USD = 'SOL-USD',
+  YFI_USD = 'YFI-USD',
+  ONEINCH_USD = '1INCH-USD',
 }
 
 export enum DydxAsset {
@@ -31,6 +35,10 @@ export enum DydxAsset {
   LINK = 'LINK',
   AAVE = 'AAVE',
   UNI = 'UNI',
+  SUSHI = 'SUSHI',
+  SOL = 'SOL',
+  YFI = 'YFI',
+  ONEINCH = '1INCH',
 }
 
 export type SyntheticAsset = Exclude<DydxAsset, DydxAsset.USDC>;

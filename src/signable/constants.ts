@@ -52,4 +52,8 @@ export const TOTAL_MARKETS_ARRAY: DydxMarket[] = [
   DydxMarket.LINK_USD,
   DydxMarket.AAVE_USD,
   DydxMarket.UNI_USD,
+  DydxMarket.SUSHI_USD,
+  DydxMarket.SOL_USD,
+  DydxMarket.YFI_USD,
+  DydxMarket.ONEINCH_USD,
 ];
