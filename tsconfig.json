@@ -1,11 +1,12 @@
 {
   "extends": "./node_modules/@dydxprotocol/node-service-base-dev/tsconfig.json",
   "include": [
-    "__tests__",
-    "scripts",
     "src"
   ],
   "compilerOptions": {
+    "module": "amd",
+    "lib": ["es5"],
+    "rootDir": "src",
     "moduleResolution": "node",
     "outDir": "build"
   }

@@ -7,7 +7,7 @@ Tool
     npm install -g @vercel/ncc
 
 Build
-    ncc build ./src/index.ts -w -o dist/starkex.js
+    ncc build ./src/index.ts -w -o dist
 
 Destination
-    ./dist/starkex.js
+    ./dist/index.js
