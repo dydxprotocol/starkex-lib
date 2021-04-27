@@ -27,6 +27,12 @@ export const SYNTHETIC_ASSET_MAP: Record<DydxMarket, SyntheticAsset> = {
   [DydxMarket.SOL_USD]: DydxAsset.SOL,
   [DydxMarket.YFI_USD]: DydxAsset.YFI,
   [DydxMarket.ONEINCH_USD]: DydxAsset.ONEINCH,
+  [DydxMarket.AVAX_USD]: DydxAsset.AVAX,
+  [DydxMarket.SNX_USD]: DydxAsset.SNX,
+  [DydxMarket.CRV_USD]: DydxAsset.CRV,
+  [DydxMarket.UMA_USD]: DydxAsset.UMA,
+  [DydxMarket.DOT_USD]: DydxAsset.DOT,
+  [DydxMarket.DOGE_USD]: DydxAsset.DOGE,
 };
 
 /**
@@ -45,6 +51,12 @@ export const ASSET_RESOLUTION: Record<DydxAsset, number> = {
   [DydxAsset.SOL]: 7,
   [DydxAsset.YFI]: 10,
   [DydxAsset.ONEINCH]: 7,
+  [DydxAsset.AVAX]: 7,
+  [DydxAsset.SNX]: 7,
+  [DydxAsset.CRV]: 6,
+  [DydxAsset.UMA]: 7,
+  [DydxAsset.DOT]: 7,
+  [DydxAsset.DOGE]: 5,
 };
 
 export const COLLATERAL_ASSET_ADDRESS_BY_NETWORK: Record<NetworkId, string> = {
