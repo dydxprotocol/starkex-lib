@@ -53,10 +53,10 @@ export const ASSET_RESOLUTION: Record<DydxAsset, number> = {
   [DydxAsset.ONEINCH]: 7,
   [DydxAsset.AVAX]: 7,
   [DydxAsset.SNX]: 7,
-  [DydxAsset.CRV]: 7,
+  [DydxAsset.CRV]: 6,
   [DydxAsset.UMA]: 7,
   [DydxAsset.DOT]: 7,
-  [DydxAsset.DOGE]: 7,
+  [DydxAsset.DOGE]: 5,
 };
 
 export const COLLATERAL_ASSET_ADDRESS_BY_NETWORK: Record<NetworkId, string> = {
