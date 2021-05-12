@@ -45,7 +45,7 @@ export abstract class StarkSignable<T> {
    * Return the message hash as a hex string, no 0x prefix.
    */
   async getHash(): Promise<string> {
-    return (await this.getHashBN()).toString(16);
+    return (await this.getHashBN()).toString(16).padStart(63, '0');
   }
 
   async getHashBN(): Promise<BN> {
