@@ -32,6 +32,19 @@ export enum DydxMarket {
   UMA_USD = 'UMA-USD',
   DOT_USD = 'DOT-USD',
   DOGE_USD = 'DOGE-USD',
+  MATIC_USD = 'MATIC-USD',
+  MKR_USD = 'MKR-USD',
+  FIL_USD = 'FIL-USD',
+  ADA_USD = 'ADA-USD',
+  ATOM_USD = 'ATOM-USD',
+  COMP_USD = 'COMP-USD',
+  BCH_USD = 'BCH-USD',
+  LTC_USD = 'LTC-USD',
+  EOS_USD = 'EOS-USD',
+  ALGO_USD = 'ALGO-USD',
+  ZRX_USD = 'ZRX-USD',
+  XMR_USD = 'XMR-USD',
+  ZEC_USD = 'ZEC-USD',
 }
 
 export enum DydxAsset {
@@ -51,6 +64,19 @@ export enum DydxAsset {
   UMA = 'UMA',
   DOT = 'DOT',
   DOGE = 'DOGE',
+  MATIC = 'MATIC',
+  MKR = 'MKR',
+  FIL = 'FIL',
+  ADA = 'ADA',
+  ATOM = 'ATOM',
+  COMP = 'COMP',
+  BCH = 'BCH',
+  LTC = 'LTC',
+  EOS = 'EOS',
+  ALGO = 'ALGO',
+  ZRX = 'ZRX',
+  XMR = 'XMR',
+  ZEC = 'ZEC',
 }
 
 export type SyntheticAsset = Exclude<DydxAsset, DydxAsset.USDC>;
