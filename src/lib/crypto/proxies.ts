@@ -35,28 +35,30 @@ let globalVerificationFunction: VerificationFunction = defaultVerify;
 /**
  * Set the hash function implementation that will be used for all StarkSignable objects.
  */
-export function setGlobalStarkHashImplementationNoSanityCheck(fn: HashFunction) {
+export function setGlobalStarkHashImplementationNoSanityCheck(fn: HashFunction): void {
   globalHashFunction = fn;
 }
 
 /**
  * Set the signing implementation that will be used for all StarkSignable objects.
  */
-export function setGlobalStarkSigningImplementationNoSanityCheck(fn: SigningFunction) {
+export function setGlobalStarkSigningImplementationNoSanityCheck(fn: SigningFunction): void {
   globalSigningFunction = fn;
 }
 
 /**
  * Set the signature verification implementation that will be used for all StarkSignable objects.
  */
-export function setGlobalStarkVerificationImplementationNoSanityCheck(fn: VerificationFunction) {
+export function setGlobalStarkVerificationImplementationNoSanityCheck(
+  fn: VerificationFunction,
+): void {
   globalVerificationFunction = fn;
 }
 
 /**
  * Set the hash function implementation that will be used for all StarkSignable objects.
  */
-export async function setGlobalStarkHashImplementation(fn: HashFunction) {
+export async function setGlobalStarkHashImplementation(fn: HashFunction): Promise<void> {
   const result = await fn(new BN(0), new BN(1));
   if (!result.eq(
     new BN('2001140082530619239661729809084578298299223810202097622761632384561112390979'),
@@ -69,7 +71,7 @@ export async function setGlobalStarkHashImplementation(fn: HashFunction) {
 /**
  * Set the signing implementation that will be used for all StarkSignable objects.
  */
-export async function setGlobalStarkSigningImplementation(fn: SigningFunction) {
+export async function setGlobalStarkSigningImplementation(fn: SigningFunction): Promise<void> {
   const result = await fn(TEST_KEY_PAIR, new BN(1));
   if (!(
     result.r.eq(new BN(TEST_SIGNATURE.r, 16)) &&
@@ -78,6 +80,7 @@ export async function setGlobalStarkSigningImplementation(fn: SigningFunction) {
     // If the result doesn't match the test signature, it may still be valid, so check with the
     // signature verification function.
     const isValid = globalVerificationFunction(TEST_KEY_PAIR, new BN(1), asSimpleSignature(result));
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (!isValid) {
       throw new Error('setGlobalStarkSigningImplementation: Sanity check failed');
     }
@@ -88,7 +91,9 @@ export async function setGlobalStarkSigningImplementation(fn: SigningFunction) {
 /**
  * Set the signature verification implementation that will be used for all StarkSignable objects.
  */
-export async function setGlobalStarkVerificationImplementation(fn: VerificationFunction) {
+export async function setGlobalStarkVerificationImplementation(
+  fn: VerificationFunction,
+): Promise<void> {
   const isValid = await fn(TEST_KEY_PAIR, new BN(1), TEST_SIGNATURE);
   if (!isValid) {
     throw new Error('setGlobalStarkVerificationImplementation: Sanity check failed');
