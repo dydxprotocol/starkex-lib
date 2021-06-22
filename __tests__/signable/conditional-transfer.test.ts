@@ -95,7 +95,7 @@ describe('SignableConditionalTransfer', () => {
 
   describe('toStarkware()', () => {
 
-    it('converts human amounts to quantum amounts and converts expiration to hours', async () => {
+    it('converts human amounts to quantum amounts and converts expiration to hours', () => {
       const starkwareConditionalTransfer: StarkwareConditionalTransfer = (
         SignableConditionalTransfer.fromTransfer(mockParams, NetworkId.ROPSTEN).toStarkware()
       );

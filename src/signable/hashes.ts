@@ -23,10 +23,10 @@ const CACHE: Record<string, Record<string, BN>> = {};
 export async function getCacheablePedersenHash(left: BN, right: BN): Promise<BN> {
   const leftString = left.toString(16);
   const rightString = right.toString(16);
-  if (!CACHE[leftString]) {
+  if (CACHE[leftString] === undefined) {
     CACHE[leftString] = {};
   }
-  if (!CACHE[leftString][rightString]) {
+  if (CACHE[leftString][rightString] === undefined) {
     CACHE[leftString][rightString] = await getPedersenHash(left, right);
   }
   return CACHE[leftString][rightString];

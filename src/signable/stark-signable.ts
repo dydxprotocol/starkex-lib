@@ -77,7 +77,7 @@ export abstract class StarkSignable<T> {
     const signatureStruct = deserializeSignature(signature);
 
     // If y-coordinate is available, save time by using it, instead of having to infer it.
-    if (publicKeyYCoordinate) {
+    if (publicKeyYCoordinate !== null) {
       const ecPublicKey = starkEc.keyFromPublic({ x: publicKey, y: publicKeyYCoordinate });
       return verify(ecPublicKey, await this.getHashBN(), signatureStruct);
     }

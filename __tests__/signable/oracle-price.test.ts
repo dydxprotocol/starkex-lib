@@ -118,7 +118,7 @@ describe('SignableOraclePrice', () => {
       expect(signature).not.toEqual(mockSignature);
     });
 
-    it('throws an error if the oracle name is too long', async () => {
+    it('throws an error if the oracle name is too long', () => {
       const oraclePrice: OraclePriceWithMarket = {
         ...mockOraclePrice,
         oracleName: 'Other2',
