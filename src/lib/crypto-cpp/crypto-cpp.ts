@@ -30,13 +30,11 @@ export function verifySignatureCpp(
 
   // Note: `signature` is always an (r, s) pair of hex strings without 0x prefix.
   const rBigInt = BigInt(`0x${signature.r}`);
-  const sBigInt = BigInt(`0x${signature.s}`);
 
+  // Invert s and pass the inverse to the verification function.
+  //
+  // TODO: Use a newer version of libcrypto_c_exports.so which no longer requires inverting s.
   const w = new BN(signature.s, 16).invm(starkEc.n!);
   const wBigInt = BigInt(w.toString(10));
-
-  // TODO: We might only need to do one of these checks if Starkware makes their implementations
-  //       more consistent.
-  const inverseIsValid = swCrypto.verify(starkKeyBigInt, messageBigInt, rBigInt, wBigInt);
-  return inverseIsValid || swCrypto.verify(starkKeyBigInt, messageBigInt, rBigInt, sBigInt);
+  return swCrypto.verify(starkKeyBigInt, messageBigInt, rBigInt, wBigInt);
 }
