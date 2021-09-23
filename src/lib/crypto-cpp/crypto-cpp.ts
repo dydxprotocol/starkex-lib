@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 import BN from 'bn.js';
 import elliptic from 'elliptic';
 
@@ -13,6 +15,35 @@ export function pedersenCpp(x: BN, y: BN): BN {
   const yBigInt = BigInt(y.toString(10));
   const result: BigInt = swCrypto.pedersen(xBigInt, yBigInt);
   return new BN(result as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+
+/**
+ * Sign a STARK signature (c++ implementation).
+ *
+ * IMPORTANT: It is assumed that `key` is already known to be a valid key.
+ */
+export function signSignatureCpp(
+  key: elliptic.ec.KeyPair,
+  message: BN,
+): elliptic.ec.Signature {
+  const privateKeyBigInt = BigInt(key.getPrivate().toString(10));
+  const messageBigInt = BigInt(message.toString(10));
+  const kBuffer = crypto.randomBytes(32);
+  const kBigInt = BigInt(`0x${kBuffer.toString('hex')}`);
+
+  const {
+    r,
+    s,
+  }: {
+    r: bigint,
+    s: bigint,
+  } = swCrypto.sign(privateKeyBigInt, messageBigInt, kBigInt);
+
+  const options: elliptic.ec.SignatureOptions = {
+    r: new BN(r as any),  // eslint-disable-line @typescript-eslint/no-explicit-any
+    s: new BN(s as any),  // eslint-disable-line @typescript-eslint/no-explicit-any
+  };
+  return new elliptic.ec.Signature(options);
 }
 
 /**
