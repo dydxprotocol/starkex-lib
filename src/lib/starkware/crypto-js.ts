@@ -70,6 +70,7 @@ export function pedersen(
     }
     for (let j = 0; j < 252; j++) {
       const pt = constantPoints[2 + i * 252 + j];
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       if (point.getX().eq(pt.getX())) {
         throw new Error('Error computing pedersen hash');
       }
@@ -128,7 +129,7 @@ function bnInRange(
   input: BN,
   lowerBoundInclusive: BN,
   upperBoundExclusive: BN,
-) {
+): boolean {
   return input.gte(lowerBoundInclusive) && input.lt(upperBoundExclusive);
 }
 
