@@ -17,6 +17,7 @@ try {
   /* eslint-disable @typescript-eslint/no-var-requires,global-require */
   require('worker_threads');
   // If the worker_threads module is available, update maybeHashInWorkerThread.
+  // eslint-disable-next-line import/extensions
   maybeHashInWorkerThread = require('./hash-in-worker-thread').hashInWorkerThread;
   /* eslint-enable @typescript-eslint/no-var-requires,global-require */
 } catch (error) {

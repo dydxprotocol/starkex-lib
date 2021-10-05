@@ -1,4 +1,5 @@
 import BN from 'bn.js';
+import _ from 'lodash';
 
 import { HashFunction } from '../../types';
 import { pedersen } from '../starkware';
@@ -24,7 +25,7 @@ let hashFunction: HashFunction = function hashInWorkerThread(_a: BN, _b: BN) {
   throw new Error('Expected hashInWorkerThread() to be called from the main thread');
 };
 
-if (isMainThread) {
+if (!_.isNil(isMainThread)) {
   /**
    * Pedersen hash implementation that runs in a worker thread.
    */
