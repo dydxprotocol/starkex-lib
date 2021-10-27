@@ -11,7 +11,6 @@ import {
   ORACLE_PRICE_FIELD_BIT_LENGTHS,
   ORDER_FIELD_BIT_LENGTHS,
   STARK_ORDER_SIGNATURE_EXPIRATION_BUFFER_HOURS,
-  TOTAL_MARKETS_ARRAY,
 } from '../signable/constants';
 import { DydxMarket } from '../types';
 
@@ -71,11 +70,4 @@ export function getSignedAssetId(
     .iushln(ORACLE_PRICE_FIELD_BIT_LENGTHS.oracleName)
     .iadd(oracleNameBn);
   return signedAssetIdBn.toString(16);
-}
-
-/**
- * Get active markets for environment
- */
-export function getActiveMarkets(numMarkets: number): DydxMarket[] {
-  return TOTAL_MARKETS_ARRAY.slice(0, numMarkets);
 }

@@ -3,6 +3,7 @@
  */
 
 import elliptic from 'elliptic';
+import _ from 'lodash';
 
 import { starkEc } from '../lib/starkware';
 import {
@@ -75,7 +76,7 @@ export function asSimpleKeyPair(
   ecKeyPair: elliptic.ec.KeyPair,
 ): KeyPairWithYCoordinate {
   const ecPrivateKey = ecKeyPair.getPrivate();
-  if (!ecPrivateKey) {
+  if (_.isNil(ecPrivateKey)) {
     throw new Error('asSimpleKeyPair: Key pair has no private key');
   }
   const ecPublicKey = ecKeyPair.getPublic();

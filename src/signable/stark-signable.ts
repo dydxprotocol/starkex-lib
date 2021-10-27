@@ -45,7 +45,7 @@ export abstract class StarkSignable<T> {
    * Return the message hash as a hex string, no 0x prefix.
    */
   async getHash(): Promise<string> {
-    return (await this.getHashBN()).toString(16);
+    return (await this.getHashBN()).toString(16).padStart(63, '0');
   }
 
   async getHashBN(): Promise<BN> {
@@ -77,7 +77,7 @@ export abstract class StarkSignable<T> {
     const signatureStruct = deserializeSignature(signature);
 
     // If y-coordinate is available, save time by using it, instead of having to infer it.
-    if (publicKeyYCoordinate) {
+    if (publicKeyYCoordinate !== null) {
       const ecPublicKey = starkEc.keyFromPublic({ x: publicKey, y: publicKeyYCoordinate });
       return verify(ecPublicKey, await this.getHashBN(), signatureStruct);
     }
