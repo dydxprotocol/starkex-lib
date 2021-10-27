@@ -5,8 +5,11 @@
     "scripts",
     "src"
   ],
-  "compilerOptions": {
+  "compilerOptions": {   
+    "moduleResolution": "Node",
+    "module": "CommonJS",
     "outDir": "build",
+    "target": "es5",
     "useUnknownInCatchVariables": false
   }
 }

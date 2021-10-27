@@ -3,6 +3,11 @@
  */
 
 import elliptic from 'elliptic';
+
+import BigNumber from 'bignumber.js';
+import AES from 'crypto-js/aes';
+import CryptoJS from 'crypto-js';
+
 import _ from 'lodash';
 
 import { starkEc } from '../lib/starkware';
@@ -10,11 +15,31 @@ import {
   bnToHex32,
   normalizeHex32,
 } from '../lib/util';
+
 import {
   KeyPair,
   KeyPairWithYCoordinate,
+  NetworkId,
   SignatureStruct,
+  StarkwareOrderSide,
 } from '../types';
+
+import {
+  keyPairFromData,
+} from '../keys';
+
+import {
+  stripHexPrefix,
+} from '../lib/util';
+
+import { StarkSignable, SignableOrder, SignableWithdrawal, SignableConditionalTransfer } from '../signable';
+
+import {
+  OrderWithClientId,
+  DydxMarket
+} from '../types';
+
+var utils = require('web3-utils');
 
 /**
  * Helper for if you want to access additional cryptographic functionality with a private key.
@@ -167,4 +192,139 @@ export function deserializeSignature(
     r: signature.slice(0, 64),
     s: signature.slice(64),
   };
+}
+
+const ASSET_ID_MASK = new BigNumber(2).pow(250);
+
+export type BigNumberable = BigNumber | string | number;
+
+export function soliditySha3(
+  ...input: any
+): string {
+  const result = utils.soliditySha3(...input);
+  if (!result) {
+    return 'soliditySha3 produced null output';
+  }
+  return result;
+}
+
+export class StarkHelper {
+  /**
+   * Derivce public key from private key.
+   * This is wrapped in a class to make it work in native
+   */
+  
+  public publicKeyAndYCoordiante(
+    privateKey: string,
+  ): String[] {
+    const keyPair = asSimpleKeyPair(asEcKeyPair(privateKey))
+    return [keyPair.publicKey, keyPair.publicKeyYCoordinate]
+  }
+
+  public privateKeyFromSignature(signature: string): String[] {
+    const keyPair = keyPairFromData(Buffer.from(stripHexPrefix(signature), 'hex'));
+    return [keyPair.privateKey, keyPair.publicKey, keyPair.publicKeyYCoordinate]
+  }
+
+  public signWithdrawal(positionId: string, humanAmount: string, 
+    expirationIsoTimestamp: string, clientId: string, privateKey: string, networkId: string): string {
+      const _networkId: NetworkId = networkId == "1" ? NetworkId.MAINNET : NetworkId.ROPSTEN
+      const withdrawal = {
+        positionId,
+        humanAmount,
+        expirationIsoTimestamp,
+        clientId
+      }
+      
+    let signable = SignableWithdrawal.fromWithdrawalWithClientId(withdrawal, _networkId)
+    return signable.signSync(privateKey)
+  }
+
+  public signFastWithdrawal(senderPositionId: string, receiverPositionId: string, receiverPublicKey: string, humanAmount: string,
+    expirationIsoTimestamp: string, clientId: string, factRegistryAddress: string, fact: string, privateKey: string, networkId: string): string {
+      const _networkId: NetworkId = networkId == "1" ? NetworkId.MAINNET : NetworkId.ROPSTEN
+      const transfer = {
+        senderPositionId,
+        receiverPositionId,
+        receiverPublicKey,
+        humanAmount,
+        expirationIsoTimestamp,
+        clientId,
+        factRegistryAddress,
+        fact
+      }
+      
+    let signable = SignableConditionalTransfer.fromTransfer(transfer, _networkId)
+    return signable.signSync(privateKey)
+  }
+
+  public sign(positionId: string, humanSize: string, limitFee: string, market: string, side: string, 
+    expirationIsoTimestamp: string, humanPrice: string, clientId: string,
+    privateKey: string, networkId: string): string {
+      const _networkId: NetworkId = networkId == "1" ? NetworkId.MAINNET : NetworkId.ROPSTEN
+      const _side:StarkwareOrderSide = side == "BUY" ? StarkwareOrderSide.BUY : StarkwareOrderSide.SELL
+      const _market = market as DydxMarket
+      const order = {
+        positionId,
+        humanSize,
+        limitFee,
+        market:_market,
+        side:_side,
+        expirationIsoTimestamp,
+        humanPrice,
+        clientId
+      }
+      
+    let signable = SignableOrder.fromOrderWithClientId(order, _networkId)
+    return signable.signSync(privateKey)
+  }
+
+  public signPayload(payload: any, privateKey: string, networkId: string): string {
+    const positionId = payload.positionId
+    const clientId = payload.clientId
+    if (positionId  && clientId && privateKey && networkId) {
+      const expirationIsoTimestamp = payload.expiresAt 
+      const humanSize = payload.size 
+      const limitFee = payload.limitFee 
+      const market = payload.market
+      const side = payload.side 
+      const humanPrice = payload.price
+      if (humanSize && limitFee && market && side && humanPrice && expirationIsoTimestamp) {
+        return this.sign(positionId, humanSize, limitFee, market, side, expirationIsoTimestamp, humanPrice, clientId, privateKey, networkId)
+      } else {
+        const humanAmount = payload.amount
+        const expirationIsoTimestamp = payload.expiration
+        if (humanAmount && expirationIsoTimestamp) {
+          return this.signWithdrawal(positionId, humanAmount, expirationIsoTimestamp, clientId, privateKey, networkId)
+        } else {
+          return "fail"
+        }
+      }
+    } else {
+      return "fail"
+    }
+  }
+
+  public getAssetId(
+    tokenAddress: string,
+    quantization: BigNumberable = 1,
+  ): string {
+    const tokenHash: string = soliditySha3('ERC20Token(address)').substr(0, 10);
+    const resultBytes = soliditySha3(
+      { type: 'bytes4', value: tokenHash },
+      { type: 'uint256', value: tokenAddress },
+      { type: 'uint256', value: new BigNumber(quantization).toFixed(0) },
+    );
+    const resultBN = new BigNumber(resultBytes, 16);
+    const result = resultBN.mod(ASSET_ID_MASK);
+    return `0x${result.toString(16).padStart(64, '0')}`;
+  }
+
+  public aesDecrypt(
+    text: string,
+    password: string
+  ): string {
+    const descrypted = AES.decrypt(text, password)
+    return descrypted.toString(CryptoJS.enc.Utf8)
+  }
 }

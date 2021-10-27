@@ -9,7 +9,8 @@ import {
   SYNTHETIC_ASSET_ID_MAP,
   SYNTHETIC_ASSETS,
 } from '../constants';
-import { getPedersenHash } from '../lib/crypto';
+import { getPedersenHash, getPedersenHashSync } from '../lib/crypto';
+
 import { hexToBn } from '../lib/util';
 import { NetworkId } from '../types';
 import { TRANSFER_FEE_ASSET_ID_BN } from './constants';
@@ -31,6 +32,19 @@ export async function getCacheablePedersenHash(left: BN, right: BN): Promise<BN>
   }
   return CACHE[leftString][rightString];
 }
+
+export function getCacheablePedersenHashSync(left: BN, right: BN): BN {
+  const leftString = left.toString(16);
+  const rightString = right.toString(16);
+  if (!CACHE[leftString]) {
+    CACHE[leftString] = {};
+  }
+  if (!CACHE[leftString][rightString]) {
+    CACHE[leftString][rightString] = getPedersenHashSync(left, right);
+  }
+  return CACHE[leftString][rightString];
+}
+
 
 /**
  * Pre-compute commonly used hashes.

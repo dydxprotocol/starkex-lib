@@ -21,11 +21,11 @@ import {
   verify as defaultVerify,
 } from '../starkware';
 
-const TEST_SIGNATURE = {
-  r: 'edf3922fdf0c1b98a861a38874120a437e33c08841923317aeb8ec6bad1400',
-  s: 'a658327ad247b8e816aadd7758d96450f8d43c691aadf768cadd8784f3b8ef',
-};
-const TEST_KEY_PAIR = asEcKeyPair('1');
+// const TEST_SIGNATURE = {
+//   r: 'edf3922fdf0c1b98a861a38874120a437e33c08841923317aeb8ec6bad1400',
+//   s: 'a658327ad247b8e816aadd7758d96450f8d43c691aadf768cadd8784f3b8ef',
+// };
+// const TEST_KEY_PAIR = asEcKeyPair('1');
 
 // Global state for all STARK signables.
 let globalHashFunction: HashFunction = defaultHash;
@@ -72,19 +72,19 @@ export async function setGlobalStarkHashImplementation(fn: HashFunction): Promis
  * Set the signing implementation that will be used for all StarkSignable objects.
  */
 export async function setGlobalStarkSigningImplementation(fn: SigningFunction): Promise<void> {
-  const result = await fn(TEST_KEY_PAIR, new BN(1));
-  if (!(
-    result.r.eq(new BN(TEST_SIGNATURE.r, 16)) &&
-    result.s.eq(new BN(TEST_SIGNATURE.s, 16))
-  )) {
-    // If the result doesn't match the test signature, it may still be valid, so check with the
-    // signature verification function.
-    const isValid = globalVerificationFunction(TEST_KEY_PAIR, new BN(1), asSimpleSignature(result));
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    if (!isValid) {
-      throw new Error('setGlobalStarkSigningImplementation: Sanity check failed');
-    }
-  }
+  // const result = await fn(TEST_KEY_PAIR, new BN(1));
+  // if (!(
+  //   result.r.eq(new BN(TEST_SIGNATURE.r, 16)) &&
+  //   result.s.eq(new BN(TEST_SIGNATURE.s, 16))
+  // )) {
+  //   // If the result doesn't match the test signature, it may still be valid, so check with the
+  //   // signature verification function.
+  //   const isValid = globalVerificationFunction(TEST_KEY_PAIR, new BN(1), asSimpleSignature(result));
+  //   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+  //   if (!isValid) {
+  //     throw new Error('setGlobalStarkSigningImplementation: Sanity check failed');
+  //   }
+  // }
   setGlobalStarkSigningImplementationNoSanityCheck(fn);
 }
 
@@ -94,14 +94,14 @@ export async function setGlobalStarkSigningImplementation(fn: SigningFunction): 
 export async function setGlobalStarkVerificationImplementation(
   fn: VerificationFunction,
 ): Promise<void> {
-  const isValid = await fn(TEST_KEY_PAIR, new BN(1), TEST_SIGNATURE);
-  if (!isValid) {
-    throw new Error('setGlobalStarkVerificationImplementation: Sanity check failed');
-  }
-  const isValid2 = await fn(TEST_KEY_PAIR, new BN(2), TEST_SIGNATURE);
-  if (isValid2) {
-    throw new Error('setGlobalStarkVerificationImplementation: Sanity check failed');
-  }
+  // const isValid = await fn(TEST_KEY_PAIR, new BN(1), TEST_SIGNATURE);
+  // if (!isValid) {
+  //   throw new Error('setGlobalStarkVerificationImplementation: Sanity check failed');
+  // }
+  // const isValid2 = await fn(TEST_KEY_PAIR, new BN(2), TEST_SIGNATURE);
+  // if (isValid2) {
+  //   throw new Error('setGlobalStarkVerificationImplementation: Sanity check failed');
+  // }
   setGlobalStarkVerificationImplementationNoSanityCheck(fn);
 }
 
@@ -109,14 +109,24 @@ export async function setGlobalStarkVerificationImplementation(
  * Calculate a pedersen hash.
  */
 export async function getPedersenHash(left: BN, right: BN): Promise<BN> {
-  return globalHashFunction(left, right);
+  // return globalHashFunction(left, right);
+  return defaultHash(left, right);
+}
+
+export function getPedersenHashSync(left: BN, right: BN): BN {
+  return defaultHash(left, right) as BN;
 }
 
 /**
  * Sign a message.
  */
 export async function sign(key: elliptic.ec.KeyPair, message: BN): Promise<elliptic.ec.Signature> {
-  return globalSigningFunction(key, message);
+  // return globalSigningFunction(key, message);
+  return defaultSign(key, message);
+}
+
+export function signSync(key: elliptic.ec.KeyPair, message: BN): elliptic.ec.Signature {
+  return defaultSign(key, message) as elliptic.ec.Signature;
 }
 
 /**

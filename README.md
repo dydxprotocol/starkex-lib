@@ -20,8 +20,53 @@ Cryptographic functions for dYdX (v3 API).
 
 Draws from [starkex-resources](https://github.com/starkware-libs/starkex-resources) for the cryptographic primitives.
 
+## Goal
+
+Create a single js file to be loadable and runnable from native code in iOS and Android, to derive public key from private key
+
+## Browsify
+Ended up not using webpack. Keep the instruction here if we need to expand the usage. Use Browsify instead
+browserify ./build/src/helpers/crypto.js --standalone StarkHelper > ./build/starkex-lib.js
+
+## To use in native code (iOS)
+context.evaluateScript("var helper = new StarkHelper.StarkHelper()")
+let jsValue = context.evaluateScript("helper.publicKeyAndYCoordiante('58c7d5a90b1776bde86ebac077e053ed85b0f7164f53b080304a531947f46e3')")
+return jsValue?.toString() // returns a comma deliminated string, or
+return jsValue?.toArray() // returns a [string]
+
+
+
+
+## Kept webpack documentation for reference in the future. Not used
 ## Installation
 
 ```bash
 npm install @dydxprotocol/starkex-lib
+```
+
+## Bundle for Mobile or Web using Webpack
+
+```bash
+npm install
+npm run compile  # Compile TypeScript to JavaScript.
+npx webpack      # Bundle JavaScript to a single file.
+```
+
+This will build the following output files in the `build/` directory:
+* `starkex-lib.js`
+* `starkex-lib.js.LICENSE.txt`
+
+
+You may want to play around with the `output.library.type` option in [webpack.config.js](./webpack.config.js) to expose the `StarkexLib` library object in the right way for your platform.
+
+Please remember to include the license with any distributions of the software. **IMPORTANT TODO: Make sure the license for Starkware's code is included correctly.**
+
+Known warnings during bundling -- these can be safely ignored:
+
+```
+Module not found: Error: Can't resolve 'worker_threads'
+Module not found: Error: Can't resolve './hash-in-worker-thread'
+WARNING in asset size limit
+WARNING in entrypoint size limit:
+WARNING in webpack performance recommendations
 ```

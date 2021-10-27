@@ -6,7 +6,8 @@ import {
   getSignedAssetName,
   isoTimestampToEpochSeconds,
 } from '../helpers';
-import { getPedersenHash } from '../lib/crypto';
+import { getPedersenHash, getPedersenHashSync } from '../lib/crypto';
+
 import {
   decToBn,
   hexToBn,
@@ -106,4 +107,26 @@ export class SignableOraclePrice extends StarkSignable<StarkwareOraclePrice> {
 
     return getPedersenHash(signedAssetId, priceAndTimestamp);
   }
+  
+  protected calculateHashSync(): BN {
+    const priceBn = decToBn(this.message.signedPrice);
+    const timestampEpochSecondsBn = intToBn(this.message.expirationEpochSeconds);
+    const signedAssetId = hexToBn(this.message.signedAssetId);
+
+    if (priceBn.bitLength() > ORACLE_PRICE_FIELD_BIT_LENGTHS.price) {
+      throw new Error('SignableOraclePrice: price exceeds max value');
+    }
+    if (
+      timestampEpochSecondsBn.bitLength() > ORACLE_PRICE_FIELD_BIT_LENGTHS.timestampEpochSeconds
+    ) {
+      throw new Error('SignableOraclePrice: timestampEpochSeconds exceeds max value');
+    }
+
+    const priceAndTimestamp = priceBn
+      .iushln(ORACLE_PRICE_FIELD_BIT_LENGTHS.timestampEpochSeconds)
+      .iadd(timestampEpochSecondsBn);
+
+    return getPedersenHashSync(signedAssetId, priceAndTimestamp);
+  }
+
 }

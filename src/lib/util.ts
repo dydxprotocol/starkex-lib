@@ -111,8 +111,7 @@ export function utf8ToBn(
 }
 
 // ============ Helper Functions ============
-
-function stripHexPrefix(hex: string): string {
+export function stripHexPrefix(hex: string): string {
   const hexNoPrefix = hex.replace(/^0x/, '');
   if (!hexNoPrefix.match(HEX_RE)) {
     throw new Error('stripHexPrefix: Input is not a hex string');

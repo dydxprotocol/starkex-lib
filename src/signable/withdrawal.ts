@@ -9,7 +9,8 @@ import {
   nonceFromClientId,
   toQuantumsExact,
 } from '../helpers';
-import { getPedersenHash } from '../lib/crypto';
+import { getPedersenHash, getPedersenHashSync } from '../lib/crypto';
+
 import {
   decToBn,
   hexToBn,
@@ -103,6 +104,40 @@ export class SignableWithdrawal extends StarkSignable<StarkwareWithdrawal> {
       .iushln(WITHDRAWAL_PADDING_BITS);
 
     return getPedersenHash(
+      hexToBn(COLLATERAL_ASSET_ID_BY_NETWORK_ID[this.networkId]),
+      packedWithdrawalBn,
+    );
+  }
+
+  protected calculateHashSync(): BN {
+    const positionIdBn = decToBn(this.message.positionId);
+    const nonceBn = decToBn(this.message.nonce);
+    const quantumsAmountBn = decToBn(this.message.quantumsAmount);
+    const expirationEpochHoursBn = intToBn(this.message.expirationEpochHours);
+
+    if (positionIdBn.bitLength() > WITHDRAWAL_FIELD_BIT_LENGTHS.positionId) {
+      throw new Error('SignableOraclePrice: positionId exceeds max value');
+    }
+    if (nonceBn.bitLength() > WITHDRAWAL_FIELD_BIT_LENGTHS.nonce) {
+      throw new Error('SignableOraclePrice: nonce exceeds max value');
+    }
+    if (quantumsAmountBn.bitLength() > WITHDRAWAL_FIELD_BIT_LENGTHS.quantumsAmount) {
+      throw new Error('SignableOraclePrice: quantumsAmount exceeds max value');
+    }
+    if (
+      expirationEpochHoursBn.bitLength() > WITHDRAWAL_FIELD_BIT_LENGTHS.expirationEpochHours
+    ) {
+      throw new Error('SignableOraclePrice: expirationEpochHours exceeds max value');
+    }
+
+    const packedWithdrawalBn = new BN(WITHDRAWAL_PREFIX)
+      .iushln(WITHDRAWAL_FIELD_BIT_LENGTHS.positionId).iadd(positionIdBn)
+      .iushln(WITHDRAWAL_FIELD_BIT_LENGTHS.nonce).iadd(nonceBn)
+      .iushln(WITHDRAWAL_FIELD_BIT_LENGTHS.quantumsAmount).iadd(quantumsAmountBn)
+      .iushln(WITHDRAWAL_FIELD_BIT_LENGTHS.expirationEpochHours).iadd(expirationEpochHoursBn)
+      .iushln(WITHDRAWAL_PADDING_BITS);
+
+    return getPedersenHashSync(
       hexToBn(COLLATERAL_ASSET_ID_BY_NETWORK_ID[this.networkId]),
       packedWithdrawalBn,
     );

@@ -7,7 +7,8 @@ import {
   nonceFromClientId,
   getStarkwareLimitFeeAmount,
 } from '../helpers';
-import { getPedersenHash } from '../lib/crypto';
+import { getPedersenHash, getPedersenHashSync } from '../lib/crypto';
+
 import {
   decToBn,
   hexToBn,
@@ -25,7 +26,8 @@ import {
 import {
   ORDER_FIELD_BIT_LENGTHS,
 } from './constants';
-import { getCacheablePedersenHash } from './hashes';
+import { getCacheablePedersenHash, getCacheablePedersenHashSync } from './hashes';
+
 import { StarkSignable } from './stark-signable';
 
 const LIMIT_ORDER_WITH_FEES = 3;
@@ -164,6 +166,74 @@ export class SignableOrder extends StarkSignable<StarkwareOrder> {
     );
     return getPedersenHash(
       await getPedersenHash(assetsBn, orderPart1),
+      orderPart2,
+    );
+  }
+
+  protected calculateHashSync(): BN {
+    const assetIdSyntheticBn = hexToBn(this.message.assetIdSynthetic);
+    const assetIdCollateralBn = hexToBn(this.message.assetIdCollateral);
+    const assetIdFeeBn = hexToBn(this.message.assetIdFee);
+    const quantumsAmountSyntheticBn = decToBn(this.message.quantumsAmountSynthetic);
+    const quantumsAmountCollateralBn = decToBn(this.message.quantumsAmountCollateral);
+    const quantumsAmountFeeBn = decToBn(this.message.quantumsAmountFee);
+    const nonceBn = decToBn(this.message.nonce);
+    const positionIdBn = decToBn(this.message.positionId);
+    const expirationEpochHours = intToBn(this.message.expirationEpochHours);
+
+    const [assetIdSellBn, assetIdBuyBn] = this.message.isBuyingSynthetic
+      ? [assetIdCollateralBn, assetIdSyntheticBn]
+      : [assetIdSyntheticBn, assetIdCollateralBn];
+    const [quantumsAmountSellBn, quantumsAmountBuyBn] = this.message.isBuyingSynthetic
+      ? [quantumsAmountCollateralBn, quantumsAmountSyntheticBn]
+      : [quantumsAmountSyntheticBn, quantumsAmountCollateralBn];
+
+    if (assetIdSyntheticBn.bitLength() > ORDER_FIELD_BIT_LENGTHS.assetIdSynthetic) {
+      throw new Error('SignableOrder: assetIdSynthetic exceeds max value');
+    }
+    if (assetIdCollateralBn.bitLength() > ORDER_FIELD_BIT_LENGTHS.assetIdCollateral) {
+      throw new Error('SignableOrder: assetIdCollateral exceeds max value');
+    }
+    if (assetIdFeeBn.bitLength() > ORDER_FIELD_BIT_LENGTHS.assetIdFee) {
+      throw new Error('SignableOrder: assetIdFee exceeds max value');
+    }
+    if (quantumsAmountSyntheticBn.bitLength() > ORDER_FIELD_BIT_LENGTHS.quantumsAmount) {
+      throw new Error('SignableOrder: quantumsAmountSynthetic exceeds max value');
+    }
+    if (quantumsAmountCollateralBn.bitLength() > ORDER_FIELD_BIT_LENGTHS.quantumsAmount) {
+      throw new Error('SignableOrder: quantumsAmountCollateral exceeds max value');
+    }
+    if (quantumsAmountFeeBn.bitLength() > ORDER_FIELD_BIT_LENGTHS.quantumsAmount) {
+      throw new Error('SignableOrder: quantumsAmountFee exceeds max value');
+    }
+    if (nonceBn.bitLength() > ORDER_FIELD_BIT_LENGTHS.nonce) {
+      throw new Error('SignableOrder: nonce exceeds max value');
+    }
+    if (positionIdBn.bitLength() > ORDER_FIELD_BIT_LENGTHS.positionId) {
+      throw new Error('SignableOrder: positionId exceeds max value');
+    }
+    if (expirationEpochHours.bitLength() > ORDER_FIELD_BIT_LENGTHS.expirationEpochHours) {
+      throw new Error('SignableOrder: expirationEpochHours exceeds max value');
+    }
+
+    const orderPart1 = new BN(quantumsAmountSellBn.toString(), 10)
+      .iushln(ORDER_FIELD_BIT_LENGTHS.quantumsAmount).iadd(quantumsAmountBuyBn)
+      .iushln(ORDER_FIELD_BIT_LENGTHS.quantumsAmount).iadd(quantumsAmountFeeBn)
+      .iushln(ORDER_FIELD_BIT_LENGTHS.nonce).iadd(nonceBn);
+
+    const orderPart2 = new BN(LIMIT_ORDER_WITH_FEES)
+      .iushln(ORDER_FIELD_BIT_LENGTHS.positionId).iadd(positionIdBn) // Repeat (1/3).
+      .iushln(ORDER_FIELD_BIT_LENGTHS.positionId).iadd(positionIdBn) // Repeat (2/3).
+      .iushln(ORDER_FIELD_BIT_LENGTHS.positionId).iadd(positionIdBn) // Repeat (3/3).
+      .iushln(ORDER_FIELD_BIT_LENGTHS.expirationEpochHours).iadd(expirationEpochHours)
+      .iushln(ORDER_PADDING_BITS);
+
+    const assetsBn = getCacheablePedersenHashSync(
+      getCacheablePedersenHashSync(assetIdSellBn, assetIdBuyBn),
+      assetIdFeeBn,
+    );
+    return getPedersenHashSync(
+      getPedersenHashSync(assetsBn, orderPart1),
       orderPart2,
     );
   }

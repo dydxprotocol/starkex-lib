@@ -9,7 +9,7 @@ import {
   nonceFromClientId,
   toQuantumsExact,
 } from '../helpers';
-import { getPedersenHash } from '../lib/crypto';
+import { getPedersenHash, getPedersenHashSync } from '../lib/crypto';
 import {
   decToBn,
   factToCondition,
@@ -25,7 +25,7 @@ import {
   TRANSFER_FEE_ASSET_ID_BN,
   CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS,
 } from './constants';
-import { getCacheablePedersenHash } from './hashes';
+import { getCacheablePedersenHash, getCacheablePedersenHashSync } from './hashes';
 import { StarkSignable } from './stark-signable';
 
 // Note: Fees are not supported for conditional transfers.
@@ -132,6 +132,79 @@ export class SignableConditionalTransfer extends StarkSignable<StarkwareConditio
 
     return getPedersenHash(
       await getPedersenHash(
+        transferPart1,
+        transferPart2,
+      ),
+      transferPart3,
+    );
+  }
+  protected calculateHashSync(): BN {
+    const senderPositionIdBn = decToBn(this.message.senderPositionId);
+    const receiverPositionIdBn = decToBn(this.message.receiverPositionId);
+    const receiverPublicKeyBn = hexToBn(this.message.receiverPublicKey);
+    const conditionBn = hexToBn(this.message.condition);
+    const quantumsAmountBn = decToBn(this.message.quantumsAmount);
+    const nonceBn = decToBn(this.message.nonce);
+    const expirationEpochHoursBn = intToBn(this.message.expirationEpochHours);
+
+    if (senderPositionIdBn.bitLength() > CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.positionId) {
+      throw new Error('SignableOraclePrice: senderPositionId exceeds max value');
+    }
+    if (
+      receiverPositionIdBn.bitLength() > CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.positionId
+    ) {
+      throw new Error('SignableOraclePrice: receiverPositionId exceeds max value');
+    }
+    if (
+      receiverPublicKeyBn.bitLength() > CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.receiverPublicKey
+    ) {
+      throw new Error('SignableOraclePrice: receiverPublicKey exceeds max value');
+    }
+    if (conditionBn.bitLength() > CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.condition) {
+      throw new Error('SignableOraclePrice: condition exceeds max value');
+    }
+    if (quantumsAmountBn.bitLength() > CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.quantumsAmount) {
+      throw new Error('SignableOraclePrice: quantumsAmount exceeds max value');
+    }
+    if (nonceBn.bitLength() > CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.nonce) {
+      throw new Error('SignableOraclePrice: nonce exceeds max value');
+    }
+    if (
+      expirationEpochHoursBn.bitLength() >
+      CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.expirationEpochHours
+    ) {
+      throw new Error('SignableOraclePrice: expirationEpochHours exceeds max value');
+    }
+
+    // The transfer asset is always the collateral asset.
+    // Fees are not supported for conditional transfers.
+    const assetIds = getCacheablePedersenHashSync(
+      hexToBn(COLLATERAL_ASSET_ID_BY_NETWORK_ID[this.networkId]),
+      TRANSFER_FEE_ASSET_ID_BN,
+    );
+
+    const transferPart1 = getPedersenHashSync(
+      getPedersenHashSync(
+        assetIds,
+        receiverPublicKeyBn,
+      ),
+      conditionBn,
+    );
+    // Note: Use toString() to avoid mutating senderPositionIdBn.
+    const transferPart2 = new BN(senderPositionIdBn.toString(), 10)
+      .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.positionId).iadd(receiverPositionIdBn)
+      .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.positionId).iadd(senderPositionIdBn)
+      .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.nonce).iadd(nonceBn);
+    const transferPart3 = new BN(CONDITIONAL_TRANSFER_PREFIX)
+      .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.quantumsAmount).iadd(quantumsAmountBn)
+      .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.quantumsAmount).iadd(MAX_AMOUNT_FEE_BN)
+      .iushln(CONDITIONAL_TRANSFER_FIELD_BIT_LENGTHS.expirationEpochHours).iadd(
+        expirationEpochHoursBn,
+      )
+      .iushln(CONDITIONAL_TRANSFER_PADDING_BITS);
+
+    return getPedersenHashSync(
+      getPedersenHashSync(
         transferPart1,
         transferPart2,
       ),

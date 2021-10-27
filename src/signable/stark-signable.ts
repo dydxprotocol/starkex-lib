@@ -10,6 +10,7 @@ import {
 } from '../helpers';
 import {
   sign,
+  signSync,
   verify,
 } from '../lib/crypto';
 import { starkEc } from '../lib/starkware/crypto-js';
@@ -55,6 +56,13 @@ export abstract class StarkSignable<T> {
     return this._hashBN;
   }
 
+  getHashBNSync(): BN {
+    if (this._hashBN === null) {
+      this._hashBN = this.calculateHashSync();
+    }
+    return this._hashBN;
+  }
+
   /**
    * Sign the message with the given private key, represented as a hex string or hex string pair.
    */
@@ -63,6 +71,17 @@ export abstract class StarkSignable<T> {
   ): Promise<string> {
     const hashBN = await this.getHashBN();
     const ecSignature = await sign(asEcKeyPair(privateKey), hashBN);
+    return serializeSignature(asSimpleSignature(ecSignature));
+  }
+
+  /**
+   * Sign the message with the given private key, represented as a hex string or hex string pair.
+   */
+   signSync(
+    privateKey: string | KeyPair,
+  ): string {
+    const hashBN = this.getHashBNSync();
+    const ecSignature = signSync(asEcKeyPair(privateKey), hashBN);
     return serializeSignature(asSimpleSignature(ecSignature));
   }
 
@@ -97,4 +116,5 @@ export abstract class StarkSignable<T> {
    * Calculate the message hash.
    */
   protected abstract calculateHash(): Promise<BN>;
+  protected abstract calculateHashSync(): BN;
 }
