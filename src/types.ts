@@ -45,6 +45,12 @@ export enum DydxMarket {
   ZRX_USD = 'ZRX-USD',
   XMR_USD = 'XMR-USD',
   ZEC_USD = 'ZEC-USD',
+  ENJ_USD = 'ENJ_USD',
+  ETC_USD = 'ETC_USD',
+  XLM_USD = 'XLM_USD',
+  TRX_USD = 'TRX_USD',
+  XTZ_USD = 'XTZ_USD',
+  HNT_USD = 'HNT_USD',
 }
 
 export enum DydxAsset {
@@ -77,6 +83,12 @@ export enum DydxAsset {
   ZRX = 'ZRX',
   XMR = 'XMR',
   ZEC = 'ZEC',
+  ENJ = 'ENJ',
+  ETC = 'ETC',
+  XLM = 'XLM',
+  TRX = 'TRX',
+  XTZ = 'XTZ',
+  HNT = 'HNT',
 }
 
 export type SyntheticAsset = Exclude<DydxAsset, DydxAsset.USDC>;
