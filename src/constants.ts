@@ -92,7 +92,7 @@ export const ASSET_RESOLUTION: Record<DydxAsset, number> = {
   [DydxAsset.ENJ]: 6,
   [DydxAsset.ETC]: 7,
   [DydxAsset.XLM]: 5,
-  [DydxAsset.TRX]: 5,
+  [DydxAsset.TRX]: 4,
   [DydxAsset.XTZ]: 6,
   [DydxAsset.HNT]: 7,
 };
