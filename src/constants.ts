@@ -94,7 +94,7 @@ export const ASSET_RESOLUTION: Record<DydxAsset, number> = {
   [DydxAsset.XLM]: 5,
   [DydxAsset.TRX]: 5,
   [DydxAsset.XTZ]: 6,
-  [DydxAsset.HNT]: 7
+  [DydxAsset.HNT]: 7,
 };
 
 export const COLLATERAL_ASSET_ADDRESS_BY_NETWORK: Record<NetworkId, string> = {
