@@ -45,12 +45,12 @@ export enum DydxMarket {
   ZRX_USD = 'ZRX-USD',
   XMR_USD = 'XMR-USD',
   ZEC_USD = 'ZEC-USD',
-  ENJ_USD = 'ENJ_USD',
-  ETC_USD = 'ETC_USD',
-  XLM_USD = 'XLM_USD',
-  TRX_USD = 'TRX_USD',
-  XTZ_USD = 'XTZ_USD',
-  HNT_USD = 'HNT_USD',
+  ENJ_USD = 'ENJ-USD',
+  ETC_USD = 'ETC-USD',
+  XLM_USD = 'XLM-USD',
+  TRX_USD = 'TRX-USD',
+  XTZ_USD = 'XTZ-USD',
+  HNT_USD = 'HNT-USD',
 }
 
 export enum DydxAsset {
