@@ -8,7 +8,7 @@
     "compile:watch": "npm run compile -- --watch",
     "compile": "tsc",
     "copy-files": "copyfiles ./**/*.so build/",
-    "coverage": "NODE_ENV=test nyc --reporter=lcovonly mocha 'build/__tests__/**/*.test.js'",
+    "coverage": "NODE_ENV=test nyc --reporter=lcovonly mocha --timeout 4000 'build/__tests__/**/*.test.js'",
     "fix": "npm run lint -- --fix",
     "lint": "eslint --ext .ts,.js .",
     "prepublishOnly": "npm run compile",
