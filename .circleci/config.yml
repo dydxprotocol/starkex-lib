@@ -66,10 +66,10 @@ jobs:
       - run:
           name: Coverage
           command: npm run coverage
+          no_output_timeout: 5m
       - run:
           name: Coveralls
           command: cat coverage/lcov.info | node_modules/.bin/coveralls
-    resource_class: large
   publish:
     docker:
       - image: dydxprotocol/node:12.18.3-alpine
