@@ -22,7 +22,6 @@
 // - return dummy proxy if the library fails to load
 
 import * as BigIntBuffer from 'bigint-buffer';
-import ffi from 'ffi-napi';
 
 const CRYPTO_CPP_LIB = 'libcrypto_c_exports';
 
@@ -36,6 +35,9 @@ let libcrypto: any = new Proxy({}, {
 });
 
 try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
+  const ffi = require('ffi-napi');
+
   libcrypto = ffi.Library(
     `${__dirname}/${CRYPTO_CPP_LIB}`,
     {
