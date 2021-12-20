@@ -111,8 +111,8 @@ export interface SignatureStruct {
 }
 
 // Market info from caller, if not using DydxMarket.
-export interface DydxMarketInfo {
-  market: string;
+export interface DydxAssetInfo {
+  asset: string;
   resolution: number;
 }
 
@@ -183,7 +183,7 @@ interface OrderParamsBase {
   positionId: string;
   humanSize: string;
   limitFee: string; // Max fee fraction, e.g. 0.01 is a max 1% fee.
-  market: DydxMarket | DydxMarketInfo;
+  market: DydxMarket | DydxAssetInfo;
   side: StarkwareOrderSide;
   expirationIsoTimestamp: string;
 }

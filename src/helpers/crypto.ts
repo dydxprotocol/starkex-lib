@@ -37,7 +37,7 @@ import { StarkSignable, SignableOrder, SignableWithdrawal, SignableConditionalTr
 import {
   OrderWithClientId,
   DydxMarket,
-  DydxMarketInfo
+  DydxAssetInfo
 } from '../types';
 
 var utils = require('web3-utils');
@@ -285,20 +285,20 @@ export class StarkHelper {
   }
 
   public signWithResolution(positionId: string, humanSize: string, limitFee: string,
-    market: string, resolution: number, side: string,
+    asset: string, resolution: number, side: string,
     expirationIsoTimestamp: string, humanPrice: string, clientId: string,
     privateKey: string, networkId: string): string {
     const _networkId: NetworkId = (networkId === '1') ? NetworkId.MAINNET : NetworkId.ROPSTEN;
     const _side:StarkwareOrderSide = (side === 'BUY') ? StarkwareOrderSide.BUY : StarkwareOrderSide.SELL;
-    const _marketInfo = {
-      market,
+    const _assetInfo = {
+      asset,
       resolution,
     };
     const order = {
       positionId,
       humanSize,
       limitFee,
-      market: _marketInfo,
+      market: _assetInfo,
       side: _side,
       expirationIsoTimestamp,
       humanPrice,

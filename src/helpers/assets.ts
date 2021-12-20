@@ -19,7 +19,7 @@ import {
   StarkwareAmounts,
   DydxMarket,
   NetworkId,
-  DydxMarketInfo,
+  DydxAssetInfo,
 } from '../types';
 
 /**
@@ -125,7 +125,7 @@ export function fromQuantums(
 
  export function getStarkwareAmounts(
   params: {
-    market: DydxMarket | DydxMarketInfo,
+    market: DydxMarket | DydxAssetInfo,
     side: StarkwareOrderSide,
     humanSize: string,
   } & (WithPrice | WithQuoteAmount),
@@ -139,11 +139,11 @@ export function fromQuantums(
     };
     return getStarkwareAmountsFromMarket(_params, networkId);
   } else {
-    const _marketInfo = params.market as DydxMarketInfo
+    const _assetInfo = params.market as DydxAssetInfo
     const _params = {
       ...params,
-      market: _marketInfo.market,
-      resolution: _marketInfo.resolution,
+      asset: _assetInfo.asset,
+      resolution: _assetInfo.resolution,
     };
     return getStarkwareAmountsFromMarketInfo(_params, networkId);
   }
@@ -198,7 +198,7 @@ export function getStarkwareAmountsFromMarket(
 
 export function getStarkwareAmountsFromMarketInfo(
   params: {
-    market: string,
+    asset: string,
     resolution:number,
     side: StarkwareOrderSide,
     humanSize: string,
@@ -206,7 +206,7 @@ export function getStarkwareAmountsFromMarketInfo(
   networkId: NetworkId,
 ): StarkwareAmounts {
   const {
-    market, side, humanSize, humanQuoteAmount, humanPrice,
+    asset, side, humanSize, humanQuoteAmount, humanPrice,
   } = params;
 
   // Determine side and assets.
@@ -233,7 +233,7 @@ export function getStarkwareAmountsFromMarketInfo(
   return {
     quantumsAmountSynthetic,
     quantumsAmountCollateral,
-    assetIdSynthetic: market,
+    assetIdSynthetic: asset,
     assetIdCollateral: COLLATERAL_ASSET_ID_BY_NETWORK_ID[networkId],
     isBuyingSynthetic,
   };
