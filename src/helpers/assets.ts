@@ -19,6 +19,7 @@ import {
   StarkwareAmounts,
   DydxMarket,
   NetworkId,
+  DydxMarketInfo,
 } from '../types';
 
 /**
@@ -31,6 +32,13 @@ export function toQuantumsExact(
   asset: DydxAsset,
 ): string {
   return toQuantumsHelper(humanAmount, asset, RoundingMode.RoundDown, true);
+}
+
+export function toQuantumsExactWithResolution(
+  humanAmount: string,
+  resolution: number,
+): string {
+  return toQuantumsHelperWithResolution(humanAmount, resolution, RoundingMode.RoundDown, true);
 }
 
 /**
@@ -74,6 +82,23 @@ function toQuantumsHelper(
   return amountBig.div(quantumSize).round(0, rm).toFixed(0);
 }
 
+function toQuantumsHelperWithResolution(
+  humanAmount: string,
+  resolution: number,
+  rm: RoundingMode,
+  assertIntegerResult: boolean,
+): string {
+  const amountBig = new Big(humanAmount);
+  const quantumSize = `1e-${resolution}`;
+  const remainder = amountBig.mod(quantumSize);
+  if (assertIntegerResult && !remainder.eq(0)) {
+    throw new Error(
+      `toQuantums: Amount ${humanAmount} is not a multiple of the quantum size ${quantumSize}`,
+    );
+  }
+  return amountBig.div(quantumSize).round(0, rm).toFixed(0);
+}
+
 /**
  * Convert a number of quantums to a human-readable asset amount.
  *
@@ -97,7 +122,34 @@ export function fromQuantums(
  *
  * Must provide either quoteAmount or price.
  */
-export function getStarkwareAmounts(
+
+ export function getStarkwareAmounts(
+  params: {
+    market: DydxMarket | DydxMarketInfo,
+    side: StarkwareOrderSide,
+    humanSize: string,
+  } & (WithPrice | WithQuoteAmount),
+  networkId: NetworkId,
+): StarkwareAmounts {
+  const _market = params.market as DydxMarket;
+  if (_market) {
+    const _params = {
+      ...params,
+      market: _market,
+    };
+    return getStarkwareAmountsFromMarket(_params, networkId);
+  } else {
+    const _marketInfo = params.market as DydxMarketInfo
+    const _params = {
+      ...params,
+      market: _marketInfo.market,
+      resolution: _marketInfo.resolution,
+    };
+    return getStarkwareAmountsFromMarketInfo(_params, networkId);
+  }
+}
+
+export function getStarkwareAmountsFromMarket(
   params: {
     market: DydxMarket,
     side: StarkwareOrderSide,
@@ -144,6 +196,48 @@ export function getStarkwareAmounts(
   };
 }
 
+export function getStarkwareAmountsFromMarketInfo(
+  params: {
+    market: string,
+    resolution:number,
+    side: StarkwareOrderSide,
+    humanSize: string,
+  } & (WithPrice | WithQuoteAmount),
+  networkId: NetworkId,
+): StarkwareAmounts {
+  const {
+    market, side, humanSize, humanQuoteAmount, humanPrice,
+  } = params;
+
+  // Determine side and assets.
+  const isBuyingSynthetic = side === StarkwareOrderSide.BUY;
+
+  // Convert the synthetic amount to Starkware quantums.
+  const quantumsAmountSynthetic = toQuantumsExactWithResolution(humanSize, params.resolution);
+
+  // Get the human-readable collateral asset amount (a.k.a. "quote amount").
+  const humanAmountCollateral = typeof humanQuoteAmount === 'string'
+    ? humanQuoteAmount
+    : new Big(humanSize).times(humanPrice!).toFixed(); // Non-null assertion safe based on types.
+
+  // If quoteAmount was specified, don't allow rounding.
+  // Otherwise, round differently depending on the order side.
+  let toQuantumsFnForCost = toQuantumsExact;
+  if (typeof humanQuoteAmount !== 'string') {
+    toQuantumsFnForCost = isBuyingSynthetic
+      ? toQuantumsRoundUp
+      : toQuantumsRoundDown;
+  }
+  const quantumsAmountCollateral = toQuantumsFnForCost(humanAmountCollateral, COLLATERAL_ASSET);
+
+  return {
+    quantumsAmountSynthetic,
+    quantumsAmountCollateral,
+    assetIdSynthetic: market,
+    assetIdCollateral: COLLATERAL_ASSET_ID_BY_NETWORK_ID[networkId],
+    isBuyingSynthetic,
+  };
+}
 /**
  * Convert a limit fee fraction for an order into a collateral quantums amount.
  */

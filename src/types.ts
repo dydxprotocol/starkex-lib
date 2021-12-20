@@ -110,6 +110,12 @@ export interface SignatureStruct {
   s: string;
 }
 
+// Market info from caller, if not using DydxMarket.
+export interface DydxMarketInfo {
+  market: string;
+  resolution: number;
+}
+
 export type HashFunction = (a: BN, b: BN) => BN | Promise<BN>;
 export type SigningFunction =
   (key: elliptic.ec.KeyPair, message: BN) => elliptic.ec.Signature | Promise<elliptic.ec.Signature>;
@@ -177,7 +183,7 @@ interface OrderParamsBase {
   positionId: string;
   humanSize: string;
   limitFee: string; // Max fee fraction, e.g. 0.01 is a max 1% fee.
-  market: DydxMarket;
+  market: DydxMarket | DydxMarketInfo;
   side: StarkwareOrderSide;
   expirationIsoTimestamp: string;
 }

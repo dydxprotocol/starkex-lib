@@ -12,7 +12,7 @@ import {
   ORDER_FIELD_BIT_LENGTHS,
   STARK_ORDER_SIGNATURE_EXPIRATION_BUFFER_HOURS,
 } from '../signable/constants';
-import { DydxMarket } from '../types';
+import { DydxMarket, DydxMarketInfo } from '../types';
 
 const MAX_NONCE = new BN(2).pow(new BN(ORDER_FIELD_BIT_LENGTHS.nonce));
 const ONE_SECOND_MS = 1000;
@@ -51,9 +51,14 @@ export function addOrderExpirationBufferHours(expirationEpochHours: number): num
  * Get the asset name to be signed by a price oracle. It is the market name with the hyphen removed.
  */
 export function getSignedAssetName(
-  market: DydxMarket,
+  market: DydxMarket | DydxMarketInfo,
 ): string {
-  return market.replace('-', '');
+  const _market = market as DydxMarket;
+  if (_market) {
+    return _market.replace('-', '');
+  } else {
+    return (market as DydxMarketInfo).market.replace('-', '');
+  }
 }
 
 /**
