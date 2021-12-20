@@ -123,7 +123,7 @@ export function fromQuantums(
  * Must provide either quoteAmount or price.
  */
 
- export function getStarkwareAmounts(
+export function getStarkwareAmounts(
   params: {
     market: DydxMarket | DydxAssetInfo,
     side: StarkwareOrderSide,
@@ -131,21 +131,21 @@ export function fromQuantums(
   } & (WithPrice | WithQuoteAmount),
   networkId: NetworkId,
 ): StarkwareAmounts {
-  const _market = params.market as DydxMarket;
-  if (_market) {
+  const _market = params.market;
+  if (typeof _market === 'string' || _market instanceof String) {
     const _params = {
       ...params,
-      market: _market,
+      market: _market as DydxMarket,
     };
     return getStarkwareAmountsFromMarket(_params, networkId);
   } else {
-    const _assetInfo = params.market as DydxAssetInfo
+    const _assetInfo = params.market as DydxAssetInfo;
     const _params = {
       ...params,
       asset: _assetInfo.asset,
       resolution: _assetInfo.resolution,
     };
-    return getStarkwareAmountsFromMarketInfo(_params, networkId);
+    return getStarkwareAmountsFromAssetInfo(_params, networkId);
   }
 }
 
@@ -196,7 +196,7 @@ export function getStarkwareAmountsFromMarket(
   };
 }
 
-export function getStarkwareAmountsFromMarketInfo(
+export function getStarkwareAmountsFromAssetInfo(
   params: {
     asset: string,
     resolution:number,

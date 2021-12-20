@@ -31,9 +31,12 @@ browserify ./build/src/helpers/crypto.js --standalone StarkHelper > ./build/star
 
 ## Notes about signing
 starkex-lib has its own string enum for the markets, which creates a problem for mobile apps when new markets are added. instead
-of using sign(...) to sign an order, use signWithResolution(...) instead. It takes the market label and resolution instead of 
-the internal lookup table. The resolution is in the markets payload in the form of 1xxxxx. It needs to be transformed into a counter
-such as 6. The asset param needs to be the asset symbol instead of market, such as 'ETH' 
+of using sign(...) to sign an order, use signWithResolution(...) instead. It takes the syntheticAssetId and resolution instead of 
+the internal lookup table. 
+
+The resolution is in the markets payload in the form of 1xxxxx. It needs to be transformed into a counter
+such as 6. 
+The asset param is the syntheticAssetId in the market payload
 
 
 ## To use in native code (iOS)

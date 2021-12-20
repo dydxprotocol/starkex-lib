@@ -77,7 +77,7 @@ export abstract class StarkSignable<T> {
   /**
    * Sign the message with the given private key, represented as a hex string or hex string pair.
    */
-   signSync(
+  signSync(
     privateKey: string | KeyPair,
   ): string {
     const hashBN = this.getHashBNSync();
