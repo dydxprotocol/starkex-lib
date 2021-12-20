@@ -28,6 +28,14 @@ Create a single js file to be loadable and runnable from native code in iOS and 
 Ended up not using webpack. Keep the instruction here if we need to expand the usage. Use Browsify instead
 browserify ./build/src/helpers/crypto.js --standalone StarkHelper > ./build/starkex-lib.js
 
+
+## Notes about signing
+starkex-lib has its own string enum for the markets, which creates a problem for mobile apps when new markets are added. instead
+of using sign(...) to sign an order, use signWithResolution(...) instead. It takes the market label and resolution instead of 
+the internal lookup table. The resolution is in the markets payload in the form of 1xxxxx. It needs to be transformed into a counter
+such as 6.
+
+
 ## To use in native code (iOS)
 context.evaluateScript("var helper = new StarkHelper.StarkHelper()")
 let jsValue = context.evaluateScript("helper.publicKeyAndYCoordiante('58c7d5a90b1776bde86ebac077e053ed85b0f7164f53b080304a531947f46e3')")
