@@ -1,5 +1,5 @@
-import {DydxAsset, DydxMarket} from '../src/types';
-import {ASSET_RESOLUTION, SYNTHETIC_ASSET_MAP} from '../src/constants';
+import { DydxAsset, DydxMarket } from '../src/types';
+import { ASSET_RESOLUTION, SYNTHETIC_ASSET_MAP } from '../src/constants';
 import expect from 'expect';
 
 describe('DydxMarket', () => {
