@@ -69,7 +69,7 @@ export enum DydxMarket {
   DODO_USD = 'DODO-USD',
   ALPHA_USD = 'ALPHA-USD',
   WNXM_USD = 'WNXM-USD',
-  XCH_USD = 'XCH-USD'
+  XCH_USD = 'XCH-USD',
 }
 
 export enum DydxAsset {
@@ -126,7 +126,7 @@ export enum DydxAsset {
   DODO = 'DODO',
   ALPHA = 'ALPHA',
   WNXM = 'WNXM',
-  XCH = 'XCH'
+  XCH = 'XCH',
 }
 
 export type SyntheticAsset = Exclude<DydxAsset, DydxAsset.USDC>;
