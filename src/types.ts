@@ -51,6 +51,25 @@ export enum DydxMarket {
   TRX_USD = 'TRX-USD',
   XTZ_USD = 'XTZ-USD',
   HNT_USD = 'HNT-USD',
+  ICP_USD = 'ICP-USD',
+  RUNE_USD = 'RUNE-USD',
+  LUNA_USD = 'LUNA-USD',
+  NEAR_USD = 'NEAR-USD',
+  AR_USD = 'AR-USD',
+  FLOW_USD = 'FLOW-USD',
+  PERP_USD = 'PERP-USD',
+  REN_USD = 'REN-USD',
+  CELO_USD = 'CELO-USD',
+  KSM_USD = 'KSM-USD',
+  BAL_USD = 'BAL-USD',
+  BNT_USD = 'BNT-USD',
+  MIR_USD = 'MIR-USD',
+  SRM_USD = 'SRM-USD',
+  LON_USD = 'LON-USD',
+  DODO_USD = 'DODO-USD',
+  ALPHA_USD = 'ALPHA-USD',
+  WNXM_USD = 'WNXM-USD',
+  XCH_USD = 'XCH-USD'
 }
 
 export enum DydxAsset {
@@ -89,6 +108,25 @@ export enum DydxAsset {
   TRX = 'TRX',
   XTZ = 'XTZ',
   HNT = 'HNT',
+  ICP = 'ICP',
+  RUNE = 'RUNE',
+  LUNA = 'LUNA',
+  NEAR = 'NEAR',
+  AR = 'AR',
+  FLOW = 'FLOW',
+  PERP = 'PERP',
+  REN = 'REN',
+  CELO = 'CELO',
+  KSM = 'KSM',
+  BAL = 'BAL',
+  BNT = 'BNT',
+  MIR = 'MIR',
+  SRM = 'SRM',
+  LON = 'LON',
+  DODO = 'DODO',
+  ALPHA = 'ALPHA',
+  WNXM = 'WNXM',
+  XCH = 'XCH'
 }
 
 export type SyntheticAsset = Exclude<DydxAsset, DydxAsset.USDC>;
