@@ -34,7 +34,7 @@ describe('SYNTHETIC_ASSET_MAP', () => {
 
   it('contains all markets in TOTAL_CORE_MARKETS_ARRAY', () => {
     const assets = Object.keys(ASSET_RESOLUTION);
-    expect(Object.keys(SYNTHETIC_ASSET_MAP).every((x) => assets.includes(x)));
+    expect(Object.values(SYNTHETIC_ASSET_MAP).every((x) => assets.includes(x))).toBeTruthy();
   });
 
   it('contains all assets in DydxAsset', () => {
