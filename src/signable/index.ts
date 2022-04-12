@@ -15,10 +15,10 @@ let maybeHashInWorkerThread: HashFunction = (_a: BN, _b: BN) => {
 };
 try {
   /* eslint-disable @typescript-eslint/no-var-requires,global-require */
-  require('worker_threads');
+  // require('worker_threads'); <----- DOESN'T EXIST
   // If the worker_threads module is available, update maybeHashInWorkerThread.
   // eslint-disable-next-line import/extensions
-  maybeHashInWorkerThread = require('./hash-in-worker-thread').hashInWorkerThread;
+  // maybeHashInWorkerThread = require('./hash-in-worker-thread').hashInWorkerThread; <----- DOESN'T EXIST
   /* eslint-enable @typescript-eslint/no-var-requires,global-require */
 } catch (error) {
   // eslint: Intentionally empty.
