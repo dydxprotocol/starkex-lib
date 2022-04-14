@@ -1,11 +1,23 @@
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-var */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable import/no-cycle */
+/* eslint-disable import/no-duplicates */
+/* eslint-disable import/order */
 /**
  * Helper functions for converting keys and signatures between formats.
  */
 
+// eslint-disable-next-line import/order
 import elliptic from 'elliptic';
 
 import BigNumber from 'bignumber.js';
+// eslint-disable-next-line import/order
 import AES from 'crypto-js/aes';
+// eslint-disable-next-line import/order
 import CryptoJS from 'crypto-js';
 
 import _ from 'lodash';
@@ -32,12 +44,14 @@ import {
   stripHexPrefix,
 } from '../lib/util';
 
-import { StarkSignable, SignableOrder, SignableWithdrawal, SignableConditionalTransfer } from '../signable';
+import {
+  StarkSignable, SignableOrder, SignableWithdrawal, SignableConditionalTransfer,
+} from '../signable';
 
 import {
   OrderWithClientId,
   DydxMarket,
-  DydxAssetInfo
+  DydxAssetInfo,
 } from '../types';
 
 var utils = require('web3-utils');
@@ -214,6 +228,15 @@ export class StarkHelper {
    * Derivce public key from private key.
    * This is wrapped in a class to make it work in native
    */
+  state?: string;
+
+  public setState(value: string): void {
+    this.state = value;
+  }
+
+  public getState(): string | undefined {
+    return this.state;
+  }
 
   public publicKeyAndYCoordiante(
     privateKey: string,
@@ -312,7 +335,7 @@ export class StarkHelper {
   public signPayload(payload: any, privateKey: string, networkId: string): string {
     const positionId = payload.positionId;
     const clientId = payload.clientId;
-    if (positionId  && clientId && privateKey && networkId) {
+    if (positionId && clientId && privateKey && networkId) {
       const expirationIsoTimestamp = payload.expiresAt;
       const humanSize = payload.size;
       const limitFee = payload.limitFee;
