@@ -20,11 +20,8 @@ const ONE_HOUR_MS = 60 * 60 * ONE_SECOND_MS;
  * Generate a nonce deterministically from an arbitrary string provided by a client.
  */
 export function nonceFromClientId(clientId: string): string {
-  const hmac = cryptoJS.algo.HMAC.create(
-    cryptoJS.algo.SHA256,
-    'FOO_BAR',
-  );
-  const nonceHex = hmac.update(clientId).finalize().toString(cryptoJS.enc.Hex)
+  const hash = cryptoJS.algo.SHA256.create();
+  const nonceHex = hash.update(clientId).finalize().toString(cryptoJS.enc.Hex);
   return hexToBn(nonceHex).mod(MAX_NONCE).toString();
 }
 
