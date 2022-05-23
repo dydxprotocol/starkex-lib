@@ -1,10 +1,8 @@
 /**
  * Other helper functions for converting data for Starkware.
  */
-
-import nodeCrypto from 'crypto';
-
 import BN from 'bn.js';
+import cryptoJS from 'crypto-js';
 
 import { hexToBn, utf8ToBn } from '../lib/util';
 import {
@@ -22,7 +20,11 @@ const ONE_HOUR_MS = 60 * 60 * ONE_SECOND_MS;
  * Generate a nonce deterministically from an arbitrary string provided by a client.
  */
 export function nonceFromClientId(clientId: string): string {
-  const nonceHex = nodeCrypto.createHash('sha256').update(clientId).digest('hex');
+  const hmac = cryptoJS.algo.HMAC.create(
+    cryptoJS.algo.SHA256,
+    'FOO_BAR',
+  );
+  const nonceHex = hmac.update(clientId).finalize().toString(cryptoJS.enc.Hex)
   return hexToBn(nonceHex).mod(MAX_NONCE).toString();
 }
 
