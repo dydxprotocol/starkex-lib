@@ -1,120 +1,60 @@
-version: 2
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
+
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  checkout_and_install:
+  build_and_test:
     docker:
-      - image: dydxprotocol/node:12.18.3-alpine
-    working_directory: ~/build
+      - image: cimg/node:16.14.2 # TODO: use our own custom frontend image
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - dependency-cache-{{ .Environment.DEP_CACHE_VERSION }}-{{ .Branch }}-{{ checksum "package-lock.json" }}
-            - dependency-cache-{{ .Environment.DEP_CACHE_VERSION }}-{{ .Branch }}-
-            - dependency-cache-{{ .Environment.DEP_CACHE_VERSION }}-
-      - run:
-          name: Install Dependencies
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc && npm ci
-      - save_cache:
-          key: dependency-cache-{{ .Environment.DEP_CACHE_VERSION }}-{{ .Branch }}-{{ checksum "package-lock.json" }}
-          paths:
-            - "$HOME/.npm"
-      - save_cache:
-          key: cache-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/build
-  lint:
-    docker:
-      - image: dydxprotocol/node:12.18.3-alpine
-    working_directory: ~/build
-    steps:
-      - restore_cache:
-          key: cache-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          name: Lint
-          command: npm run lint
-  build:
-    docker:
-      - image: dydxprotocol/node:12.18.3-alpine
-    working_directory: ~/build
-    steps:
-      - restore_cache:
-          key: cache-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          name: Build
-          command: npm run build
-      - save_cache:
-          key: cache-completed-build-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/build
-  test:
-    docker:
-      - image: dydxprotocol/node:12.18.3-alpine
-    working_directory: ~/build
-    steps:
-      - restore_cache:
-          key: cache-completed-build-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          name: Test
-          command: npm test
-  coverage:
-    docker:
-      - image: dydxprotocol/node:12.18.3-alpine
-    working_directory: ~/build
-    steps:
-      - restore_cache:
-          key: cache-completed-build-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          name: Coverage
-          command: npm run coverage
-      - run:
-          name: Coveralls
-          command: cat coverage/lcov.info | node_modules/.bin/coveralls
+      - run: mkdir -p $TEST_RESULTS
+      - run: yarn
+      - run: yarn build
+      - run: yarn test
+      - store_artifacts: # upload test summary for display in Artifacts
+          path: /tmp/test-results
+          destination: raw-test-output
+
+      - store_test_results: # upload test results for display in Test Summary
+          path: /tmp/test-results
+    environment:
+      TEST_RESULTS: /tmp/test-results 
+  
   publish:
     docker:
-      - image: dydxprotocol/node:12.18.3-alpine
-    working_directory: ~/build
+      - image: cimg/node:16.14.2
     steps:
-      - restore_cache:
-          key: cache-completed-build-{{ .Environment.CIRCLE_SHA1 }}
-      - add_ssh_keys:
-          fingerprints:
-            - "d5:85:4c:16:17:80:7e:4c:af:48:4d:59:61:0e:2a:b3"
+      - checkout
       - run:
           name: Authenticate with registry
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/build/.npmrc
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+      - add_ssh_keys:
+          fingerprints:
+            - "36:28:e6:50:6a:6b:8f:e4:0a:eb:09:2f:17:81:51:6b"
+      - run:
+          name: Build package
+          command: yarn && yarn build
       - run:
           command: |
-            ./node_modules/@dydxprotocol/node-service-base-dev/scripts/publish-if-not-exists.sh
+            ./scripts/publish_if_not_exists.sh
+  
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  version: 2
-  build_and_test:
+  build_test_deploy:
     jobs:
-      - checkout_and_install:
-          context: Node Service Context
-      - lint:
-          context: Node Service Context
-          requires:
-            - checkout_and_install
-      - build:
-          context: Node Service Context
-          requires:
-            - checkout_and_install
-      - test:
-          context: Node Service Context
-          requires:
-            - build
-            - checkout_and_install
-      - coverage:
-          context: Node Service Context
-          requires:
-            - build
-            - checkout_and_install
+      - build_and_test:
+          context:
+            - aws
       - publish:
-          context: Node Service Context
           requires:
-            - lint
-            - build
-            - test
+            - build_and_test
           filters:
             branches:
               only: master
+          context:
+            - aws
+            - npm
