@@ -1,8 +1,8 @@
 {
   "name": "@flash1-exchange/starkex-lib",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Cryptographic functions for use with StarkEx",
-  "main": "build/src/index.js",
+  "main": "./build/src/index.js",
   "types": "./build/src/index.d.ts",
   "scripts": {
     "build": "rm -rf build/ && npm run compile && npm run copy-files",
