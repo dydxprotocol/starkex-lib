@@ -32,7 +32,7 @@ import {
   stripHexPrefix,
 } from '../lib/util';
 
-import { StarkSignable, SignableOrder, SignableWithdrawal, SignableConditionalTransfer } from '../signable';
+import { StarkSignable, SignableOrder, SignableWithdrawal, SignableConditionalTransfer, SignableTransfer } from '../signable';
 
 import {
   OrderWithClientId,
@@ -259,6 +259,24 @@ export class StarkHelper {
     };
 
     const signable = SignableConditionalTransfer.fromTransfer(transfer, _networkId);
+    return signable.signSync(privateKey);
+  }
+
+  public signTransfer(senderPositionId: string, receiverPositionId: string,
+    receiverPublicKey: string, humanAmount: string,
+    clientId: string, expirationIsoTimestamp: string, privateKey: string,
+    networkId: string): string {
+    const _networkId: NetworkId = (networkId === '1') ? NetworkId.MAINNET : NetworkId.ROPSTEN;
+    const transfer = {
+      senderPositionId,
+      receiverPositionId,
+      receiverPublicKey,
+      humanAmount,
+      clientId,
+      expirationIsoTimestamp,
+    };
+
+    const signable = SignableTransfer.fromTransfer(transfer, _networkId);
     return signable.signSync(privateKey);
   }
 
