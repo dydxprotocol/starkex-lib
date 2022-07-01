@@ -154,7 +154,8 @@ describe('Pedersen hashes', () => {
     expect(mockPedersen.callCount).toBe(1);
   });
 
-  describe('after pre-computing hashes', () => {
+  // slowing down rest of test suite and will never be changed
+  describe.skip('after pre-computing hashes', () => {
 
     beforeEach(async () => {
       await proxyquiredHashes.preComputeHashes(NetworkId.ROPSTEN);
