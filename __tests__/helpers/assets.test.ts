@@ -9,8 +9,8 @@ import {
   COLLATERAL_ASSET_ID_BY_NETWORK_ID,
 } from '../../src/constants';
 import {
-  DydxAsset,
-  DydxMarket,
+  Flash1Asset,
+  Flash1Market,
   NetworkId,
   StarkwareOrderSide,
 } from '../../src/types';
@@ -31,13 +31,13 @@ describe('assets helpers', () => {
 
     it('converts a number of quantums to a human-readable amount', () => {
       expect(
-        fromQuantums('1000', DydxAsset.ETH),
+        fromQuantums('1000', Flash1Asset.ETH),
       ).toBe('0.000001');
     });
 
     it('throws if the asset is unknown', () => {
       expect(() => {
-        fromQuantums('1000', 'UNKNOWN' as DydxAsset);
+        fromQuantums('1000', 'UNKNOWN' as Flash1Asset);
       }).toThrow('Unknown asset');
     });
   });
@@ -47,7 +47,7 @@ describe('assets helpers', () => {
     it('converts order params to Starkware order params', () => {
       expect(
         getStarkwareAmounts({
-          market: DydxMarket.BTC_USD,
+          market: Flash1Market.BTC_USD,
           side: StarkwareOrderSide.SELL,
           humanSize: '250.0000000001',
           humanPrice: '1.23456789',
@@ -55,7 +55,7 @@ describe('assets helpers', () => {
       ).toStrictEqual({
         quantumsAmountSynthetic: '2500000000001',
         quantumsAmountCollateral: '308641972',
-        assetIdSynthetic: SYNTHETIC_ASSET_ID_MAP[DydxAsset.BTC],
+        assetIdSynthetic: SYNTHETIC_ASSET_ID_MAP[Flash1Asset.BTC],
         assetIdCollateral: COLLATERAL_ASSET_ID_BY_NETWORK_ID[NetworkId.ROPSTEN],
         isBuyingSynthetic: false,
       });
@@ -64,7 +64,7 @@ describe('assets helpers', () => {
     it('converts order params with a quote amount instead of price', () => {
       expect(
         getStarkwareAmounts({
-          market: DydxMarket.BTC_USD,
+          market: Flash1Market.BTC_USD,
           side: StarkwareOrderSide.SELL,
           humanSize: '250.0000000001',
           humanQuoteAmount: '308.641972',
@@ -72,7 +72,7 @@ describe('assets helpers', () => {
       ).toStrictEqual({
         quantumsAmountSynthetic: '2500000000001',
         quantumsAmountCollateral: '308641972',
-        assetIdSynthetic: SYNTHETIC_ASSET_ID_MAP[DydxAsset.BTC],
+        assetIdSynthetic: SYNTHETIC_ASSET_ID_MAP[Flash1Asset.BTC],
         assetIdCollateral: COLLATERAL_ASSET_ID_BY_NETWORK_ID[NetworkId.ROPSTEN],
         isBuyingSynthetic: false,
       });
@@ -81,7 +81,7 @@ describe('assets helpers', () => {
     it('throws if the order size is not a multiple of the Starkware quantum', () => {
       expect(() => {
         getStarkwareAmounts({
-          market: DydxMarket.BTC_USD,
+          market: Flash1Market.BTC_USD,
           side: StarkwareOrderSide.SELL,
           humanSize: '250.00000000001',
           humanPrice: '1.23456789',
@@ -92,7 +92,7 @@ describe('assets helpers', () => {
     it('throws if the quote amount is given and is not a multiple of the Starkware quantum', () => {
       expect(() => {
         getStarkwareAmounts({
-          market: DydxMarket.BTC_USD,
+          market: Flash1Market.BTC_USD,
           side: StarkwareOrderSide.SELL,
           humanSize: '250.0000000001',
           humanQuoteAmount: '308.6419721',
@@ -105,13 +105,13 @@ describe('assets helpers', () => {
 
     it('converts a human readable amount to an integer number of quantums', () => {
       expect(
-        toQuantumsExact('12.0000003', DydxAsset.LINK),
+        toQuantumsExact('12.0000003', Flash1Asset.LINK),
       ).toBe('120000003');
     });
 
     it('throws if the amount does not divide evenly by the quantum size', () => {
       expect(() => {
-        toQuantumsExact('12.00000031', DydxAsset.LINK);
+        toQuantumsExact('12.00000031', Flash1Asset.LINK);
       }).toThrow('not a multiple of the quantum size');
     });
   });
@@ -120,13 +120,13 @@ describe('assets helpers', () => {
 
     it('converts a human readable amount to an integer number of quantums', () => {
       expect(
-        toQuantumsRoundDown('12.0000003', DydxAsset.LINK),
+        toQuantumsRoundDown('12.0000003', Flash1Asset.LINK),
       ).toBe('120000003');
     });
 
     it('rounds down if the amount does not divide evenly by the quantum size', () => {
       expect(
-        toQuantumsRoundDown('12.00000031', DydxAsset.LINK),
+        toQuantumsRoundDown('12.00000031', Flash1Asset.LINK),
       ).toBe('120000003');
     });
   });
@@ -135,13 +135,13 @@ describe('assets helpers', () => {
 
     it('converts a human readable amount to an integer number of quantums', () => {
       expect(
-        toQuantumsRoundUp('12.0000003', DydxAsset.LINK),
+        toQuantumsRoundUp('12.0000003', Flash1Asset.LINK),
       ).toBe('120000003');
     });
 
     it('rounds up if the amount does not divide evenly by the quantum size', () => {
       expect(
-        toQuantumsRoundUp('12.00000031', DydxAsset.LINK),
+        toQuantumsRoundUp('12.00000031', Flash1Asset.LINK),
       ).toBe('120000004');
     });
   });

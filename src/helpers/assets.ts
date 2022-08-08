@@ -14,10 +14,10 @@ import {
 import {
   WithPrice,
   WithQuoteAmount,
-  DydxAsset,
+  Flash1Asset,
   StarkwareOrderSide,
   StarkwareAmounts,
-  DydxMarket,
+  Flash1Market,
   NetworkId,
 } from '../types';
 
@@ -28,7 +28,7 @@ import {
  */
 export function toQuantumsExact(
   humanAmount: string,
-  asset: DydxAsset,
+  asset: Flash1Asset,
 ): string {
   return toQuantumsHelper(humanAmount, asset, RoundingMode.RoundDown, true);
 }
@@ -40,7 +40,7 @@ export function toQuantumsExact(
  */
 export function toQuantumsRoundDown(
   humanAmount: string,
-  asset: DydxAsset,
+  asset: Flash1Asset,
 ): string {
   return toQuantumsHelper(humanAmount, asset, RoundingMode.RoundDown, false);
 }
@@ -52,14 +52,14 @@ export function toQuantumsRoundDown(
  */
 export function toQuantumsRoundUp(
   humanAmount: string,
-  asset: DydxAsset,
+  asset: Flash1Asset,
 ): string {
   return toQuantumsHelper(humanAmount, asset, RoundingMode.RoundUp, false);
 }
 
 function toQuantumsHelper(
   humanAmount: string,
-  asset: DydxAsset,
+  asset: Flash1Asset,
   rm: RoundingMode,
   assertIntegerResult: boolean,
 ): string {
@@ -79,11 +79,11 @@ function toQuantumsHelper(
  *
  * Example:
  *   Suppose the quantum size in Starkware for synthetic ETH is 10^10 (10 Gwei).
- *   Then fromQuantums(1000, DydxAsset.ETH), representing 10,000 Gwei, returns a value of 0.00001.
+ *   Then fromQuantums(1000, Flash1Asset.ETH), representing 10,000 Gwei, returns a value of 0.00001.
  */
 export function fromQuantums(
   quantumAmount: string,
-  asset: DydxAsset,
+  asset: Flash1Asset,
 ): string {
   const quantumSize = ASSET_QUANTUM_SIZE[asset];
   if (!quantumSize) {
@@ -99,7 +99,7 @@ export function fromQuantums(
  */
 export function getStarkwareAmounts(
   params: {
-    market: DydxMarket,
+    market: Flash1Market,
     side: StarkwareOrderSide,
     humanSize: string,
   } & (WithPrice | WithQuoteAmount),

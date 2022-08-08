@@ -24,7 +24,7 @@ import {
 } from '../../src/signable/withdrawal';
 import {
   ConditionalTransferParams,
-  DydxMarket,
+  Flash1Market,
   NetworkId,
   OrderWithClientId,
   StarkwareOrderSide,
@@ -58,7 +58,7 @@ const mockOrder: OrderWithClientId = {
   positionId: '12345',
   humanSize: '145.0005',
   limitFee: '0.125',
-  market: DydxMarket.ETH_USD,
+  market: Flash1Market.ETH_USD,
   side: StarkwareOrderSide.BUY,
   expirationIsoTimestamp: '2020-09-17T04:15:55.028Z',
   humanPrice: '350.00067',

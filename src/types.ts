@@ -14,122 +14,30 @@ export enum StarkwareOrderSide {
   BUY = 'BUY',
   SELL = 'SELL',
 }
-
-// TODO: De-dup with other definitions.
-export enum DydxMarket {
-  BTC_USD = 'BTC-USD',
-  ETH_USD = 'ETH-USD',
-  LINK_USD = 'LINK-USD',
-  AAVE_USD = 'AAVE-USD',
-  UNI_USD = 'UNI-USD',
-  SUSHI_USD = 'SUSHI-USD',
-  SOL_USD = 'SOL-USD',
-  YFI_USD = 'YFI-USD',
-  ONEINCH_USD = '1INCH-USD',
-  AVAX_USD = 'AVAX-USD',
-  SNX_USD = 'SNX-USD',
-  CRV_USD = 'CRV-USD',
-  UMA_USD = 'UMA-USD',
-  DOT_USD = 'DOT-USD',
-  DOGE_USD = 'DOGE-USD',
-  MATIC_USD = 'MATIC-USD',
-  MKR_USD = 'MKR-USD',
-  FIL_USD = 'FIL-USD',
-  ADA_USD = 'ADA-USD',
-  ATOM_USD = 'ATOM-USD',
-  COMP_USD = 'COMP-USD',
-  BCH_USD = 'BCH-USD',
-  LTC_USD = 'LTC-USD',
-  EOS_USD = 'EOS-USD',
-  ALGO_USD = 'ALGO-USD',
-  ZRX_USD = 'ZRX-USD',
-  XMR_USD = 'XMR-USD',
-  ZEC_USD = 'ZEC-USD',
-  ENJ_USD = 'ENJ-USD',
-  ETC_USD = 'ETC-USD',
-  XLM_USD = 'XLM-USD',
-  TRX_USD = 'TRX-USD',
-  XTZ_USD = 'XTZ-USD',
-  HNT_USD = 'HNT-USD',
-  ICP_USD = 'ICP-USD',
-  RUNE_USD = 'RUNE-USD',
-  LUNA_USD = 'LUNA-USD',
-  NEAR_USD = 'NEAR-USD',
-  AR_USD = 'AR-USD',
-  FLOW_USD = 'FLOW-USD',
-  PERP_USD = 'PERP-USD',
-  REN_USD = 'REN-USD',
-  CELO_USD = 'CELO-USD',
-  KSM_USD = 'KSM-USD',
-  BAL_USD = 'BAL-USD',
-  BNT_USD = 'BNT-USD',
-  MIR_USD = 'MIR-USD',
-  SRM_USD = 'SRM-USD',
-  LON_USD = 'LON-USD',
-  DODO_USD = 'DODO-USD',
-  ALPHA_USD = 'ALPHA-USD',
-  WNXM_USD = 'WNXM-USD',
-  XCH_USD = 'XCH-USD',
+export declare enum Flash1Market {
+  BTC_USD = "BTC-USD",
+  ETH_USD = "ETH-USD",
+  BCH_USD = "BCH-USD",
+  SOL_USD = "SOL-USD",
+  DOGE_USD = "DOGE-USD",
+  TRX_USD = "TRX-USD",
+  ADA_USD = "ADA-USD",
+  DOT_USD = "DOT-USD",
+  AVAX_USD = "AVAX-USD"
 }
-
-export enum DydxAsset {
-  USDC = 'USDC',
-  BTC = 'BTC',
-  ETH = 'ETH',
-  LINK = 'LINK',
-  AAVE = 'AAVE',
-  UNI = 'UNI',
-  SUSHI = 'SUSHI',
-  SOL = 'SOL',
-  YFI = 'YFI',
-  ONEINCH = '1INCH',
-  AVAX = 'AVAX',
-  SNX = 'SNX',
-  CRV = 'CRV',
-  UMA = 'UMA',
-  DOT = 'DOT',
-  DOGE = 'DOGE',
-  MATIC = 'MATIC',
-  MKR = 'MKR',
-  FIL = 'FIL',
-  ADA = 'ADA',
-  ATOM = 'ATOM',
-  COMP = 'COMP',
-  BCH = 'BCH',
-  LTC = 'LTC',
-  EOS = 'EOS',
-  ALGO = 'ALGO',
-  ZRX = 'ZRX',
-  XMR = 'XMR',
-  ZEC = 'ZEC',
-  ENJ = 'ENJ',
-  ETC = 'ETC',
-  XLM = 'XLM',
-  TRX = 'TRX',
-  XTZ = 'XTZ',
-  HNT = 'HNT',
-  ICP = 'ICP',
-  RUNE = 'RUNE',
-  LUNA = 'LUNA',
-  NEAR = 'NEAR',
-  AR = 'AR',
-  FLOW = 'FLOW',
-  PERP = 'PERP',
-  REN = 'REN',
-  CELO = 'CELO',
-  KSM = 'KSM',
-  BAL = 'BAL',
-  BNT = 'BNT',
-  MIR = 'MIR',
-  SRM = 'SRM',
-  LON = 'LON',
-  DODO = 'DODO',
-  ALPHA = 'ALPHA',
-  WNXM = 'WNXM',
-  XCH = 'XCH',
+export declare enum Flash1Asset {
+  USDC = "USDC",
+  BTC = "BTC",
+  ETH = "ETH",
+  BCH = "BCH",
+  SOL = "SOL",
+  DOGE = "DOGE",
+  TRX = "TRX",
+  ADA = "ADA",
+  DOT = "DOT",
+  AVAX = "AVAX"
 }
-
-export type SyntheticAsset = Exclude<DydxAsset, DydxAsset.USDC>;
+export declare type SyntheticAsset = Exclude<Flash1Asset, Flash1Asset.USDC>;
 
 // Key pair, represented as hex strings, no 0x prefix.
 export interface KeyPair {
@@ -215,7 +123,7 @@ interface OrderParamsBase {
   positionId: string;
   humanSize: string;
   limitFee: string; // Max fee fraction, e.g. 0.01 is a max 1% fee.
-  market: DydxMarket;
+  market: Flash1Market;
   side: StarkwareOrderSide;
   expirationIsoTimestamp: string;
 }
@@ -277,7 +185,7 @@ export interface OraclePriceWithAssetName {
 }
 
 export interface OraclePriceWithMarket {
-  market: DydxMarket;
+  market: Flash1Market;
   oracleName: string;
   humanPrice: string;
   isoTimestamp: string;
