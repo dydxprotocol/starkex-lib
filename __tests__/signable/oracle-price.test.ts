@@ -6,7 +6,7 @@ import expect from 'expect';
 import _ from 'lodash';
 
 import {
-  DydxMarket,
+  Flash1Market,
   KeyPair,
   NetworkId,
   OraclePriceWithMarket,
@@ -24,7 +24,7 @@ const mockKeyPair: KeyPair = {
   privateKey: '178047D3869489C055D7EA54C014FFB834A069C9595186ABE04EA4D1223A03F',
 };
 const mockOraclePrice: OraclePriceWithMarket = {
-  market: DydxMarket.BTC_USD,
+  market: Flash1Market.BTC_USD,
   oracleName: 'dYdX',
   humanPrice: '11512.34',
   isoTimestamp: '2020-01-01T00:00:00.000Z',
@@ -88,7 +88,7 @@ describe('SignableOraclePrice', () => {
     it('generates a different signature when the market is different', async () => {
       const oraclePrice: OraclePriceWithMarket = {
         ...mockOraclePrice,
-        market: DydxMarket.ETH_USD,
+        market: Flash1Market.ETH_USD,
       };
       const signature = await SignableOraclePrice
         .fromPriceWithMarket(oraclePrice, NetworkId.ROPSTEN)

@@ -1,10 +1,10 @@
-import { DydxAsset, DydxMarket } from '../src/types';
+import { Flash1Asset, Flash1Market } from '../src/types';
 import { ASSET_RESOLUTION, SYNTHETIC_ASSET_MAP } from '../src/constants';
 import expect from 'expect';
 
-describe('DydxMarket', () => {
-  const cases = Object.entries(DydxMarket); // returns[[ 'BTC_USD', 'BTC-USD' ], ...]
-  const edgeCases = [DydxMarket.ONEINCH_USD]; // handle non-matching left-hand component
+describe('Flash1Market', () => {
+  const cases = Object.entries(Flash1Market); // returns[[ 'BTC_USD', 'BTC-USD' ], ...]
+  const edgeCases = [Flash1Market.ONEINCH_USD]; // handle non-matching left-hand component
   it('correctly maps enum values', () => {
     cases.filter(([_, v]) => !edgeCases.includes(v)).forEach(([k, v]) => {
       const enumKeyParts = k.split('_');
@@ -28,8 +28,8 @@ describe('DydxMarket', () => {
 });
 
 describe('SYNTHETIC_ASSET_MAP', () => {
-  it('contains all assets in DydxMarket', () => {
-    expect(Object.keys(SYNTHETIC_ASSET_MAP)).toEqual(Object.values(DydxMarket));
+  it('contains all assets in Flash1Market', () => {
+    expect(Object.keys(SYNTHETIC_ASSET_MAP)).toEqual(Object.values(Flash1Market));
   });
 
   it('contains all markets in TOTAL_CORE_MARKETS_ARRAY', () => {
@@ -37,8 +37,8 @@ describe('SYNTHETIC_ASSET_MAP', () => {
     expect(Object.values(SYNTHETIC_ASSET_MAP).every((x) => assets.includes(x))).toBeTruthy();
   });
 
-  it('contains all assets in DydxAsset', () => {
-    const assets = Object.values(DydxAsset).filter((x) => x !== DydxAsset.USDC);
+  it('contains all assets in Flash1Asset', () => {
+    const assets = Object.values(Flash1Asset).filter((x) => x !== Flash1Asset.USDC);
     expect(Object.values(SYNTHETIC_ASSET_MAP)).toEqual(assets);
   });
 });

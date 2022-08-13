@@ -6,7 +6,7 @@ import expect from 'expect';
 
 import {
   SYNTHETIC_ASSET_ID_MAP,
-  DydxAsset,
+  Flash1Asset,
   COLLATERAL_ASSET_ID_BY_NETWORK_ID,
   NetworkId,
 } from '../src';
@@ -23,8 +23,8 @@ describe('Constants', () => {
   });
 
   it('generates the expected synthetic asset IDs', () => {
-    expect(SYNTHETIC_ASSET_ID_MAP[DydxAsset.BTC]).toBe('0x4254432d3130000000000000000000');
-    expect(SYNTHETIC_ASSET_ID_MAP[DydxAsset.ETH]).toBe('0x4554482d3900000000000000000000');
-    expect(SYNTHETIC_ASSET_ID_MAP[DydxAsset.LINK]).toBe('0x4c494e4b2d37000000000000000000');
+    expect(SYNTHETIC_ASSET_ID_MAP[Flash1Asset.BTC]).toBe('0x4254432d3130000000000000000000');
+    expect(SYNTHETIC_ASSET_ID_MAP[Flash1Asset.ETH]).toBe('0x4554482d3900000000000000000000');
+    // expect(SYNTHETIC_ASSET_ID_MAP[Flash1Asset.LINK]).toBe('0x4c494e4b2d37000000000000000000');
   });
 });
