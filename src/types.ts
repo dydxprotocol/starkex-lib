@@ -4,6 +4,7 @@ import elliptic from 'elliptic';
 export enum NetworkId {
   MAINNET = 1,
   ROPSTEN = 3,
+  GOERLI = 5
 }
 
 export enum StarkwareOrderType {
@@ -14,30 +15,33 @@ export enum StarkwareOrderSide {
   BUY = 'BUY',
   SELL = 'SELL',
 }
-export declare enum Flash1Market {
-  BTC_USD = "BTC-USD",
-  ETH_USD = "ETH-USD",
-  BCH_USD = "BCH-USD",
-  SOL_USD = "SOL-USD",
-  DOGE_USD = "DOGE-USD",
-  TRX_USD = "TRX-USD",
-  ADA_USD = "ADA-USD",
-  DOT_USD = "DOT-USD",
-  AVAX_USD = "AVAX-USD"
+export enum Flash1Market {
+  BTC_USD = 'BTC-USD',
+  ETH_USD = 'ETH-USD',
+  BCH_USD = 'BCH-USD',
+  SOL_USD = 'SOL-USD',
+  DOGE_USD = 'DOGE-USD',
+  TRX_USD = 'TRX-USD',
+  ADA_USD = 'ADA-USD',
+  DOT_USD = 'DOT-USD',
+  AVAX_USD = 'AVAX-USD',
+  ONEINCH_USD = '1INCH-USD',
 }
-export declare enum Flash1Asset {
-  USDC = "USDC",
-  BTC = "BTC",
-  ETH = "ETH",
-  BCH = "BCH",
-  SOL = "SOL",
-  DOGE = "DOGE",
-  TRX = "TRX",
-  ADA = "ADA",
-  DOT = "DOT",
-  AVAX = "AVAX"
+export enum Flash1Asset {
+  USDC = 'USDC',
+  BTC = 'BTC',
+  ETH = 'ETH',
+  BCH = 'BCH',
+  SOL = 'SOL',
+  DOGE = 'DOGE',
+  TRX = 'TRX',
+  ADA = 'ADA',
+  DOT = 'DOT',
+  AVAX = 'AVAX',
+  LINK = 'LINK',
+  ONEINCH = '1INCH',
 }
-export declare type SyntheticAsset = Exclude<Flash1Asset, Flash1Asset.USDC>;
+export type SyntheticAsset = Exclude<Flash1Asset, Flash1Asset.USDC>;
 
 // Key pair, represented as hex strings, no 0x prefix.
 export interface KeyPair {

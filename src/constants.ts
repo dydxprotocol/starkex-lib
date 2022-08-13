@@ -27,6 +27,7 @@ export const SYNTHETIC_ASSET_MAP: Record<Flash1Market, SyntheticAsset> = {
   [Flash1Market.ADA_USD]: Flash1Asset.ADA,
   [Flash1Market.BCH_USD]: Flash1Asset.BCH,
   [Flash1Market.TRX_USD]: Flash1Asset.TRX,
+  [Flash1Market.ONEINCH_USD]: Flash1Asset.ONEINCH,
 
   /*
       The following markets are not available yet
@@ -94,6 +95,8 @@ export const ASSET_RESOLUTION: Record<Flash1Asset, number> = {
   [Flash1Asset.ADA]: 6,
   [Flash1Asset.BCH]: 8,
   [Flash1Asset.TRX]: 4,
+  [Flash1Asset.LINK]: 7,
+  [Flash1Asset.ONEINCH]: 7,
 
   /*
       The following markets are not available yet
@@ -146,8 +149,9 @@ export const ASSET_RESOLUTION: Record<Flash1Asset, number> = {
 };
 
 export const COLLATERAL_ASSET_ADDRESS_BY_NETWORK: Record<NetworkId, string> = {
-  [NetworkId.MAINNET]: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-  [NetworkId.ROPSTEN]: '0x8707a5bf4c2842d46b31a405ba41b858c0f876c4',
+  [NetworkId.MAINNET]: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // TODO: change when we know what it is
+  [NetworkId.GOERLI]: '0xd44BB808bfE43095dBb94c83077766382D63952a',
+  [NetworkId.ROPSTEN]: '0x8707a5bf4c2842d46b31a405ba41b858c0f876c4', // TODO: remove
 };
 
 export const COLLATERAL_ASSET_ID_BY_NETWORK_ID: Record<NetworkId, string> = _.mapValues(
