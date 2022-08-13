@@ -11,10 +11,10 @@ then
     
     echo "Committing to GitHub"
 	git config credential.helper 'cache --timeout=120'
-	git config user.email "circleci@flash1.com"
-	git config user.name "CircleCI Job"
+	git config user.email "github@flash1.com"
+	git config user.name "Actions Job"
 	git add .
-	git commit --allow-empty -m "[skip ci] Publish to NPM via CircleCI"
+	git commit --allow-empty -m "[skip ci] Publish to NPM via Github Actions"
 
     # Get version and tag
     git tag v${VERSION}

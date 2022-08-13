@@ -21,7 +21,7 @@
     "type": "git",
     "url": "git+https://github.com/flash1-dev/starkex-lib.git"
   },
-  "author": "dYdX Trading Inc.",
+  "author": "Flash1 Exchange & dYdX",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/flash1-dev/starkex-lib/issues"
