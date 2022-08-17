@@ -105,13 +105,13 @@ describe('assets helpers', () => {
 
     it('converts a human readable amount to an integer number of quantums', () => {
       expect(
-        toQuantumsExact('12.0000003', Flash1Asset.LINK),
-      ).toBe('120000003');
+        toQuantumsExact('12.0000003', Flash1Asset.BTC),
+      ).toBe('120000003000');
     });
 
     it('throws if the amount does not divide evenly by the quantum size', () => {
       expect(() => {
-        toQuantumsExact('12.00000031', Flash1Asset.LINK);
+        toQuantumsExact('12.00000000031', Flash1Asset.BTC);
       }).toThrow('not a multiple of the quantum size');
     });
   });
@@ -120,14 +120,14 @@ describe('assets helpers', () => {
 
     it('converts a human readable amount to an integer number of quantums', () => {
       expect(
-        toQuantumsRoundDown('12.0000003', Flash1Asset.LINK),
-      ).toBe('120000003');
+        toQuantumsRoundDown('12.0000003', Flash1Asset.BTC),
+      ).toBe('120000003000');
     });
 
     it('rounds down if the amount does not divide evenly by the quantum size', () => {
       expect(
-        toQuantumsRoundDown('12.00000031', Flash1Asset.LINK),
-      ).toBe('120000003');
+        toQuantumsRoundDown('12.00000031', Flash1Asset.BTC),
+      ).toBe('120000003100');
     });
   });
 
@@ -135,14 +135,14 @@ describe('assets helpers', () => {
 
     it('converts a human readable amount to an integer number of quantums', () => {
       expect(
-        toQuantumsRoundUp('12.0000003', Flash1Asset.LINK),
-      ).toBe('120000003');
+        toQuantumsRoundUp('12.0000003', Flash1Asset.BTC),
+      ).toBe('120000003000');
     });
 
     it('rounds up if the amount does not divide evenly by the quantum size', () => {
       expect(
-        toQuantumsRoundUp('12.00000031', Flash1Asset.LINK),
-      ).toBe('120000004');
+        toQuantumsRoundUp('12.00000031', Flash1Asset.BTC),
+      ).toBe('120000003100');
     });
   });
 
