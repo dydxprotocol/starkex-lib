@@ -4,7 +4,7 @@ import expect from 'expect';
 
 describe('Flash1Market', () => {
   const cases = Object.entries(Flash1Market); // returns[[ 'BTC_USD', 'BTC-USD' ], ...]
-  const edgeCases = [Flash1Market.ONEINCH_USD]; // handle non-matching left-hand component
+  const edgeCases = [Flash1Market.BTC_USD]; // handle non-matching left-hand component
   it('correctly maps enum values', () => {
     cases.filter(([_, v]) => !edgeCases.includes(v)).forEach(([k, v]) => {
       const enumKeyParts = k.split('_');

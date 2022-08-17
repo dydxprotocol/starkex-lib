@@ -20,19 +20,18 @@ export const SYNTHETIC_ASSETS = _.without(ALL_ASSETS, COLLATERAL_ASSET) as Synth
 export const SYNTHETIC_ASSET_MAP: Record<Flash1Market, SyntheticAsset> = {
   [Flash1Market.BTC_USD]: Flash1Asset.BTC,
   [Flash1Market.ETH_USD]: Flash1Asset.ETH,
-  [Flash1Market.SOL_USD]: Flash1Asset.SOL,
-  [Flash1Market.AVAX_USD]: Flash1Asset.AVAX,
-  [Flash1Market.DOT_USD]: Flash1Asset.DOT,
-  [Flash1Market.DOGE_USD]: Flash1Asset.DOGE,
-  [Flash1Market.ADA_USD]: Flash1Asset.ADA,
-  [Flash1Market.BCH_USD]: Flash1Asset.BCH,
-  [Flash1Market.TRX_USD]: Flash1Asset.TRX,
-  [Flash1Market.ONEINCH_USD]: Flash1Asset.ONEINCH,
 
   /*
       The following markets are not available yet
   */
-
+  // [Flash1Market.SOL_USD]: Flash1Asset.SOL,
+  // [Flash1Market.AVAX_USD]: Flash1Asset.AVAX,
+  // [Flash1Market.DOT_USD]: Flash1Asset.DOT,
+  // [Flash1Market.DOGE_USD]: Flash1Asset.DOGE,
+  // [Flash1Market.ADA_USD]: Flash1Asset.ADA,
+  // [Flash1Market.BCH_USD]: Flash1Asset.BCH,
+  // [Flash1Market.TRX_USD]: Flash1Asset.TRX,
+  // [Flash1Market.ONEINCH_USD]: Flash1Asset.ONEINCH,
   // [Flash1Market.LINK_USD]: Flash1Asset.LINK,
   // [Flash1Market.AAVE_USD]: Flash1Asset.AAVE,
   // [Flash1Market.UNI_USD]: Flash1Asset.UNI,
@@ -88,20 +87,19 @@ export const ASSET_RESOLUTION: Record<Flash1Asset, number> = {
   [Flash1Asset.USDC]: 6,
   [Flash1Asset.BTC]: 10,
   [Flash1Asset.ETH]: 9,
-  [Flash1Asset.SOL]: 7,
-  [Flash1Asset.AVAX]: 7,
-  [Flash1Asset.DOT]: 7,
-  [Flash1Asset.DOGE]: 5,
-  [Flash1Asset.ADA]: 6,
-  [Flash1Asset.BCH]: 8,
-  [Flash1Asset.TRX]: 4,
-  [Flash1Asset.LINK]: 7,
-  [Flash1Asset.ONEINCH]: 7,
 
   /*
       The following markets are not available yet
   */
-
+  // [Flash1Asset.SOL]: 7,
+  // [Flash1Asset.AVAX]: 7,
+  // [Flash1Asset.DOT]: 7,
+  // [Flash1Asset.DOGE]: 5,
+  // [Flash1Asset.ADA]: 6,
+  // [Flash1Asset.BCH]: 8,
+  // [Flash1Asset.TRX]: 4,
+  // [Flash1Asset.LINK]: 7,
+  // [Flash1Asset.ONEINCH]: 7,
   // [Flash1Asset.LINK]: 7,
   // [Flash1Asset.AAVE]: 8,
   // [Flash1Asset.UNI]: 7,
@@ -167,6 +165,7 @@ export const SYNTHETIC_ASSET_ID_MAP: Record<SyntheticAsset, string> = _.chain(SY
   .mapValues(makeSyntheticAssetId)
   .value() as Record<SyntheticAsset, string>;
 
+SYNTHETIC_ASSET_ID_MAP[Flash1Asset.BTC] = '0x4254432d3130000000000000000000';
 /**
  * The smallest unit of the asset in the Starkware system, represented in canonical (human) units.
  */

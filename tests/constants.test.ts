@@ -25,6 +25,5 @@ describe('Constants', () => {
   it('generates the expected synthetic asset IDs', () => {
     expect(SYNTHETIC_ASSET_ID_MAP[Flash1Asset.BTC]).toBe('0x4254432d3130000000000000000000');
     expect(SYNTHETIC_ASSET_ID_MAP[Flash1Asset.ETH]).toBe('0x4554482d3900000000000000000000');
-    // expect(SYNTHETIC_ASSET_ID_MAP[Flash1Asset.LINK]).toBe('0x4c494e4b2d37000000000000000000');
   });
 });

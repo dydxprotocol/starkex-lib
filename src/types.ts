@@ -18,28 +18,28 @@ export enum StarkwareOrderSide {
 export enum Flash1Market {
   BTC_USD = 'BTC-USD',
   ETH_USD = 'ETH-USD',
-  BCH_USD = 'BCH-USD',
-  SOL_USD = 'SOL-USD',
-  DOGE_USD = 'DOGE-USD',
-  TRX_USD = 'TRX-USD',
-  ADA_USD = 'ADA-USD',
-  DOT_USD = 'DOT-USD',
-  AVAX_USD = 'AVAX-USD',
-  ONEINCH_USD = '1INCH-USD',
+  // BCH_USD = 'BCH-USD',
+  // SOL_USD = 'SOL-USD',
+  // DOGE_USD = 'DOGE-USD',
+  // TRX_USD = 'TRX-USD',
+  // ADA_USD = 'ADA-USD',
+  // DOT_USD = 'DOT-USD',
+  // AVAX_USD = 'AVAX-USD',
+  // ONEINCH_USD = '1INCH-USD',
 }
 export enum Flash1Asset {
   USDC = 'USDC',
   BTC = 'BTC',
   ETH = 'ETH',
-  BCH = 'BCH',
-  SOL = 'SOL',
-  DOGE = 'DOGE',
-  TRX = 'TRX',
-  ADA = 'ADA',
-  DOT = 'DOT',
-  AVAX = 'AVAX',
-  LINK = 'LINK',
-  ONEINCH = '1INCH',
+  // BCH = 'BCH',
+  // SOL = 'SOL',
+  // DOGE = 'DOGE',
+  // TRX = 'TRX',
+  // ADA = 'ADA',
+  // DOT = 'DOT',
+  // AVAX = 'AVAX',
+  // LINK = 'LINK',
+  // ONEINCH = '1INCH',
 }
 export type SyntheticAsset = Exclude<Flash1Asset, Flash1Asset.USDC>;
 
@@ -116,7 +116,7 @@ export interface StarkwareTransfer {
   expirationEpochHours: number;
 }
 
-export interface StarkwareConditionalTransfer extends StarkwareTransfer{
+export interface StarkwareConditionalTransfer extends StarkwareTransfer {
   condition: string;
 }
 
