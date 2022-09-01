@@ -46,12 +46,12 @@ const mockOrder: OrderWithClientId = {
   clientId: 'This is an ID that the client came up with to describe this order',
 };
 const mockSignature = (
-  '00cecbe513ecdbf782cd02b2a5efb03e58d5f63d15f2b840e9bc0029af04e8dd' +
-  '0090b822b16f50b2120e4ea9852b340f7936ff6069d02acca02f2ed03029ace5'
+  '07670488d9d2c6ff980ca86e6d05b89414de0f2bfd462a1058fb05add68d034a' +
+  '036268ae33e8e21d324e975678f56b66dacb2502a7de1512a46b96fc0e106f79'
 );
 const mockSignatureEvenY = (
-  '00fc0756522d78bef51f70e3981dc4d1e82273f59cdac6bc31c5776baabae6ec' +
-  '0158963bfd45d88a99fb2d6d72c9bbcf90b24c3c0ef2394ad8d05f9d3983443a'
+  '0618bcd2a8a027cf407116f88f2fa0d866154ee421cdf8a9deca0fecfda5277b' +
+  '03e42fa1d039522fc77c23906253e537cc5b2f392dba6f2dbb35d51cbe37273a'
 );
 
 describe('SignableOrder', () => {
@@ -60,31 +60,31 @@ describe('SignableOrder', () => {
 
     it('returns true for a valid signature (odd y)', async () => {
       const result = await SignableOrder
-        .fromOrder(mockOrder, NetworkId.ROPSTEN)
+        .fromOrder(mockOrder, NetworkId.GOERLI)
         .verifySignature(mockSignature, mockKeyPair.publicKey);
       expect(result).toBe(true);
     });
 
     it('returns true for a valid signature (odd y), with y-coordinate provided', async () => {
       const result = await SignableOrder
-        .fromOrder(mockOrder, NetworkId.ROPSTEN)
+        .fromOrder(mockOrder, NetworkId.GOERLI)
         .verifySignature(mockSignature, mockKeyPair.publicKey, mockKeyPairPublicYCoordinate);
       expect(result).toBe(true);
     });
 
     it('returns true for a valid signature (even y)', async () => {
       const result = await SignableOrder
-        .fromOrder(mockOrder, NetworkId.ROPSTEN)
+        .fromOrder(mockOrder, NetworkId.GOERLI)
         .verifySignature(mockSignatureEvenY, mockKeyPairEvenY.publicKey);
       expect(result).toBe(true);
     });
 
     it('returns false for an invalid signature', async () => {
       // Mutate a single character in r.
-      await Promise.all(_.range(1, 4).map(async (i) => {
+      await Promise.all(_.range(2, 4).map(async (i) => {
         const badSignature: string = mutateHexStringAt(mockSignature, i);
         const result = await SignableOrder
-          .fromOrder(mockOrder, NetworkId.ROPSTEN)
+          .fromOrder(mockOrder, NetworkId.GOERLI)
           .verifySignature(badSignature, mockKeyPair.publicKey);
         expect(result).toBe(false);
       }));
@@ -93,16 +93,16 @@ describe('SignableOrder', () => {
       await Promise.all(_.range(1, 4).map(async (i) => {
         const badSignature: string = mutateHexStringAt(mockSignature, i + 64);
         const result = await SignableOrder
-          .fromOrder(mockOrder, NetworkId.ROPSTEN)
+          .fromOrder(mockOrder, NetworkId.GOERLI)
           .verifySignature(badSignature, mockKeyPair.publicKey);
         expect(result).toBe(false);
       }));
     });
 
     it('returns false for a invalid signature (odd y), with y-coordinate provided', async () => {
-      const badSignature = mutateHexStringAt(mockSignature, 1);
+      const badSignature = mutateHexStringAt(mockSignature, 2);
       const result = await SignableOrder
-        .fromOrder(mockOrder, NetworkId.ROPSTEN)
+        .fromOrder(mockOrder, NetworkId.GOERLI)
         .verifySignature(badSignature, mockKeyPair.publicKey, mockKeyPairPublicYCoordinate);
       expect(result).toBe(false);
     });
@@ -110,7 +110,7 @@ describe('SignableOrder', () => {
     it('returns false if the x-coordinate is invalid, when y-coordinate is provided', async () => {
       const badX = mutateHexStringAt(mockKeyPair.publicKey, 20); // Arbitrary offset.
       const result = await SignableOrder
-        .fromOrder(mockOrder, NetworkId.ROPSTEN)
+        .fromOrder(mockOrder, NetworkId.GOERLI)
         .verifySignature(mockSignature, badX, mockKeyPairPublicYCoordinate);
       expect(result).toBe(false);
     });
@@ -118,7 +118,7 @@ describe('SignableOrder', () => {
     it('returns false if the y-coordinate is invalid', async () => {
       const badY = mutateHexStringAt(mockKeyPairPublicYCoordinate, 20); // Arbitrary offset.
       const result = await SignableOrder
-        .fromOrder(mockOrder, NetworkId.ROPSTEN)
+        .fromOrder(mockOrder, NetworkId.GOERLI)
         .verifySignature(mockSignature, mockKeyPair.publicKey, badY);
       expect(result).toBe(false);
     });
@@ -128,14 +128,14 @@ describe('SignableOrder', () => {
 
     it('signs an order (odd y)', async () => {
       const signature = await SignableOrder
-        .fromOrder(mockOrder, NetworkId.ROPSTEN)
+        .fromOrder(mockOrder, NetworkId.GOERLI)
         .sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
 
     it('signs an order (even y)', async () => {
       const signature = await SignableOrder
-        .fromOrder(mockOrder, NetworkId.ROPSTEN)
+        .fromOrder(mockOrder, NetworkId.GOERLI)
         .sign(mockKeyPairEvenY.privateKey);
       expect(signature).toEqual(mockSignatureEvenY);
     });
@@ -151,7 +151,7 @@ describe('SignableOrder', () => {
         humanQuoteAmount: roundedQuoteAmount,
       };
       const signature = await SignableOrder
-        .fromOrder(orderWithQuoteAmount, NetworkId.ROPSTEN)
+        .fromOrder(orderWithQuoteAmount, NetworkId.GOERLI)
         .sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
@@ -163,7 +163,7 @@ describe('SignableOrder', () => {
         nonce: nonceFromClientId(mockOrder.clientId),
       };
       const signature = await SignableOrder
-        .fromOrderWithNonce(orderWithNonce, NetworkId.ROPSTEN)
+        .fromOrderWithNonce(orderWithNonce, NetworkId.GOERLI)
         .sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
@@ -174,7 +174,7 @@ describe('SignableOrder', () => {
         clientId: `${mockOrder.clientId}!`,
       };
       const signature = await SignableOrder
-        .fromOrder(order, NetworkId.ROPSTEN)
+        .fromOrder(order, NetworkId.GOERLI)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -185,7 +185,7 @@ describe('SignableOrder', () => {
         side: StarkwareOrderSide.SELL,
       };
       const signature = await SignableOrder
-        .fromOrder(order, NetworkId.ROPSTEN)
+        .fromOrder(order, NetworkId.GOERLI)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -196,7 +196,7 @@ describe('SignableOrder', () => {
         positionId: (Number.parseInt(mockOrder.positionId, 10) + 1).toString(),
       };
       const signature = await SignableOrder
-        .fromOrder(order, NetworkId.ROPSTEN)
+        .fromOrder(order, NetworkId.GOERLI)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -206,7 +206,7 @@ describe('SignableOrder', () => {
 
     it('converts human amounts to quantum amounts and converts expiration to hours', () => {
       const starkwareOrder: StarkwareOrder = SignableOrder
-        .fromOrder(mockOrder, NetworkId.ROPSTEN)
+        .fromOrder(mockOrder, NetworkId.GOERLI)
         .toStarkware();
       expect(starkwareOrder.quantumsAmountSynthetic).toBe('145000500000');
       expect(starkwareOrder.quantumsAmountCollateral).toBe('50750272151');
@@ -222,7 +222,7 @@ describe('SignableOrder', () => {
         market: 'FAKE-MARKET' as DydxMarket,
       };
       expect(
-        () => SignableOrder.fromOrder(order, NetworkId.ROPSTEN).toStarkware(),
+        () => SignableOrder.fromOrder(order, NetworkId.GOERLI).toStarkware(),
       ).toThrow('Unknown market');
     });
 
@@ -231,7 +231,7 @@ describe('SignableOrder', () => {
         ...mockOrder,
         expirationIsoTimestamp: '2021-02-24T16:00:00.407Z',
       };
-      const starkwareOrder = SignableOrder.fromOrder(order, NetworkId.ROPSTEN).toStarkware();
+      const starkwareOrder = SignableOrder.fromOrder(order, NetworkId.GOERLI).toStarkware();
       expect(starkwareOrder.expirationEpochHours).toBe(448553);
     });
   });
@@ -240,7 +240,7 @@ describe('SignableOrder', () => {
     // Repeat some number of times.
     await Promise.all(_.range(3).map(async () => {
       const keyPair: KeyPair = generateKeyPairUnsafe();
-      const signableOrder = SignableOrder.fromOrder(mockOrder, NetworkId.ROPSTEN);
+      const signableOrder = SignableOrder.fromOrder(mockOrder, NetworkId.GOERLI);
       const signature = await signableOrder.sign(keyPair.privateKey);
 
       // Expect to be valid when verifying with the right public key.

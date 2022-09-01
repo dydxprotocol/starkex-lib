@@ -138,6 +138,7 @@ export const ASSET_RESOLUTION: Record<DydxAsset, number> = {
 export const COLLATERAL_ASSET_ADDRESS_BY_NETWORK: Record<NetworkId, string> = {
   [NetworkId.MAINNET]: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
   [NetworkId.ROPSTEN]: '0x8707a5bf4c2842d46b31a405ba41b858c0f876c4',
+  [NetworkId.GOERLI]: '0xf7a2fa2c2025ffe64427dd40dc190d47ecc8b36e',
 };
 
 export const COLLATERAL_ASSET_ID_BY_NETWORK_ID: Record<NetworkId, string> = _.mapValues(

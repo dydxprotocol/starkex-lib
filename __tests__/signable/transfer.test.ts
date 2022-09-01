@@ -31,8 +31,8 @@ const mockParams: TransferParams = {
   clientId: 'This is an ID that the client came up with to describe this transfer',
 };
 const mockSignature = (
-  '06b72146028a7f0092557a3a04e9916bd4ae1fba0a4bd92670ef80e2293f7386' +
-  '04c0918a7a8e622e463d40f24984c23fd8bab2cd32980676ba666f55c6efeaf3'
+  '07a64843a0fb9bd455696139f6230d3152d9df2e863d54587f1f8bdbb07eb032' +
+  '0699b82593aa2e02915694ffc39c1001e81337b8fcc73f5b91f73ce5146c50bd'
 );
 
 describe('SignableTransfer', () => {
@@ -40,21 +40,21 @@ describe('SignableTransfer', () => {
   describe('verifySignature()', () => {
 
     it('returns true for a valid signature', async () => {
-      const result = await SignableTransfer.fromTransfer(mockParams, NetworkId.ROPSTEN)
+      const result = await SignableTransfer.fromTransfer(mockParams, NetworkId.GOERLI)
         .verifySignature(mockSignature, mockKeyPair.publicKey);
       expect(result).toBe(true);
     });
 
     it('returns false for an invalid signature', async () => {
       // Mutate a single character in r.
-      const badSignatureR: string = mutateHexStringAt(mockSignature, 1);
-      const result1 = await SignableTransfer.fromTransfer(mockParams, NetworkId.ROPSTEN)
+      const badSignatureR: string = mutateHexStringAt(mockSignature, 2);
+      const result1 = await SignableTransfer.fromTransfer(mockParams, NetworkId.GOERLI)
         .verifySignature(badSignatureR, mockKeyPair.publicKey);
       expect(result1).toBe(false);
 
       // Mutate a single character in s.
       const badSignatureS: string = mutateHexStringAt(mockSignature, 65);
-      const result2 = await SignableTransfer.fromTransfer(mockParams, NetworkId.ROPSTEN)
+      const result2 = await SignableTransfer.fromTransfer(mockParams, NetworkId.GOERLI)
         .verifySignature(badSignatureS, mockKeyPair.publicKey);
       expect(result2).toBe(false);
     });
@@ -65,7 +65,7 @@ describe('SignableTransfer', () => {
     it('signs a transfer', async () => {
       const signature = await SignableTransfer.fromTransfer(
         mockParams,
-        NetworkId.ROPSTEN,
+        NetworkId.GOERLI,
       ).sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
@@ -75,7 +75,7 @@ describe('SignableTransfer', () => {
         ...mockParams,
         clientId: `${mockParams.clientId}!`,
       };
-      const signature = await SignableTransfer.fromTransfer(transfer, NetworkId.ROPSTEN)
+      const signature = await SignableTransfer.fromTransfer(transfer, NetworkId.GOERLI)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -85,7 +85,7 @@ describe('SignableTransfer', () => {
         ...mockParams,
         receiverPositionId: (Number.parseInt(mockParams.receiverPositionId, 10) + 1).toString(),
       };
-      const signature = await SignableTransfer.fromTransfer(transfer, NetworkId.ROPSTEN)
+      const signature = await SignableTransfer.fromTransfer(transfer, NetworkId.GOERLI)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -95,7 +95,7 @@ describe('SignableTransfer', () => {
 
     it('converts human amounts to quantum amounts and converts expiration to hours', () => {
       const starkwareTransfer: StarkwareTransfer = (
-        SignableTransfer.fromTransfer(mockParams, NetworkId.ROPSTEN).toStarkware()
+        SignableTransfer.fromTransfer(mockParams, NetworkId.GOERLI).toStarkware()
       );
       expect(starkwareTransfer.quantumsAmount).toEqual('49478023');
       expect(starkwareTransfer.expirationEpochHours).toBe(444533);
@@ -106,7 +106,7 @@ describe('SignableTransfer', () => {
     // Repeat some number of times.
     await Promise.all(_.range(3).map(async () => {
       const keyPair: KeyPair = generateKeyPairUnsafe();
-      const signable = SignableTransfer.fromTransfer(mockParams, NetworkId.ROPSTEN);
+      const signable = SignableTransfer.fromTransfer(mockParams, NetworkId.GOERLI);
       const signature = await signable.sign(keyPair.privateKey);
 
       // Expect to be valid when verifying with the right public key.

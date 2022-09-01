@@ -4,6 +4,7 @@ import elliptic from 'elliptic';
 export enum NetworkId {
   MAINNET = 1,
   ROPSTEN = 3,
+  GOERLI = 5,
 }
 
 export enum StarkwareOrderType {
