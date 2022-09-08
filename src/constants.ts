@@ -20,7 +20,7 @@ export const SYNTHETIC_ASSETS = _.without(ALL_ASSETS, COLLATERAL_ASSET) as Synth
 export const SYNTHETIC_ASSET_MAP: Record<Flash1Market, SyntheticAsset> = {
   [Flash1Market.BTC_USD]: Flash1Asset.BTC,
   [Flash1Market.ETH_USD]: Flash1Asset.ETH,
-
+  [Flash1Market.LINK_USD]: Flash1Asset.LINK,
   /*
       The following markets are not available yet
   */
@@ -84,9 +84,10 @@ export const SYNTHETIC_ASSET_MAP: Record<Flash1Market, SyntheticAsset> = {
  * For example, a resolution of 9 for ETH means that 1e-9 ETH = 1 Gwei is the smallest unit.
  */
 export const ASSET_RESOLUTION: Record<Flash1Asset, number> = {
-  [Flash1Asset.USDC]: 6,
+  [Flash1Asset.USDC]: 7,
   [Flash1Asset.BTC]: 10,
-  [Flash1Asset.ETH]: 9,
+  [Flash1Asset.ETH]: 8,
+  [Flash1Asset.LINK]: 7,
 
   /*
       The following markets are not available yet
@@ -147,9 +148,9 @@ export const ASSET_RESOLUTION: Record<Flash1Asset, number> = {
 };
 
 export const COLLATERAL_ASSET_ADDRESS_BY_NETWORK: Record<NetworkId, string> = {
-  [NetworkId.MAINNET]: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // TODO: change when we know what it is
+  [NetworkId.MAINNET]: '0x0000000000000000000000000000000000000000', // TODO: change when we know what it is
+  [NetworkId.ROPSTEN]: '0x0000000000000000000000000000000000000000',
   [NetworkId.GOERLI]: '0xd44BB808bfE43095dBb94c83077766382D63952a',
-  [NetworkId.ROPSTEN]: '0x8707a5bf4c2842d46b31a405ba41b858c0f876c4', // TODO: remove
 };
 
 export const COLLATERAL_ASSET_ID_BY_NETWORK_ID: Record<NetworkId, string> = _.mapValues(
@@ -165,7 +166,6 @@ export const SYNTHETIC_ASSET_ID_MAP: Record<SyntheticAsset, string> = _.chain(SY
   .mapValues(makeSyntheticAssetId)
   .value() as Record<SyntheticAsset, string>;
 
-SYNTHETIC_ASSET_ID_MAP[Flash1Asset.BTC] = '0x4254432d3130000000000000000000';
 /**
  * The smallest unit of the asset in the Starkware system, represented in canonical (human) units.
  */

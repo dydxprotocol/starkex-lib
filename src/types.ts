@@ -18,6 +18,7 @@ export enum StarkwareOrderSide {
 export enum Flash1Market {
   BTC_USD = 'BTC-USD',
   ETH_USD = 'ETH-USD',
+  LINK_USD = 'LINK-USD',
   // BCH_USD = 'BCH-USD',
   // SOL_USD = 'SOL-USD',
   // DOGE_USD = 'DOGE-USD',
@@ -31,6 +32,7 @@ export enum Flash1Asset {
   USDC = 'USDC',
   BTC = 'BTC',
   ETH = 'ETH',
+  LINK = 'LINK',
   // BCH = 'BCH',
   // SOL = 'SOL',
   // DOGE = 'DOGE',
@@ -38,7 +40,6 @@ export enum Flash1Asset {
   // ADA = 'ADA',
   // DOT = 'DOT',
   // AVAX = 'AVAX',
-  // LINK = 'LINK',
   // ONEINCH = '1INCH',
 }
 export type SyntheticAsset = Exclude<Flash1Asset, Flash1Asset.USDC>;
