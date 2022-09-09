@@ -31,8 +31,7 @@ const mockWithdrawal: WithdrawalWithClientId = {
   clientId: 'This is an ID that the client came up with to describe this withdrawal',
 };
 const mockSignature = (
-  '05e48c33f8205a5359c95f1bd7385c1c1f587e338a514298c07634c0b6c952ba' +
-  '0687d6980502a5d7fa84ef6fdc00104db22c43c7fb83e88ca84f19faa9ee3de1'
+  "04899be37b9776f1d963afc184efd274820715e12a1cde15533fe97609c5298a025d98188ffb9221da6285cc7c29cdc7207e3c6ec0b5f046710d1b5631e37c5b"
 );
 
 describe('SignableWithdrawal', () => {
@@ -41,7 +40,7 @@ describe('SignableWithdrawal', () => {
 
     it('returns true for a valid signature', async () => {
       const result = await SignableWithdrawal
-        .fromWithdrawal(mockWithdrawal, NetworkId.ROPSTEN)
+        .fromWithdrawal(mockWithdrawal, NetworkId.GOERLI)
         .verifySignature(mockSignature, mockKeyPair.publicKey);
       expect(result).toBe(true);
     });
@@ -51,7 +50,7 @@ describe('SignableWithdrawal', () => {
       await Promise.all(_.range(1, 4).map(async (i) => {
         const badSignature: string = mutateHexStringAt(mockSignature, i);
         const result = await SignableWithdrawal
-          .fromWithdrawal(mockWithdrawal, NetworkId.ROPSTEN)
+          .fromWithdrawal(mockWithdrawal, NetworkId.GOERLI)
           .verifySignature(badSignature, mockKeyPair.publicKey);
         expect(result).toBe(false);
       }));
@@ -60,7 +59,7 @@ describe('SignableWithdrawal', () => {
       await Promise.all(_.range(1, 4).map(async (i) => {
         const badSignature: string = mutateHexStringAt(mockSignature, i + 64);
         const result = await SignableWithdrawal
-          .fromWithdrawal(mockWithdrawal, NetworkId.ROPSTEN)
+          .fromWithdrawal(mockWithdrawal, NetworkId.GOERLI)
           .verifySignature(badSignature, mockKeyPair.publicKey);
         expect(result).toBe(false);
       }));
@@ -71,7 +70,7 @@ describe('SignableWithdrawal', () => {
 
     it('signs a withdrawal', async () => {
       const signature = await SignableWithdrawal
-        .fromWithdrawal(mockWithdrawal, NetworkId.ROPSTEN)
+        .fromWithdrawal(mockWithdrawal, NetworkId.GOERLI)
         .sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
@@ -83,7 +82,7 @@ describe('SignableWithdrawal', () => {
         nonce: nonceFromClientId(mockWithdrawal.clientId),
       };
       const signature = await SignableWithdrawal
-        .fromWithdrawalWithNonce(withdrawalWithNonce, NetworkId.ROPSTEN)
+        .fromWithdrawalWithNonce(withdrawalWithNonce, NetworkId.GOERLI)
         .sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
@@ -94,7 +93,7 @@ describe('SignableWithdrawal', () => {
         clientId: `${mockWithdrawal.clientId}!`,
       };
       const signature = await SignableWithdrawal
-        .fromWithdrawal(withdrawal, NetworkId.ROPSTEN)
+        .fromWithdrawal(withdrawal, NetworkId.GOERLI)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -105,7 +104,7 @@ describe('SignableWithdrawal', () => {
         positionId: (Number.parseInt(mockWithdrawal.positionId, 10) + 1).toString(),
       };
       const signature = await SignableWithdrawal
-        .fromWithdrawal(withdrawal, NetworkId.ROPSTEN)
+        .fromWithdrawal(withdrawal, NetworkId.GOERLI)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -115,7 +114,7 @@ describe('SignableWithdrawal', () => {
 
     it('converts human amounts to quantum amounts and converts expiration to hours', () => {
       const starkwareWithdrawal: StarkwareWithdrawal = SignableWithdrawal
-        .fromWithdrawal(mockWithdrawal, NetworkId.ROPSTEN)
+        .fromWithdrawal(mockWithdrawal, NetworkId.GOERLI)
         .toStarkware();
       expect(starkwareWithdrawal.quantumsAmount).toBe('49478023');
       expect(starkwareWithdrawal.expirationEpochHours).toBe(444533);
@@ -128,7 +127,7 @@ describe('SignableWithdrawal', () => {
       const keyPair: KeyPair = generateKeyPairUnsafe();
       const signableWithdrawal = SignableWithdrawal.fromWithdrawal(
         mockWithdrawal,
-        NetworkId.ROPSTEN,
+        NetworkId.GOERLI,
       );
       const signature = await signableWithdrawal.sign(keyPair.privateKey);
 

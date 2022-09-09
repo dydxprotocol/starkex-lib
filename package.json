@@ -1,6 +1,6 @@
 {
   "name": "@flash1-exchange/starkex-lib",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "description": "Cryptographic functions for use with StarkEx",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -30,9 +30,6 @@
   },
   "homepage": "https://github.com/flash1-dev/starkex-lib#readme",
   "dependencies": {
-    "@types/big.js": "6.0.0",
-    "@types/crypto-js": "^4.1.1",
-    "@types/elliptic": "^6.4.12",
     "big.js": "6.0.3",
     "bigint-buffer": "^1.1.5",
     "bip39": "^3.0.3",
@@ -42,6 +39,9 @@
     "hash.js": "^1.1.7"
   },
   "devDependencies": {
+    "@types/big.js": "6.0.0",
+    "@types/crypto-js": "^4.1.1",
+    "@types/elliptic": "^6.4.12",
     "@dydxprotocol/node-service-base-dev": "0.2.5",
     "@types/node": "15.12.2",
     "@types/proxyquire": "^1.3.28",

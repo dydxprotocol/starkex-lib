@@ -32,7 +32,7 @@ describe('assets helpers', () => {
     it('converts a number of quantums to a human-readable amount', () => {
       expect(
         fromQuantums('1000', Flash1Asset.ETH),
-      ).toBe('0.000001');
+      ).toBe('0.00001');
     });
 
     it('throws if the asset is unknown', () => {
@@ -51,12 +51,12 @@ describe('assets helpers', () => {
           side: StarkwareOrderSide.SELL,
           humanSize: '250.0000000001',
           humanPrice: '1.23456789',
-        }, NetworkId.ROPSTEN),
+        }, NetworkId.GOERLI),
       ).toStrictEqual({
         quantumsAmountSynthetic: '2500000000001',
         quantumsAmountCollateral: '308641972',
         assetIdSynthetic: SYNTHETIC_ASSET_ID_MAP[Flash1Asset.BTC],
-        assetIdCollateral: COLLATERAL_ASSET_ID_BY_NETWORK_ID[NetworkId.ROPSTEN],
+        assetIdCollateral: COLLATERAL_ASSET_ID_BY_NETWORK_ID[NetworkId.GOERLI],
         isBuyingSynthetic: false,
       });
     });
@@ -68,12 +68,12 @@ describe('assets helpers', () => {
           side: StarkwareOrderSide.SELL,
           humanSize: '250.0000000001',
           humanQuoteAmount: '308.641972',
-        }, NetworkId.ROPSTEN),
+        }, NetworkId.GOERLI),
       ).toStrictEqual({
         quantumsAmountSynthetic: '2500000000001',
         quantumsAmountCollateral: '308641972',
         assetIdSynthetic: SYNTHETIC_ASSET_ID_MAP[Flash1Asset.BTC],
-        assetIdCollateral: COLLATERAL_ASSET_ID_BY_NETWORK_ID[NetworkId.ROPSTEN],
+        assetIdCollateral: COLLATERAL_ASSET_ID_BY_NETWORK_ID[NetworkId.GOERLI],
         isBuyingSynthetic: false,
       });
     });
@@ -85,7 +85,7 @@ describe('assets helpers', () => {
           side: StarkwareOrderSide.SELL,
           humanSize: '250.00000000001',
           humanPrice: '1.23456789',
-        }, NetworkId.ROPSTEN);
+        }, NetworkId.GOERLI);
       }).toThrow('not a multiple of the quantum size');
     });
 
@@ -95,8 +95,8 @@ describe('assets helpers', () => {
           market: Flash1Market.BTC_USD,
           side: StarkwareOrderSide.SELL,
           humanSize: '250.0000000001',
-          humanQuoteAmount: '308.6419721',
-        }, NetworkId.ROPSTEN);
+          humanQuoteAmount: '308.64197212',
+        }, NetworkId.GOERLI);
       }).toThrow('not a multiple of the quantum size');
     });
   });

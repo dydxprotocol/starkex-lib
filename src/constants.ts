@@ -84,7 +84,7 @@ export const SYNTHETIC_ASSET_MAP: Record<Flash1Market, SyntheticAsset> = {
  * For example, a resolution of 9 for ETH means that 1e-9 ETH = 1 Gwei is the smallest unit.
  */
 export const ASSET_RESOLUTION: Record<Flash1Asset, number> = {
-  [Flash1Asset.USDC]: 7,
+  [Flash1Asset.USDC]: 6,
   [Flash1Asset.BTC]: 10,
   [Flash1Asset.ETH]: 8,
   [Flash1Asset.LINK]: 7,
