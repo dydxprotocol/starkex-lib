@@ -230,7 +230,7 @@ export class StarkHelper {
   public signWithdrawal(positionId: string, humanAmount: string,
     expirationIsoTimestamp: string, clientId: string, privateKey: string,
     networkId: string): string {
-    const _networkId: NetworkId = (networkId === '1') ? NetworkId.MAINNET : NetworkId.ROPSTEN;
+    const _networkId: NetworkId = (networkId === '1') ? NetworkId.MAINNET : NetworkId.GOERLI;
     const withdrawal = {
       positionId,
       humanAmount,
@@ -246,7 +246,7 @@ export class StarkHelper {
     receiverPositionId: string, receiverPublicKey: string, humanAmount: string,
     expirationIsoTimestamp: string, clientId: string, factRegistryAddress: string,
     fact: string, privateKey: string, networkId: string): string {
-    const _networkId: NetworkId = (networkId === '1') ? NetworkId.MAINNET : NetworkId.ROPSTEN;
+    const _networkId: NetworkId = (networkId === '1') ? NetworkId.MAINNET : NetworkId.GOERLI;
     const transfer = {
       senderPositionId,
       receiverPositionId,
@@ -266,7 +266,7 @@ export class StarkHelper {
     receiverPublicKey: string, humanAmount: string,
     clientId: string, expirationIsoTimestamp: string, privateKey: string,
     networkId: string): string {
-    const _networkId: NetworkId = (networkId === '1') ? NetworkId.MAINNET : NetworkId.ROPSTEN;
+    const _networkId: NetworkId = (networkId === '1') ? NetworkId.MAINNET : NetworkId.GOERLI;
     const transfer = {
       senderPositionId,
       receiverPositionId,
@@ -284,7 +284,7 @@ export class StarkHelper {
     market: string, side: string,
     expirationIsoTimestamp: string, humanPrice: string, clientId: string,
     privateKey: string, networkId: string): string {
-    const _networkId: NetworkId = (networkId === '1') ? NetworkId.MAINNET : NetworkId.ROPSTEN;
+    const _networkId: NetworkId = (networkId === '1') ? NetworkId.MAINNET : NetworkId.GOERLI;
     const _side:StarkwareOrderSide = (side === 'BUY') ? StarkwareOrderSide.BUY : StarkwareOrderSide.SELL;
     const _market = market as DydxMarket;
     const order = {
@@ -306,7 +306,7 @@ export class StarkHelper {
     asset: string, resolution: number, side: string,
     expirationIsoTimestamp: string, humanPrice: string, clientId: string,
     privateKey: string, networkId: string): string {
-    const _networkId: NetworkId = (networkId === '1') ? NetworkId.MAINNET : NetworkId.ROPSTEN;
+    const _networkId: NetworkId = (networkId === '1') ? NetworkId.MAINNET : NetworkId.GOERLI;
     const _side:StarkwareOrderSide = (side === 'BUY') ? StarkwareOrderSide.BUY : StarkwareOrderSide.SELL;
     const _assetInfo = {
       asset,
