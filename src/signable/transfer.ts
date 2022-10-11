@@ -7,7 +7,7 @@ import {
 import {
   isoTimestampToEpochHours,
   nonceFromClientId,
-  toQuantumsExact,
+  toQuantumsRound,
 } from '../helpers';
 import { getPedersenHash } from '../lib/crypto';
 import {
@@ -45,7 +45,7 @@ export class SignableTransfer extends StarkSignable<StarkwareTransfer> {
     const nonce = nonceFromClientId(transfer.clientId);
 
     // The transfer asset is always the collateral asset.
-    const quantumsAmount = toQuantumsExact(transfer.humanAmount, COLLATERAL_ASSET);
+    const quantumsAmount = toQuantumsRound(transfer.humanAmount, COLLATERAL_ASSET);
 
     // Convert to a Unix timestamp (in hours).
     const expirationEpochHours = isoTimestampToEpochHours(transfer.expirationIsoTimestamp);

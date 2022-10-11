@@ -1,6 +1,6 @@
 {
   "name": "@flash1-exchange/starkex-lib",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Cryptographic functions for use with StarkEx",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",

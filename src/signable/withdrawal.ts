@@ -7,7 +7,7 @@ import {
 import {
   isoTimestampToEpochHours,
   nonceFromClientId,
-  toQuantumsExact,
+  toQuantumsRound,
 } from '../helpers';
 import { getPedersenHash } from '../lib/crypto';
 import {
@@ -58,7 +58,7 @@ export class SignableWithdrawal extends StarkSignable<StarkwareWithdrawal> {
     const nonce = withdrawal.nonce;
 
     // The withdrawal asset is always the collateral asset.
-    const quantumsAmount = toQuantumsExact(withdrawal.humanAmount, COLLATERAL_ASSET);
+    const quantumsAmount = toQuantumsRound(withdrawal.humanAmount, COLLATERAL_ASSET);
 
     // Convert to a Unix timestamp (in hours).
     const expirationEpochHours = isoTimestampToEpochHours(withdrawal.expirationIsoTimestamp);

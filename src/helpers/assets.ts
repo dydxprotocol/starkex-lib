@@ -57,6 +57,18 @@ export function toQuantumsRoundUp(
   return toQuantumsHelper(humanAmount, asset, RoundingMode.RoundUp, false);
 }
 
+/**
+ * Convert a human-readable asset amount to an integer amount of the asset's quantum size.
+ *
+ * If the provided value is not a multiple of the quantum size, round down.
+ */
+export function toQuantumsRound(
+  humanAmount: string,
+  asset: Flash1Asset,
+): string {
+  return toQuantumsHelper(humanAmount, asset, RoundingMode.RoundHalfUp, false);
+}
+
 function toQuantumsHelper(
   humanAmount: string,
   asset: Flash1Asset,
@@ -118,22 +130,22 @@ export function getStarkwareAmounts(
   }
 
   // Convert the synthetic amount to Starkware quantums.
-  const quantumsAmountSynthetic = toQuantumsExact(humanSize, syntheticAsset);
+  const quantumsAmountSynthetic = toQuantumsRound(humanSize, syntheticAsset);
 
   // Get the human-readable collateral asset amount (a.k.a. "quote amount").
   const humanAmountCollateral = typeof humanQuoteAmount === 'string'
     ? humanQuoteAmount
     : new Big(humanSize).times(humanPrice!).toFixed(); // Non-null assertion safe based on types.
 
-  // If quoteAmount was specified, don't allow rounding.
-  // Otherwise, round differently depending on the order side.
-  let toQuantumsFnForCost = toQuantumsExact;
-  if (typeof humanQuoteAmount !== 'string') {
-    toQuantumsFnForCost = isBuyingSynthetic
-      ? toQuantumsRoundUp
-      : toQuantumsRoundDown;
-  }
-  const quantumsAmountCollateral = toQuantumsFnForCost(humanAmountCollateral, COLLATERAL_ASSET);
+  // // If quoteAmount was specified, don't allow rounding.
+  // // Otherwise, round differently depending on the order side.
+  // let toQuantumsFnForCost = toQuantumsExact;
+  // if (typeof humanQuoteAmount !== 'string') {
+  //   toQuantumsFnForCost = isBuyingSynthetic
+  //     ? toQuantumsRoundUp
+  //     : toQuantumsRoundDown;
+  // }
+  const quantumsAmountCollateral = toQuantumsRound(humanAmountCollateral, COLLATERAL_ASSET);
 
   return {
     quantumsAmountSynthetic,
