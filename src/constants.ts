@@ -71,6 +71,21 @@ export const SYNTHETIC_ASSET_MAP: Record<DydxMarket, SyntheticAsset> = {
   [DydxMarket.ALPHA_USD]: DydxAsset.ALPHA,
   [DydxMarket.WNXM_USD]: DydxAsset.WNXM,
   [DydxMarket.XCH_USD]: DydxAsset.XCH,
+  [DydxMarket.APE_USD]: DydxAsset.APE,
+  [DydxMarket.GMT_USD]: DydxAsset.GMT,
+  [DydxMarket.FTM_USD]: DydxAsset.FTM,
+  [DydxMarket.AXS_USD]: DydxAsset.AXS,
+  [DydxMarket.OP_USD]: DydxAsset.OP,
+  [DydxMarket.WAVES_USD]: DydxAsset.WAVES,
+  [DydxMarket.GALA_USD]: DydxAsset.GALA,
+  [DydxMarket.SAND_USD]: DydxAsset.SAND,
+  [DydxMarket.MANA_USD]: DydxAsset.MANA,
+  [DydxMarket.SHIB_USD]: DydxAsset.SHIB,
+  [DydxMarket.THETA_USD]: DydxAsset.THETA,
+  [DydxMarket.RSR_USD]: DydxAsset.RSR,
+  [DydxMarket.ZIL_USD]: DydxAsset.ZIL,
+  [DydxMarket.VET_USD]: DydxAsset.VET,
+  [DydxMarket.ENS_USD]: DydxAsset.ENS,
 };
 
 /**
@@ -133,6 +148,21 @@ export const ASSET_RESOLUTION: Record<DydxAsset, number> = {
   [DydxAsset.ALPHA]: 5,
   [DydxAsset.WNXM]: 7,
   [DydxAsset.XCH]: 8,
+  [DydxAsset.APE]: 7,
+  [DydxAsset.GMT]: 6,
+  [DydxAsset.FTM]: 6,
+  [DydxAsset.AXS]: 7,
+  [DydxAsset.OP]: 6,
+  [DydxAsset.WAVES]: 7,
+  [DydxAsset.GALA]: 5,
+  [DydxAsset.SAND]: 6,
+  [DydxAsset.MANA]: 6,
+  [DydxAsset.SHIB]: 0,
+  [DydxAsset.THETA]: 6,
+  [DydxAsset.RSR]: 3,
+  [DydxAsset.ZIL]: 4,
+  [DydxAsset.VET]: 4,
+  [DydxAsset.ENS]: 7,
 };
 
 export const COLLATERAL_ASSET_ADDRESS_BY_NETWORK: Record<NetworkId, string> = {

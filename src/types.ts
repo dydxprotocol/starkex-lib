@@ -71,6 +71,21 @@ export enum DydxMarket {
   ALPHA_USD = 'ALPHA-USD',
   WNXM_USD = 'WNXM-USD',
   XCH_USD = 'XCH-USD',
+  APE_USD = 'APE-USD',
+  GMT_USD = 'GMT-USD',
+  FTM_USD = 'FTM-USD',
+  AXS_USD = 'AXS-USD',
+  OP_USD = 'OP-USD',
+  WAVES_USD = 'WAVES-USD',
+  GALA_USD = 'GALA-USD',
+  SAND_USD = 'SAND-USD',
+  MANA_USD = 'MANA-USD',
+  SHIB_USD = 'SHIB-USD',
+  THETA_USD = 'THETA-USD',
+  RSR_USD = 'RSR-USD',
+  ZIL_USD = 'ZIL-USD',
+  VET_USD = 'VET-USD',
+  ENS_USD = 'ENS-USD',
 }
 
 export enum DydxAsset {
@@ -128,6 +143,21 @@ export enum DydxAsset {
   ALPHA = 'ALPHA',
   WNXM = 'WNXM',
   XCH = 'XCH',
+  APE = 'APE',
+  GMT = 'GMT',
+  FTM = 'FTM',
+  AXS = 'AXS',
+  OP = 'OP',
+  WAVES = 'WAVES',
+  GALA = 'GALA',
+  SAND = 'SAND',
+  MANA = 'MANA',
+  SHIB = 'SHIB',
+  THETA = 'THETA',
+  RSR = 'RSR',
+  ZIL = 'ZIL',
+  VET = 'VET',
+  ENS = 'ENS',
 }
 
 export type SyntheticAsset = Exclude<DydxAsset, DydxAsset.USDC>;
