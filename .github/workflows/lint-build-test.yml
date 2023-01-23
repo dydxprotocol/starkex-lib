@@ -9,4 +9,3 @@ on:
 jobs:
   main:
     uses: dydxprotocol/actions-public/.github/workflows/v3-lint-build-test.yml@main
-    secrets: inherit
