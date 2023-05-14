@@ -54,7 +54,7 @@ try {
 /**
  * Computes the Starkware version of the Pedersen hash of x and y.
  * Full specification of the hash function can be found here:
- *  https://starkware.co/starkex/docs/signatures.html#pedersen-hash-function
+ *  https://docs.starkware.co/starkex-v4/crypto/pedersen-hash-function
  */
 export function pedersen(x: bigint, y: bigint): bigint {
   const xBuf = BigIntBuffer.toBufferLE(x, 32);
