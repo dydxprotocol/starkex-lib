@@ -2,9 +2,6 @@ name: Lint/Build/Test/Cov
 
 on:
   pull_request:
-  push:
-    branches:
-      - master
 
 jobs:
   main:
