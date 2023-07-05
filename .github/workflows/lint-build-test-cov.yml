@@ -4,28 +4,6 @@ on:
   pull_request:
 
 jobs:
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ inputs.NODE_VERSION }}
-          registry-url: https://registry.npmjs.org
-          cache: 'npm'
-
-      - name: Install 
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_READ }}
-        run: |
-          git config --global url."https://github.com/".insteadOf ssh://git@github.com/
-          git config --global url."https://".insteadOf git://
-          npm ci
-
-      - name: Lint
-        run: npm run lint
-
+  main:
+    uses: dydxprotocol/actions-public/.github/workflows/v3-lint-build-test.yml@main
+    secrets: inherit
