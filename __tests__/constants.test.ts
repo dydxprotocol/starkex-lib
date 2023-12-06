@@ -23,6 +23,9 @@ describe('Constants', () => {
     expect(COLLATERAL_ASSET_ID_BY_NETWORK_ID[NetworkId.ROPSTEN]).toBe(
       '0x02c04d8b650f44092278a7cb1e1028c82025dff622db96c934b611b84cc8de5a',
     );
+    expect(COLLATERAL_ASSET_ID_BY_NETWORK_ID[NetworkId.SEPOLIA]).toBe(
+      '0x01e70c509c4c6bfafe8b73d2fc1819444b2c0b435d4b82c0f24addff9565ce25',
+    );
   });
 
   it('generates the expected synthetic asset IDs', () => {

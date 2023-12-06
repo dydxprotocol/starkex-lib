@@ -5,6 +5,7 @@ export enum NetworkId {
   MAINNET = 1,
   ROPSTEN = 3,
   GOERLI = 5,
+  SEPOLIA = 11155111,
 }
 
 export enum StarkwareOrderType {
