@@ -31,8 +31,8 @@ const mockParams: TransferParams = {
   clientId: 'This is an ID that the client came up with to describe this transfer',
 };
 const mockSignature = (
-  '07a64843a0fb9bd455696139f6230d3152d9df2e863d54587f1f8bdbb07eb032' +
-  '0699b82593aa2e02915694ffc39c1001e81337b8fcc73f5b91f73ce5146c50bd'
+  '02b4d393ea955be0f53029e2f8a10d31671eb9d3ada015d973c903417264688a' +
+  '02ffb6b7f29870208f1f860b125de95b5444142a867be9dcd80128999518ddd3'
 );
 
 describe('SignableTransfer', () => {
