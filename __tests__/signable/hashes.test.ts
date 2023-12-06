@@ -96,7 +96,7 @@ describe('Pedersen hashes', () => {
     );
     await (SignableConditionalTransfer as typeof SignableConditionalTransferOrig).fromTransfer(
       mockConditionalTransfer,
-      NetworkId.GOERLI,
+      NetworkId.SEPOLIA,
     ).getHash();
     expect(mockPedersen.callCount).toBe(5);
 
@@ -104,7 +104,7 @@ describe('Pedersen hashes', () => {
     mockPedersen.resetHistory();
     await (SignableConditionalTransfer as typeof SignableConditionalTransferOrig).fromTransfer(
       mockConditionalTransfer,
-      NetworkId.GOERLI,
+      NetworkId.SEPOLIA,
     ).getHash();
     expect(mockPedersen.callCount).toBe(4);
   });
@@ -113,7 +113,7 @@ describe('Pedersen hashes', () => {
     const { SignableOrder } = proxyquire('../../src/signable/order', mocks);
     await (SignableOrder as typeof SignableOrderOrig).fromOrder(
       mockOrder,
-      NetworkId.GOERLI,
+      NetworkId.SEPOLIA,
     ).getHash();
     expect(mockPedersen.callCount).toBe(4);
 
@@ -121,7 +121,7 @@ describe('Pedersen hashes', () => {
     mockPedersen.resetHistory();
     await (SignableOrder as typeof SignableOrderOrig).fromOrder(
       mockOrder,
-      NetworkId.GOERLI,
+      NetworkId.SEPOLIA,
     ).getHash();
     expect(mockPedersen.callCount).toBe(2);
   });
@@ -132,7 +132,7 @@ describe('Pedersen hashes', () => {
     );
     await (SignableTransfer as typeof SignableTransferOrig).fromTransfer(
       mockTransfer,
-      NetworkId.GOERLI,
+      NetworkId.SEPOLIA,
     ).getHash();
     expect(mockPedersen.callCount).toBe(4);
 
@@ -140,7 +140,7 @@ describe('Pedersen hashes', () => {
     mockPedersen.resetHistory();
     await (SignableTransfer as typeof SignableTransferOrig).fromTransfer(
       mockTransfer,
-      NetworkId.GOERLI,
+      NetworkId.SEPOLIA,
     ).getHash();
     expect(mockPedersen.callCount).toBe(3);
   });
@@ -149,7 +149,7 @@ describe('Pedersen hashes', () => {
     const { SignableWithdrawal } = proxyquire('../../src/signable/withdrawal', mocks);
     await (SignableWithdrawal as typeof SignableWithdrawalOrig).fromWithdrawal(
       mockWithdrawal,
-      NetworkId.GOERLI,
+      NetworkId.SEPOLIA,
     ).getHash();
     expect(mockPedersen.callCount).toBe(1);
   });
@@ -158,7 +158,7 @@ describe('Pedersen hashes', () => {
   describe.skip('after pre-computing hashes', () => {
 
     beforeEach(async () => {
-      await proxyquiredHashes.preComputeHashes(NetworkId.GOERLI);
+      await proxyquiredHashes.preComputeHashes(NetworkId.SEPOLIA);
       mockPedersen.resetHistory();
     });
 
@@ -168,7 +168,7 @@ describe('Pedersen hashes', () => {
       );
       await (SignableConditionalTransfer as typeof SignableConditionalTransferOrig).fromTransfer(
         mockConditionalTransfer,
-        NetworkId.GOERLI,
+        NetworkId.SEPOLIA,
       ).getHash();
       expect(mockPedersen.callCount).toBe(4);
     });
@@ -177,7 +177,7 @@ describe('Pedersen hashes', () => {
       const { SignableOrder } = proxyquire('../../src/signable/order', mocks);
       await (SignableOrder as typeof SignableOrderOrig).fromOrder(
         mockOrder,
-        NetworkId.GOERLI,
+        NetworkId.SEPOLIA,
       ).getHash();
       expect(mockPedersen!.callCount).toBe(2);
     });
@@ -188,7 +188,7 @@ describe('Pedersen hashes', () => {
       );
       await (SignableTransfer as typeof SignableTransferOrig).fromTransfer(
         mockTransfer,
-        NetworkId.GOERLI,
+        NetworkId.SEPOLIA,
       ).getHash();
       expect(mockPedersen.callCount).toBe(3);
     });
@@ -197,7 +197,7 @@ describe('Pedersen hashes', () => {
       const { SignableWithdrawal } = proxyquire('../../src/signable/withdrawal', mocks);
       await (SignableWithdrawal as typeof SignableWithdrawalOrig).fromWithdrawal(
         mockWithdrawal,
-        NetworkId.GOERLI,
+        NetworkId.SEPOLIA,
       ).getHash();
       expect(mockPedersen.callCount).toBe(1);
     });

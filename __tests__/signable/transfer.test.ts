@@ -40,7 +40,7 @@ describe('SignableTransfer', () => {
   describe('verifySignature()', () => {
 
     it('returns true for a valid signature', async () => {
-      const result = await SignableTransfer.fromTransfer(mockParams, NetworkId.GOERLI)
+      const result = await SignableTransfer.fromTransfer(mockParams, NetworkId.SEPOLIA)
         .verifySignature(mockSignature, mockKeyPair.publicKey);
       expect(result).toBe(true);
     });
@@ -48,13 +48,13 @@ describe('SignableTransfer', () => {
     it('returns false for an invalid signature', async () => {
       // Mutate a single character in r.
       const badSignatureR: string = mutateHexStringAt(mockSignature, 2);
-      const result1 = await SignableTransfer.fromTransfer(mockParams, NetworkId.GOERLI)
+      const result1 = await SignableTransfer.fromTransfer(mockParams, NetworkId.SEPOLIA)
         .verifySignature(badSignatureR, mockKeyPair.publicKey);
       expect(result1).toBe(false);
 
       // Mutate a single character in s.
       const badSignatureS: string = mutateHexStringAt(mockSignature, 65);
-      const result2 = await SignableTransfer.fromTransfer(mockParams, NetworkId.GOERLI)
+      const result2 = await SignableTransfer.fromTransfer(mockParams, NetworkId.SEPOLIA)
         .verifySignature(badSignatureS, mockKeyPair.publicKey);
       expect(result2).toBe(false);
     });
@@ -65,7 +65,7 @@ describe('SignableTransfer', () => {
     it('signs a transfer', async () => {
       const signature = await SignableTransfer.fromTransfer(
         mockParams,
-        NetworkId.GOERLI,
+        NetworkId.SEPOLIA,
       ).sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
@@ -75,7 +75,7 @@ describe('SignableTransfer', () => {
         ...mockParams,
         clientId: `${mockParams.clientId}!`,
       };
-      const signature = await SignableTransfer.fromTransfer(transfer, NetworkId.GOERLI)
+      const signature = await SignableTransfer.fromTransfer(transfer, NetworkId.SEPOLIA)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -85,7 +85,7 @@ describe('SignableTransfer', () => {
         ...mockParams,
         receiverPositionId: (Number.parseInt(mockParams.receiverPositionId, 10) + 1).toString(),
       };
-      const signature = await SignableTransfer.fromTransfer(transfer, NetworkId.GOERLI)
+      const signature = await SignableTransfer.fromTransfer(transfer, NetworkId.SEPOLIA)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -95,7 +95,7 @@ describe('SignableTransfer', () => {
 
     it('converts human amounts to quantum amounts and converts expiration to hours', () => {
       const starkwareTransfer: StarkwareTransfer = (
-        SignableTransfer.fromTransfer(mockParams, NetworkId.GOERLI).toStarkware()
+        SignableTransfer.fromTransfer(mockParams, NetworkId.SEPOLIA).toStarkware()
       );
       expect(starkwareTransfer.quantumsAmount).toEqual('49478023');
       expect(starkwareTransfer.expirationEpochHours).toBe(444533);
@@ -106,7 +106,7 @@ describe('SignableTransfer', () => {
     // Repeat some number of times.
     await Promise.all(_.range(3).map(async () => {
       const keyPair: KeyPair = generateKeyPairUnsafe();
-      const signable = SignableTransfer.fromTransfer(mockParams, NetworkId.GOERLI);
+      const signable = SignableTransfer.fromTransfer(mockParams, NetworkId.SEPOLIA);
       const signature = await signable.sign(keyPair.privateKey);
 
       // Expect to be valid when verifying with the right public key.
