@@ -51,12 +51,12 @@ describe('assets helpers', () => {
           side: StarkwareOrderSide.SELL,
           humanSize: '250.0000000001',
           humanPrice: '1.23456789',
-        }, NetworkId.ROPSTEN),
+        }, NetworkId.SEPOLIA),
       ).toStrictEqual({
         quantumsAmountSynthetic: '2500000000001',
         quantumsAmountCollateral: '308641972',
         assetIdSynthetic: SYNTHETIC_ASSET_ID_MAP[DydxAsset.BTC],
-        assetIdCollateral: COLLATERAL_ASSET_ID_BY_NETWORK_ID[NetworkId.ROPSTEN],
+        assetIdCollateral: COLLATERAL_ASSET_ID_BY_NETWORK_ID[NetworkId.SEPOLIA],
         isBuyingSynthetic: false,
       });
     });
@@ -68,12 +68,12 @@ describe('assets helpers', () => {
           side: StarkwareOrderSide.SELL,
           humanSize: '250.0000000001',
           humanQuoteAmount: '308.641972',
-        }, NetworkId.ROPSTEN),
+        }, NetworkId.SEPOLIA),
       ).toStrictEqual({
         quantumsAmountSynthetic: '2500000000001',
         quantumsAmountCollateral: '308641972',
         assetIdSynthetic: SYNTHETIC_ASSET_ID_MAP[DydxAsset.BTC],
-        assetIdCollateral: COLLATERAL_ASSET_ID_BY_NETWORK_ID[NetworkId.ROPSTEN],
+        assetIdCollateral: COLLATERAL_ASSET_ID_BY_NETWORK_ID[NetworkId.SEPOLIA],
         isBuyingSynthetic: false,
       });
     });
@@ -85,7 +85,7 @@ describe('assets helpers', () => {
           side: StarkwareOrderSide.SELL,
           humanSize: '250.00000000001',
           humanPrice: '1.23456789',
-        }, NetworkId.ROPSTEN);
+        }, NetworkId.SEPOLIA);
       }).toThrow('not a multiple of the quantum size');
     });
 
@@ -96,7 +96,7 @@ describe('assets helpers', () => {
           side: StarkwareOrderSide.SELL,
           humanSize: '250.0000000001',
           humanQuoteAmount: '308.6419721',
-        }, NetworkId.ROPSTEN);
+        }, NetworkId.SEPOLIA);
       }).toThrow('not a multiple of the quantum size');
     });
   });

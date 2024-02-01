@@ -40,7 +40,7 @@ describe('SignableOraclePrice', () => {
 
     it('returns true for a valid signature', async () => {
       const result = await SignableOraclePrice
-        .fromPriceWithMarket(mockOraclePrice, NetworkId.ROPSTEN)
+        .fromPriceWithMarket(mockOraclePrice, NetworkId.SEPOLIA)
         .verifySignature(mockSignature, mockKeyPair.publicKey);
       expect(result).toBe(true);
     });
@@ -50,7 +50,7 @@ describe('SignableOraclePrice', () => {
       await Promise.all(_.range(1, 4).map(async (i) => {
         const badSignature: string = mutateHexStringAt(mockSignature, i);
         const result = await SignableOraclePrice
-          .fromPriceWithMarket(mockOraclePrice, NetworkId.ROPSTEN)
+          .fromPriceWithMarket(mockOraclePrice, NetworkId.SEPOLIA)
           .verifySignature(badSignature, mockKeyPair.publicKey);
         expect(result).toBe(false);
       }));
@@ -59,7 +59,7 @@ describe('SignableOraclePrice', () => {
       await Promise.all(_.range(1, 4).map(async (i) => {
         const badSignature: string = mutateHexStringAt(mockSignature, i + 64);
         const result = await SignableOraclePrice
-          .fromPriceWithMarket(mockOraclePrice, NetworkId.ROPSTEN)
+          .fromPriceWithMarket(mockOraclePrice, NetworkId.SEPOLIA)
           .verifySignature(badSignature, mockKeyPair.publicKey);
         expect(result).toBe(false);
       }));
@@ -70,7 +70,7 @@ describe('SignableOraclePrice', () => {
 
     it('signs an oracle price, with a market', async () => {
       const signature = await SignableOraclePrice
-        .fromPriceWithMarket(mockOraclePrice, NetworkId.ROPSTEN)
+        .fromPriceWithMarket(mockOraclePrice, NetworkId.SEPOLIA)
         .sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
@@ -80,7 +80,7 @@ describe('SignableOraclePrice', () => {
         .fromPriceWithAssetName({
           ...mockOraclePrice,
           assetName: getSignedAssetName(mockOraclePrice.market),
-        }, NetworkId.ROPSTEN)
+        }, NetworkId.SEPOLIA)
         .sign(mockKeyPair.privateKey);
       expect(signature).toEqual(mockSignature);
     });
@@ -91,7 +91,7 @@ describe('SignableOraclePrice', () => {
         market: DydxMarket.ETH_USD,
       };
       const signature = await SignableOraclePrice
-        .fromPriceWithMarket(oraclePrice, NetworkId.ROPSTEN)
+        .fromPriceWithMarket(oraclePrice, NetworkId.SEPOLIA)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -102,7 +102,7 @@ describe('SignableOraclePrice', () => {
         oracleName: 'Other',
       };
       const signature = await SignableOraclePrice
-        .fromPriceWithMarket(oraclePrice, NetworkId.ROPSTEN)
+        .fromPriceWithMarket(oraclePrice, NetworkId.SEPOLIA)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -113,7 +113,7 @@ describe('SignableOraclePrice', () => {
         isoTimestamp: new Date().toISOString(),
       };
       const signature = await SignableOraclePrice
-        .fromPriceWithMarket(oraclePrice, NetworkId.ROPSTEN)
+        .fromPriceWithMarket(oraclePrice, NetworkId.SEPOLIA)
         .sign(mockKeyPair.privateKey);
       expect(signature).not.toEqual(mockSignature);
     });
@@ -124,7 +124,7 @@ describe('SignableOraclePrice', () => {
         oracleName: 'Other2',
       };
       expect(
-        () => SignableOraclePrice.fromPriceWithMarket(oraclePrice, NetworkId.ROPSTEN),
+        () => SignableOraclePrice.fromPriceWithMarket(oraclePrice, NetworkId.SEPOLIA),
       ).toThrow('Input does not fit in numBits=40 bits');
     });
   });
@@ -135,7 +135,7 @@ describe('SignableOraclePrice', () => {
       const keyPair: KeyPair = generateKeyPairUnsafe();
       const signableOraclePrice = SignableOraclePrice.fromPriceWithMarket(
         mockOraclePrice,
-        NetworkId.ROPSTEN,
+        NetworkId.SEPOLIA,
       );
       const signature = await signableOraclePrice.sign(keyPair.privateKey);
 

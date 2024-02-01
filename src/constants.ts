@@ -52,6 +52,25 @@ export const SYNTHETIC_ASSET_MAP: Record<DydxMarket, SyntheticAsset> = {
   [DydxMarket.TRX_USD]: DydxAsset.TRX,
   [DydxMarket.XTZ_USD]: DydxAsset.XTZ,
   [DydxMarket.HNT_USD]: DydxAsset.HNT,
+  [DydxMarket.ICP_USD]: DydxAsset.ICP,
+  [DydxMarket.RUNE_USD]: DydxAsset.RUNE,
+  [DydxMarket.LUNA_USD]: DydxAsset.LUNA,
+  [DydxMarket.NEAR_USD]: DydxAsset.NEAR,
+  [DydxMarket.AR_USD]: DydxAsset.AR,
+  [DydxMarket.FLOW_USD]: DydxAsset.FLOW,
+  [DydxMarket.PERP_USD]: DydxAsset.PERP,
+  [DydxMarket.REN_USD]: DydxAsset.REN,
+  [DydxMarket.CELO_USD]: DydxAsset.CELO,
+  [DydxMarket.KSM_USD]: DydxAsset.KSM,
+  [DydxMarket.BAL_USD]: DydxAsset.BAL,
+  [DydxMarket.BNT_USD]: DydxAsset.BNT,
+  [DydxMarket.MIR_USD]: DydxAsset.MIR,
+  [DydxMarket.SRM_USD]: DydxAsset.SRM,
+  [DydxMarket.LON_USD]: DydxAsset.LON,
+  [DydxMarket.DODO_USD]: DydxAsset.DODO,
+  [DydxMarket.ALPHA_USD]: DydxAsset.ALPHA,
+  [DydxMarket.WNXM_USD]: DydxAsset.WNXM,
+  [DydxMarket.XCH_USD]: DydxAsset.XCH,
 };
 
 /**
@@ -95,11 +114,32 @@ export const ASSET_RESOLUTION: Record<DydxAsset, number> = {
   [DydxAsset.TRX]: 4,
   [DydxAsset.XTZ]: 6,
   [DydxAsset.HNT]: 7,
+  [DydxAsset.ICP]: 7,
+  [DydxAsset.RUNE]: 6,
+  [DydxAsset.LUNA]: 6,
+  [DydxAsset.NEAR]: 6,
+  [DydxAsset.AR]: 7,
+  [DydxAsset.FLOW]: 7,
+  [DydxAsset.PERP]: 6,
+  [DydxAsset.REN]: 5,
+  [DydxAsset.CELO]: 6,
+  [DydxAsset.KSM]: 8,
+  [DydxAsset.BAL]: 7,
+  [DydxAsset.BNT]: 6,
+  [DydxAsset.MIR]: 6,
+  [DydxAsset.SRM]: 6,
+  [DydxAsset.LON]: 6,
+  [DydxAsset.DODO]: 6,
+  [DydxAsset.ALPHA]: 5,
+  [DydxAsset.WNXM]: 7,
+  [DydxAsset.XCH]: 8,
 };
 
 export const COLLATERAL_ASSET_ADDRESS_BY_NETWORK: Record<NetworkId, string> = {
   [NetworkId.MAINNET]: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
   [NetworkId.ROPSTEN]: '0x8707a5bf4c2842d46b31a405ba41b858c0f876c4',
+  [NetworkId.GOERLI]: '0xf7a2fa2c2025ffe64427dd40dc190d47ecc8b36e',
+  [NetworkId.SEPOLIA]: '0x7fC9C132268E0E414991449c003DbdB3E73E2059',
 };
 
 export const COLLATERAL_ASSET_ID_BY_NETWORK_ID: Record<NetworkId, string> = _.mapValues(
